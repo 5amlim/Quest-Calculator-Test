@@ -1,3 +1,9 @@
+Quest Lab Calculator v2.8
+
+- Highlighted preferred volume in the test library, selected-test summary, and printed collection table.
+- Renamed the printed volume column from Minimum to Volume.
+- Kept minimum volume visible as secondary information beneath the preferred volume.
+
 Quest Lab Calculator v2.7
 
 - Corrected 83 SST records so routine tests show submit spun SST/gold tube instead of a generic transport tube.

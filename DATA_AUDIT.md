@@ -3,7 +3,7 @@
 This update corrected SST handling and added full-directory lookup links.
 
 Built-in tests: **253**
-Built-in records changed: **86**
+Built-in records changed: **83**
 
 ## What changed
 
@@ -100,7 +100,3 @@ Quest advertises more than 3,500 tests, with service-area-specific availability 
 - `91735` — Cardio IQ® Vitamin D, 25-Hydroxy: official Quest page correction
 - `38683` — TRAb (TSH Receptor Binding Antibody): official Quest page correction
 - `36378` — Analyzer ANA with reflex panel: official Quest page correction
-
-- `3102` — Mercury, RBCs: corrected specimen type and confirmed refrigerated submission in the original royal blue EDTA tube after plasma removal
-- `16265` — Procalcitonin: corrected preferred red-top workflow, transfer-tube requirement, alternatives, minimum volume, and stability
-- `90271` — von Willebrand Screen: corrected to three frozen platelet-poor plasma aliquots
