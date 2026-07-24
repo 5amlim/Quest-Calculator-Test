@@ -1,7 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'questLabCalculator.database.v1';
+  const DB_KEY = 'questLabCalculator.database.v2';
+  const LEGACY_DB_KEY = 'questLabCalculator.database.v1';
   const SELECTED_KEY = 'questLabCalculator.selected.v1';
   const LABEL_KEY = 'questLabCalculator.orderLabel.v1';
   const PAGE_STEP = 80;
@@ -99,13 +100,23 @@
   function loadDatabase() {
     const seed = (window.SEED_TESTS || []).map(normalizeRecord);
     const stored = loadJson(DB_KEY, null);
-    if (!Array.isArray(stored) || !stored.length) return seed;
+    if (Array.isArray(stored) && stored.length) {
+      const merged = new Map(seed.map(test => [databaseKey(test), test]));
+      stored.map(normalizeRecord).forEach(test => merged.set(databaseKey(test), test));
+      return Array.from(merged.values());
+    }
 
-    // Merge newly published GitHub records into an existing browser database.
-    // Local edits win when a code/name pair already exists.
+    // v2.5 refreshes published records so corrected collection instructions replace
+    // older cached copies, while preserving tests staff manually added in v1.
+    const legacy = loadJson(LEGACY_DB_KEY, null);
+    if (!Array.isArray(legacy) || !legacy.length) return seed;
     const merged = new Map(seed.map(test => [databaseKey(test), test]));
-    stored.map(normalizeRecord).forEach(test => merged.set(databaseKey(test), test));
-    return Array.from(merged.values());
+    legacy.map(normalizeRecord)
+      .filter(test => test.id.startsWith('custom-') || test.source === 'Custom entry')
+      .forEach(test => merged.set(databaseKey(test), test));
+    const migrated = Array.from(merged.values());
+    localStorage.setItem(DB_KEY, JSON.stringify(migrated));
+    return migrated;
   }
 
   function databaseKey(test) {
@@ -473,7 +484,7 @@
       if (/own tube|dedicated tube|needs own tube|two separate|full tube|required on label|draw waste|discard tube/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: dedicated tube, fill, labeling, or discard instructions may apply.` });
       if (/immediately|freeze immediately|centrifuge immediately|stat/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: time-sensitive processing noted.` });
       if (/protect from light|amber|wrap.*foil/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: protect from light.` });
-      if (/cannot be done on housecall|do not refrigerate|unacceptable|reject/.test(note)) alerts.push({ type: 'danger', text: `${test.testName}: collection or rejection restriction noted.` });
+      if (/cannot be done on housecall|do not refrigerate|unacceptable|reject|not found in the current directory|verify the active quest test code/.test(note)) alerts.push({ type: 'danger', text: `${test.testName}: collection or rejection restriction noted.` });
     });
     const seen = new Set();
     return alerts.filter(alert => {
