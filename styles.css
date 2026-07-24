@@ -263,6 +263,7 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   background: #fff4bd;
   color: #624600;
   font-weight: 900;
+  font-size: 0.78rem;
   line-height: 1.2;
 }
 .preferred-volume-inline {
@@ -272,6 +273,7 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   background: #fff4bd;
   color: #624600;
   font-weight: 850;
+  font-size: 0.78rem;
 }
 
 @media print {
@@ -283,6 +285,7 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     background: #fff0a8 !important;
     color: #523b00 !important;
     font-weight: 900;
+    font-size: 6.4px;
     line-height: 1.2;
   }
   .print-minimum-volume {
