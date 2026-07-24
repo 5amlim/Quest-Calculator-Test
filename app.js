@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'questLabCalculator.database.v2';
-  const LEGACY_DB_KEY = 'questLabCalculator.database.v1';
+  const DB_KEY = 'questLabCalculator.database.v3';
+  const LEGACY_DB_KEYS = ['questLabCalculator.database.v2', 'questLabCalculator.database.v1'];
   const SELECTED_KEY = 'questLabCalculator.selected.v1';
   const LABEL_KEY = 'questLabCalculator.orderLabel.v1';
   const PAGE_STEP = 80;
@@ -92,7 +92,7 @@
   }
 
   function renderAll() {
-    els.recordCount.textContent = `${database.length} tests`;
+    els.recordCount.textContent = `${database.length} local tests`;
     renderLibrary();
     renderOrder();
   }
@@ -100,20 +100,18 @@
   function loadDatabase() {
     const seed = (window.SEED_TESTS || []).map(normalizeRecord);
     const stored = loadJson(DB_KEY, null);
-    if (Array.isArray(stored) && stored.length) {
-      const merged = new Map(seed.map(test => [databaseKey(test), test]));
-      stored.map(normalizeRecord).forEach(test => merged.set(databaseKey(test), test));
-      return Array.from(merged.values());
-    }
+    if (Array.isArray(stored) && stored.length) return stored.map(normalizeRecord);
 
-    // v2.5 refreshes published records so corrected collection instructions replace
-    // older cached copies, while preserving tests staff manually added in v1.
-    const legacy = loadJson(LEGACY_DB_KEY, null);
-    if (!Array.isArray(legacy) || !legacy.length) return seed;
+    // Published data corrections should replace older built-in records. Preserve only
+    // staff-created custom tests when migrating from an earlier browser database.
     const merged = new Map(seed.map(test => [databaseKey(test), test]));
-    legacy.map(normalizeRecord)
-      .filter(test => test.id.startsWith('custom-') || test.source === 'Custom entry')
-      .forEach(test => merged.set(databaseKey(test), test));
+    LEGACY_DB_KEYS.forEach(key => {
+      const legacy = loadJson(key, null);
+      if (!Array.isArray(legacy)) return;
+      legacy.map(normalizeRecord)
+        .filter(test => test.id.startsWith('custom-') || test.source === 'Custom entry')
+        .forEach(test => merged.set(databaseKey(test), test));
+    });
     const migrated = Array.from(merged.values());
     localStorage.setItem(DB_KEY, JSON.stringify(migrated));
     return migrated;
@@ -242,7 +240,7 @@
 
   function renderBatchRow(row) {
     if (!row.matches.length) {
-      return `<div class="batch-row unmatched"><div class="batch-query">${escapeHtml(row.query)}</div><div class="batch-match">No match found<small>Add a new test or refine the name.</small></div><button class="mini-button edit" data-action="new-from-query" data-query="${escapeAttr(row.query)}">Add missing test</button></div>`;
+      return `<div class="batch-row unmatched"><div class="batch-query">${escapeHtml(row.query)}</div><div class="batch-match">No local match found<small>Search the full official Quest directory, then add the verified collection details.</small></div><div class="batch-unmatched-actions"><a class="mini-button edit" href="${escapeAttr(questSearchUrl(row.query))}" target="_blank" rel="noreferrer">Search Quest ↗</a><button class="mini-button edit" data-action="new-from-query" data-query="${escapeAttr(row.query)}">Add missing test</button></div></div>`;
     }
     const best = row.matches[0];
     const alternatives = row.matches.slice(1).map(item => `${item.test.questCode} ${item.test.testName}`).join(' · ');
@@ -679,7 +677,7 @@
 
   function persistDatabase() {
     localStorage.setItem(DB_KEY, JSON.stringify(database));
-    els.recordCount.textContent = `${database.length} tests`;
+    els.recordCount.textContent = `${database.length} local tests`;
   }
 
   function exportDatabase() {
@@ -766,9 +764,19 @@
     return String(test.questCode || '').trim() || 'Manual';
   }
 
+  function questSearchUrl(query) {
+    const value = String(query || '').trim();
+    return value
+      ? `https://testdirectory.questdiagnostics.com/test/results?q=${encodeURIComponent(value)}`
+      : 'https://testdirectory.questdiagnostics.com/';
+  }
+
   function questUrl(test) {
-    if (!/^\d+$/.test(test.questCode)) return 'https://testdirectory.questdiagnostics.com/';
-    return `https://testdirectory.questdiagnostics.com/test/test-detail/${encodeURIComponent(test.questCode)}/?cc=MASTER&q=${encodeURIComponent(test.questCode)}`;
+    const code = String(test.questCode || '').trim();
+    if (/^\d+$/.test(code)) {
+      return `https://testdirectory.questdiagnostics.com/test/test-detail/${encodeURIComponent(code)}/?cc=MASTER&q=${encodeURIComponent(code)}`;
+    }
+    return questSearchUrl(test.testName || '');
   }
 
   function temperatureClass(temp) {

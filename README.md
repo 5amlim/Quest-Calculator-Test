@@ -104,3 +104,11 @@ The printed summary color-codes the draw container, transfer container, alternat
 
 ## Version 2.6 print cleanup
 The printed temperature column now shows only the color-coded standardized temperature badge. Duplicate raw labels such as “Room Temp” or “FROZEN” are no longer printed.
+
+## v2.7 data model
+
+The built-in list is a curated local database, not a mirror of Quest's full 3,500+ test menu. For unmatched tests, the app now provides a one-click search of the official Quest Test Directory. Routine SST records were reviewed so spun SST/gold tubes are submitted in the primary tube unless a verified test-specific instruction requires transfer.
+
+Additional corrections in v2.7 include Mercury, RBCs (3102), Procalcitonin (16265), and von Willebrand Screen (90271).
+
+See `DATA_AUDIT.md` and `SOURCES.txt` for review details.
