@@ -100,3 +100,7 @@ The printed summary color-codes the draw container, transfer container, alternat
 - Corrected several volume, temperature, specimen-type, and spelling inconsistencies.
 - Refreshed published records in staff browsers while preserving manually added custom tests.
 - Flagged legacy Troponin T code 34483 for verification instead of displaying an unverified red-top workflow.
+
+
+## Version 2.6 print cleanup
+The printed temperature column now shows only the color-coded standardized temperature badge. Duplicate raw labels such as “Room Temp” or “FROZEN” are no longer printed.
