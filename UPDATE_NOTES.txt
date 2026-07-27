@@ -1,7 +1,5 @@
-Quest Lab Calculator v4.2
+Quest Lab Calculator v4.3
 
-- Renamed the yellow blood-tube option and legend to Yellow ACD.
-- Corrected routine urinalysis so its red/yellow swirl urine preservative tube is not confused with a yellow ACD blood tube.
-- Added a dedicated orange-label Aptima tube badge.
-- Updated Quest code 70049 to use the Aptima Multitest transport tube (orange label), with the Aptima Unisex kit as an alternative.
+- Updated Quest code 70049 so the submission plan displays an Aptima badge with “Throat swab · Submit as Aptima.”
+- Kept the full Aptima Multitest collection-tube description in What to Collect.
 - Refreshed built-in records while preserving staff-created custom tests.

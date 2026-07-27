@@ -1,3 +1,8 @@
+## Version 4.3 updates
+
+- Quest code **70049** now displays **Aptima** in the submission section with **Submit as Aptima**.
+- The collection section still identifies the Aptima Multitest tube with the orange label.
+
 ## Version 4.2 updates
 
 - Yellow blood tubes are labeled **Yellow ACD**.

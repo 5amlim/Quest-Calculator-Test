@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'questLabCalculator.database.v7';
-  const LEGACY_DB_KEYS = ['questLabCalculator.database.v6', 'questLabCalculator.database.v5', 'questLabCalculator.database.v4', 'questLabCalculator.database.v3', 'questLabCalculator.database.v2', 'questLabCalculator.database.v1'];
+  const DB_KEY = 'questLabCalculator.database.v8';
+  const LEGACY_DB_KEYS = ['questLabCalculator.database.v7', 'questLabCalculator.database.v6', 'questLabCalculator.database.v5', 'questLabCalculator.database.v4', 'questLabCalculator.database.v3', 'questLabCalculator.database.v2', 'questLabCalculator.database.v1'];
   const SELECTED_KEY = 'questLabCalculator.selected.v1';
   const LABEL_KEY = 'questLabCalculator.orderLabel.v1';
   const PAGE_STEP = 80;
@@ -872,13 +872,17 @@
   function originalContainerSubmission(test) {
     const draw = String(test.drawContainer || 'Original collection container').trim();
     const specimen = titleCaseSpecimen(test.specimenType);
-    const processing = String(test.spin || '').toLowerCase() === 'yes' ? 'Process as directed; submit in original tube' : 'Submit in original tube';
+    const isAptima70049 = String(test.questCode || '').trim() === '70049';
+    const label = isAptima70049 ? 'Aptima' : draw;
+    const processing = isAptima70049
+      ? 'Throat swab · Submit as Aptima'
+      : (String(test.spin || '').toLowerCase() === 'yes' ? 'Process as directed; submit in original tube' : 'Submit in original tube');
     return {
-      key: `original|${normalizeSearch(draw)}|${normalizeSearch(specimen)}`,
-      label: draw,
+      key: `original|${normalizeSearch(label)}|${normalizeSearch(specimen)}`,
+      label,
       className: tubeClass(draw),
       count: explicitSubmissionCount(test),
-      detail: `${specimen} · ${processing}`,
+      detail: isAptima70049 ? processing : `${specimen} · ${processing}`,
       originalTube: true
     };
   }
