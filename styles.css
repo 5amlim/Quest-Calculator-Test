@@ -92,6 +92,7 @@ tr:hover td { background: #fbfdfd; }
 .tube-urine-culture::before { background: repeating-linear-gradient(135deg, #8c969d 0 4px, #d9dee1 4px 7px); border-style: dashed; }
 .tube-pink::before { background: #e9a4c4; }
 .tube-yellow::before { background: #f1d85b; }
+.tube-aptima::before { background: repeating-linear-gradient(180deg, #f39a3d 0 6px, #fff 6px 9px); border-color: #bd6819; }
 .tube-ua-swirl::before { background: repeating-linear-gradient(135deg, #d95851 0 3px, #f1d85b 3px 6px); }
 .tube-ua-pair::before { background: linear-gradient(180deg, #d95851 0 30%, #f1d85b 30% 62%, #8c969d 62% 100%); }
 .order-panel { position: sticky; top: 18px; padding: 20px; max-height: calc(100vh - 36px); overflow: auto; }

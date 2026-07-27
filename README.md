@@ -1,3 +1,9 @@
+## Version 4.2 updates
+
+- Yellow blood tubes are labeled **Yellow ACD**.
+- Quest code **70049** uses a dedicated **Aptima Multitest (orange label)** badge.
+- The standard urinalysis preservative tube remains the separate red/yellow swirl urine tube.
+
 # Quest Lab Calculator v4.1
 
 **v3.8:** The printout now keeps the same tube badge when a specimen is submitted in its original collection tube. Original-tube submissions clearly identify the specimen inside, such as “Royal Blue EDTA · Whole Blood · Submit in original tube” for arsenic. Transferred serum, plasma, and RBC specimens continue to use transport-tube labels.

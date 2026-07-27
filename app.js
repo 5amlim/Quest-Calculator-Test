@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'questLabCalculator.database.v6';
-  const LEGACY_DB_KEYS = ['questLabCalculator.database.v5', 'questLabCalculator.database.v4', 'questLabCalculator.database.v3', 'questLabCalculator.database.v2', 'questLabCalculator.database.v1'];
+  const DB_KEY = 'questLabCalculator.database.v7';
+  const LEGACY_DB_KEYS = ['questLabCalculator.database.v6', 'questLabCalculator.database.v5', 'questLabCalculator.database.v4', 'questLabCalculator.database.v3', 'questLabCalculator.database.v2', 'questLabCalculator.database.v1'];
   const SELECTED_KEY = 'questLabCalculator.selected.v1';
   const LABEL_KEY = 'questLabCalculator.orderLabel.v1';
   const PAGE_STEP = 80;
@@ -489,7 +489,8 @@
       ['Red/Yellow swirl UA preservative', 'tube-ua-swirl'],
       ['Gray urine culture preservative', 'tube-urine-culture'],
       ['Pink EDTA', 'tube-pink'],
-      ['Yellow', 'tube-yellow']
+      ['Yellow ACD', 'tube-yellow'],
+      ['Aptima Multitest (orange label)', 'tube-aptima']
     ];
     const temperatures = [
       ['Room temperature', 'temp-room'],
@@ -764,6 +765,7 @@
       'tube-royal': 'Royal Blue',
       'tube-gray': 'Gray Fluoride / Oxalate Blood Tube',
       'tube-yellow': 'Yellow ACD',
+      'tube-aptima': 'Aptima Multitest Transport Tube (orange label)',
       'tube-urine-cup': 'Sterile Urine Cup',
       'tube-ua-swirl': 'Red/Yellow Swirl UA Preservative Tube',
       'tube-urine-culture': 'Gray-Top Urine Culture Preservative Tube'
@@ -837,6 +839,7 @@
     if (/red/i.test(draw)) return 'Red Top';
     if (/light blue|citrate/i.test(draw)) return 'Light Blue Citrate';
     if (/royal/i.test(draw)) return 'Royal Blue';
+    if (/aptima/i.test(draw)) return 'Aptima Multitest';
     return draw && !/^verify/i.test(draw) ? draw : '';
   }
 
@@ -1065,6 +1068,7 @@
 
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
+    if (/aptima/.test(value)) return 'tube-aptima';
     if (/sterile\s+urine\s+cup|urine\s+collection\s+cup/.test(value)) return 'tube-urine-cup';
     if (/blood culture|culture bottle|bactec|\bsps\b/.test(value)) return 'tube-culture';
     if (value.includes('red/yellow') && (value.includes('gray') || value.includes('grey'))) return 'tube-ua-pair';
