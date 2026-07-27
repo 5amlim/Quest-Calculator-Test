@@ -1033,6 +1033,80 @@
     return `<span class="print-tube-badge tube ${transportTubeClass(test, value)}">${escapeHtml(value || 'Verify')}</span>${sourceText ? `<div class="print-transport-source">${escapeHtml(sourceText)}</div>` : ''}`;
   }
 
+  function processingInstructionForItem(item, bag) {
+    const tests = item.tests || [];
+    const combined = `${item.label || ''} ${item.detail || ''} ${tests.map(test => `${test.spin || ''} ${test.specialInstructions || ''}`).join(' ')}`.toLowerCase();
+    const label = item.label || 'specimen container';
+    const count = Math.max(Number(item.count) || 1, 1);
+    const countLabel = `${count} × ${label}`;
+    const destination = bag.label;
+    const anySpin = tests.some(test => String(test.spin || '').toLowerCase() === 'yes' || /centrifug|\bspin\b/.test(String(test.specialInstructions || '').toLowerCase()));
+    const serumSource = /serum/.test(combined);
+    const plasmaSource = /plasma/.test(combined);
+    const plateletPoor = /platelet[- ]?poor/.test(combined);
+    const rbcSource = /\brbcs?\b|red blood cell/.test(combined);
+
+    if (/red\/yellow swirl|ua preservative/.test(combined)) {
+      return `From the sterile urine cup, fill ${countLabel} to the marked line. Place in the ${destination}.`;
+    }
+    if (/urine culture preservative/.test(combined)) {
+      return `From the sterile urine cup, fill ${countLabel} to the marked line. Place in the ${destination}.`;
+    }
+    if (/aptima|swab/.test(combined)) {
+      const source = item.detail || 'Clarify the swab source';
+      return `No centrifugation. Submit ${countLabel} as collected with ${source}. Place in the ${destination}.`;
+    }
+
+    if (item.originalTube) {
+      if (/sst|gold/.test(combined)) {
+        return `Allow to clot, centrifuge ${countLabel}, and keep the serum in the original spun tube${count === 1 ? '' : 's'}. Place in the ${destination}.`;
+      }
+      if (anySpin) {
+        const clot = serumSource || /red top/.test(combined) ? 'Allow to clot, then ' : '';
+        return `${clot}centrifuge ${countLabel} as directed and submit in the original tube${count === 1 ? '' : 's'}. Place in the ${destination}.`;
+      }
+      return `Do not transfer. Submit ${countLabel} in the original collection tube${count === 1 ? '' : 's'}. Place in the ${destination}.`;
+    }
+
+    if (plateletPoor) {
+      return `Centrifuge as required to prepare platelet-poor plasma, then aliquot into ${countLabel}. Place in the ${destination}.`;
+    }
+    if (serumSource && /transport tube|aliquot|vial|cryovial/.test(combined)) {
+      return `Allow the source tube(s) to clot, centrifuge, then transfer serum into ${countLabel}. Place in the ${destination}.`;
+    }
+    if (plasmaSource && /transport tube|aliquot|vial|cryovial/.test(combined)) {
+      return `Centrifuge the source tube(s), then transfer plasma into ${countLabel}. Place in the ${destination}.`;
+    }
+    if (rbcSource && /transport tube|aliquot|vial|cryovial/.test(combined)) {
+      return `Centrifuge and remove plasma as directed, then transfer RBCs into ${countLabel}. Place in the ${destination}.`;
+    }
+    if (anySpin) {
+      return `Centrifuge as directed, prepare ${countLabel}, and place in the ${destination}.`;
+    }
+    return `Prepare ${countLabel} as directed and place in the ${destination}.`;
+  }
+
+  function printProcessingInstructions(bags) {
+    return `<section class="print-processing-section">
+      <div class="print-logistics-subheading">Processing instructions</div>
+      <div class="print-processing-note">Process each temperature group separately. The quantity below is the number of processed tubes or containers to prepare for submission.</div>
+      <div class="print-processing-grid">${bags.map(bag => {
+        const contents = buildSubmissionContents(bag);
+        return `<article class="print-processing-card ${bag.className}">
+          <div class="print-processing-card-header"><strong>${escapeHtml(bag.label)}</strong><span>${contents.reduce((sum, item) => sum + item.count, 0)} processed containers</span></div>
+          <div class="print-processing-steps">${contents.map((item, index) => `<div class="print-processing-step">
+            <span class="print-processing-number">${index + 1}</span>
+            <div class="print-processing-body">
+              <div class="print-processing-item-title"><strong>${item.count}</strong><span class="tube ${item.className}">${escapeHtml(item.label)}</span></div>
+              <div class="print-processing-action">${escapeHtml(processingInstructionForItem(item, bag))}</div>
+              <div class="print-for-tests"><b>For tests:</b><ul>${testReferences(item.tests)}</ul></div>
+            </div>
+          </div>`).join('')}</div>
+        </article>`;
+      }).join('')}</div>
+    </section>`;
+  }
+
   function printCollectionSubmissionPlan(tests) {
     const bags = buildTransportBagPlan(tests);
     const collectionItems = buildCollectionPlan(tests, bags);
@@ -1048,12 +1122,16 @@
         <div class="print-submit-bags">${bagLabels}</div>
       </div>
 
+      ${printOrderOfDraw(tests)}
+
       <div class="print-logistics-subheading">What to collect</div>
       <div class="print-collection-grid">${collectionItems.map(item => `<article class="print-collection-card">
         <div class="print-container-count"><strong>${item.count}</strong><span class="tube ${item.className}">${escapeHtml(item.label)}</span></div>
         ${item.detail ? `<div class="print-container-detail">${escapeHtml(item.detail)}</div>` : ''}
         <div class="print-for-tests"><b>For tests:</b><ul>${testReferences(item.tests)}</ul></div>
       </article>`).join('')}</div>
+
+      ${printProcessingInstructions(bags)}
 
       <div class="print-logistics-subheading">What to submit after processing</div>
       <div class="print-bag-grid">${bags.map(bag => {
@@ -1086,7 +1164,6 @@
       </div>
       <div class="print-plan">${groups.map(group => `<div class="print-plan-card"><strong class="print-plan-container tube ${tubeClass(group.container)}">${escapeHtml(group.container)}</strong>${group.tests.length} ${group.tests.length === 1 ? 'test' : 'tests'}<div class="print-specimen-list">${Array.from(group.specimenTypes).map(type => specimenBadge(type, 'print-specimen-badge')).join('')}</div>${group.volumeCount ? `<br>Listed minimum total: ${escapeHtml(formatMl(group.minimumMl))}` : ''}</div>`).join('')}</div>
       ${printColorLegend()}
-      ${printOrderOfDraw(tests)}
       ${alerts.length ? `<div class="print-alerts">${alerts.map(alert => `<div>${escapeHtml(alert.text)}</div>`).join('')}</div>` : ''}
       <table class="print-table">
         <colgroup><col style="width:6%"><col style="width:14%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:5%"><col style="width:8%"><col style="width:7%"><col style="width:8%"><col style="width:25%"></colgroup>

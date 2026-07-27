@@ -1,4 +1,6 @@
-Version 4.8
-- Copper code 363 now clearly displays an Acid-Washed / Metal-Free Plasma Transport Tube in the submission bag.
-- The badge remains neutral because this is a specialty trace-metal container, not a standard green-top plasma transport tube.
-- The source remains clearly identified as plasma from the Royal Blue trace-metal tube.
+Version 5.0
+- Added a print-only Processing instructions section directly above What to submit after processing.
+- Processing is grouped by room-temperature, refrigerated, frozen, and verify/mixed bags.
+- Each step states whether to centrifuge, keep the specimen in the original tube, transfer or aliquot it, how many processed containers to prepare, and which bag receives them.
+- Each processing step lists the Quest tests supported by that processed specimen.
+- No changes were made to the staff-facing search, add/edit, or database workflows.

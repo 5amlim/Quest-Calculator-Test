@@ -1,4 +1,10 @@
-## Version 4.8 updates
+## Version 5.0 updates
+
+- Added a print-only **Processing instructions** section above **What to submit after processing**.
+- Processing steps are grouped by transport-temperature bag.
+- Each step identifies whether to centrifuge, keep the original tube, transfer/aliquot the specimen, the number of processed containers to prepare, the destination bag, and the related tests.
+
+## Version 4.9 updates
 
 - Quest code 363 Copper now displays **Acid-Washed / Metal-Free Plasma Transport Tube** in the transport bag.
 - It intentionally uses the neutral specialty-container badge.
