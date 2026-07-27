@@ -1,3 +1,8 @@
+## Version 5.3 updates
+
+- The print heading **Collection and submission plan** is larger, bolder, and visually separated with a teal accent panel.
+- All other website and print behavior remains unchanged.
+
 ## Version 5.0 updates
 
 - Added a print-only **Processing instructions** section above **What to submit after processing**.

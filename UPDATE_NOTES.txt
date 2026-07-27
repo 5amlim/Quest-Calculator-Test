@@ -1,5 +1,5 @@
-Quest Lab Calculator v5.2
+Quest Lab Calculator v5.3
 
-- Restored the on-screen test cart / collection summary before printing.
-- Fixed the draw-plan rendering error that prevented the selected-test cart from updating.
-- Kept the streamlined v5.1 printout unchanged.
+- Increased the print font size for “Collection and submission plan.”
+- Added a distinct teal-accented heading panel to separate the plan from the rest of the printout.
+- Kept all collection, submission, calculation, and on-screen cart behavior unchanged.
