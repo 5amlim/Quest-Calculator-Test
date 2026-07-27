@@ -1,7 +1,5 @@
-Quest Lab Calculator v5.1
+Quest Lab Calculator v5.2
 
-Printout cleanup:
-- Removed the print-only Processing instructions section added in v5.0.
-- Removed the repetitive tube summary cards from the top of the printout.
-- Removed the large tube/specimen/temperature color legend from the top.
-- Kept the detailed test table, order of draw, What to collect, and What to submit after processing sections unchanged.
+- Restored the on-screen test cart / collection summary before printing.
+- Fixed the draw-plan rendering error that prevented the selected-test cart from updating.
+- Kept the streamlined v5.1 printout unchanged.

@@ -32,7 +32,9 @@
 - Quest code **70049** uses a dedicated **Aptima Multitest (orange label)** badge.
 - The standard urinalysis preservative tube remains the separate red/yellow swirl urine tube.
 
-# Quest Lab Calculator v4.1
+# Quest Lab Calculator
+
+**Version 5.2** v4.1
 
 **v3.8:** The printout now keeps the same tube badge when a specimen is submitted in its original collection tube. Original-tube submissions clearly identify the specimen inside, such as “Royal Blue EDTA · Whole Blood · Submit in original tube” for arsenic. Transferred serum, plasma, and RBC specimens continue to use transport-tube labels.
 
@@ -87,3 +89,8 @@ Acid-washed, acid-rinsed, metal-free, and trace-metal transport containers use t
 ## Version 5.1 print cleanup
 
 The printout no longer includes the separate Processing instructions section or the repetitive tube-summary and color-legend tiles at the top. Collection counts and tube badges remain in **What to collect**, and processed contents remain in **What to submit after processing**.
+
+
+## Version 5.2
+
+The on-screen test cart and collection summary are restored. The printout remains streamlined as in v5.1.

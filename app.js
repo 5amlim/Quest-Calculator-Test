@@ -426,6 +426,7 @@
       els.drawPlan.textContent = 'Add tests to see the draw plan.';
       return;
     }
+    const groups = buildDrawGroups(tests);
     els.drawPlan.className = 'draw-plan';
     els.drawPlan.innerHTML = groups.map(group => {
       const volume = group.volumeCount ? ` · listed minimum total ${formatMl(group.minimumMl)}` : '';
