@@ -1,3 +1,15 @@
+## Version 4.7 updates
+
+- **Platelet-poor plasma** uses the same green-top-third transport-tube badge as other serum/plasma transport tubes.
+- The printed label remains **Platelet-Poor Plasma Transport Tube** so the specimen type is explicit.
+
+## Version 4.4 updates
+
+- Swab and transport-tube entries identify their specimen source, such as **throat swab**, **serum from SST**, or **plasma from Lavender EDTA**.
+- The Add/Edit Missing Test form includes a source-clarification reminder.
+- Generic swabs are labeled **source must be clarified** until the collection source is documented.
+- Serum/plasma transport-tube badges use a green top third.
+
 ## Version 4.3 updates
 
 - Quest code **70049** now displays **Aptima** in the submission section with **Submit as Aptima**.
@@ -56,3 +68,7 @@ Choose **Other / manually type** in the Draw container dropdown to enter an unco
 
 ## Manual draw container
 The custom draw-container text box is always visible below the dropdown. Staff can either select **Other / manually type** first or simply start typing; the calculator automatically selects Other and saves the typed container.
+
+### v4.7 badge refinement
+
+Acid-washed, acid-rinsed, metal-free, and trace-metal transport containers use the neutral transport-tube badge. They do not use the green-top-third serum/plasma badge. Standard serum, plasma, and platelet-poor plasma transport tubes remain green-top-third.

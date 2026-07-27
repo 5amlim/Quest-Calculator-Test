@@ -1,5 +1,5 @@
-Quest Lab Calculator v4.3
-
-- Updated Quest code 70049 so the submission plan displays an Aptima badge with “Throat swab · Submit as Aptima.”
-- Kept the full Aptima Multitest collection-tube description in What to Collect.
-- Refreshed built-in records while preserving staff-created custom tests.
+Version 4.7
+- Serum transport tubes use the green-top-third transport badge.
+- Plasma transport tubes use the green-top-third transport badge.
+- Platelet-poor plasma transport tubes use the green-top-third transport badge.
+- Acid-washed, acid-rinsed, metal-free, and trace-metal transport tubes always use the neutral transport badge.
