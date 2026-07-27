@@ -1,15 +1,5 @@
-QUEST LAB CALCULATOR — START HERE
+QUEST LAB CALCULATOR v3.7
 
-FOR STAFF
-1. Search by Quest code or test name.
-2. Add the matching tests to the collection summary.
-3. Review tube, specimen, processing, volume, temperature, and notes.
-4. Use Add missing test when needed and verify the details in the official Quest directory.
-5. Print the summary or save it as a PDF.
+Upload every file in this folder to the root of the GitHub repository and commit to main.
 
-Contact Sam for any missing entries you would like added and for feedback or corrections.
-
-FOR GITHUB PAGES
-Upload all files to the repository root. In Settings > Pages, deploy from the main branch and the root folder.
-
-Do not enter patient information. Always verify current Quest requirements before collection.
+The printout separates TOTAL TO COLLECT from TOTAL TO SUBMIT. Spot urine tests add a sterile urine cup; processed urine preservative tubes appear under the correct transport bag and never in blood order of draw.

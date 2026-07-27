@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'questLabCalculator.database.v4';
-  const LEGACY_DB_KEYS = ['questLabCalculator.database.v3', 'questLabCalculator.database.v2', 'questLabCalculator.database.v1'];
+  const DB_KEY = 'questLabCalculator.database.v6';
+  const LEGACY_DB_KEYS = ['questLabCalculator.database.v5', 'questLabCalculator.database.v4', 'questLabCalculator.database.v3', 'questLabCalculator.database.v2', 'questLabCalculator.database.v1'];
   const SELECTED_KEY = 'questLabCalculator.selected.v1';
   const LABEL_KEY = 'questLabCalculator.orderLabel.v1';
   const PAGE_STEP = 80;
@@ -433,6 +433,12 @@
   }
 
   function orderCategory(test) {
+    // The order-of-draw panel is for blood collection tubes only. Urine culture
+    // preservative tubes may also have gray caps, but they are not fluoride/oxalate
+    // blood tubes and must never appear in the blood-tube order of draw.
+    const specimen = String(test.specimenType || '').toLowerCase();
+    if (/urine|stool|swab|saliva|semen|csf|cerebrospinal|tissue/.test(specimen)) return null;
+
     const value = `${test.drawContainer || ''} ${test.alternativeContainer || ''}`.toLowerCase();
     if (/blood culture|culture bottle|bactec|\bsps\b/.test(value)) return 'culture';
     if (/light blue|sodium citrate|coagulation tube/.test(value)) return 'citrate';
@@ -476,10 +482,12 @@
       ['Red serum', 'tube-red'],
       ['Light blue citrate', 'tube-blue'],
       ['Royal blue', 'tube-royal'],
-      ['Gray', 'tube-gray'],
+      ['Gray fluoride / oxalate (blood)', 'tube-gray'],
+      ['Sterile urine cup', 'tube-urine-cup'],
+      ['Red/Yellow swirl UA preservative', 'tube-ua-swirl'],
+      ['Gray urine culture preservative', 'tube-urine-culture'],
       ['Pink EDTA', 'tube-pink'],
-      ['Yellow', 'tube-yellow'],
-      ['UA red/yellow swirl + gray culture', 'tube-ua-pair']
+      ['Yellow', 'tube-yellow']
     ];
     const temperatures = [
       ['Room temperature', 'temp-room'],
@@ -671,25 +679,13 @@
     return String(test.drawContainer || 'Verify container').trim();
   }
 
-  function buildTransportBagPlan(tests) {
-    const bags = new Map();
-    tests.forEach(test => {
-      const info = transportBagInfo(test);
-      if (!bags.has(info.key)) {
-        bags.set(info.key, {
-          ...info,
-          tests: [],
-          sharedSstMl: 0,
-          sharedSstTests: 0,
-          dedicatedSstTubes: 0,
-          unmeasuredSstTubes: 0,
-          unmeasuredSstTests: []
-        });
-      }
-      const bag = bags.get(info.key);
-      bag.tests.push(test);
+  function sstEstimateForTests(tests) {
+    let sharedMl = 0;
+    let dedicatedTubes = 0;
+    let unmeasuredTubes = 0;
+    const unmeasuredTests = [];
 
-      if (!isSstDraw(test)) return;
+    tests.filter(isSstDraw).forEach(test => {
       const preferredMl = parseVolumeMl(test.preferredVolume);
       const fallbackMl = preferredMl === null ? parseVolumeMl(test.minimumVolume) : null;
       const plannedMl = preferredMl === null ? fallbackMl : preferredMl;
@@ -697,46 +693,268 @@
 
       if (requiresDedicatedSst(test)) {
         const calculated = plannedMl === null ? 1 : Math.ceil(plannedMl / SST_USABLE_ML_PER_TUBE);
-        bag.dedicatedSstTubes += Math.max(explicitCount, calculated, 1);
+        dedicatedTubes += Math.max(explicitCount, calculated, 1);
       } else if (plannedMl !== null) {
-        bag.sharedSstMl += plannedMl;
-        bag.sharedSstTests += 1;
+        sharedMl += plannedMl;
       } else {
-        // Reserve one tube so an unparseable volume cannot make the estimate too low.
-        bag.unmeasuredSstTubes += 1;
-        bag.unmeasuredSstTests.push(test.testName);
+        unmeasuredTubes += 1;
+        unmeasuredTests.push(test.testName);
       }
+    });
+
+    const sharedTubes = sharedMl > 0 ? Math.ceil(sharedMl / SST_USABLE_ML_PER_TUBE) : 0;
+    return {
+      sharedMl,
+      sharedTubes,
+      dedicatedTubes,
+      unmeasuredTubes,
+      unmeasuredTests,
+      totalTubes: sharedTubes + dedicatedTubes + unmeasuredTubes
+    };
+  }
+
+  function buildTransportBagPlan(tests) {
+    const bags = new Map();
+    tests.forEach(test => {
+      const info = transportBagInfo(test);
+      if (!bags.has(info.key)) bags.set(info.key, { ...info, tests: [] });
+      bags.get(info.key).tests.push(test);
     });
 
     return Array.from(bags.values())
       .sort((a, b) => a.order - b.order)
-      .map(bag => {
-        bag.sharedSstTubes = bag.sharedSstMl > 0 ? Math.ceil(bag.sharedSstMl / SST_USABLE_ML_PER_TUBE) : 0;
-        bag.totalSstTubes = bag.sharedSstTubes + bag.dedicatedSstTubes + bag.unmeasuredSstTubes;
-        return bag;
-      });
+      .map(bag => ({ ...bag, sstEstimate: sstEstimateForTests(bag.tests) }));
   }
 
-  function printTransportBagPlan(tests) {
+  function isUrineTest(test) {
+    return /urine/.test(String(test.specimenType || '').toLowerCase());
+  }
+
+  function isTimedUrineTest(test) {
+    if (!isUrineTest(test)) return false;
+    const text = `${test.testName || ''} ${test.drawContainer || ''} ${test.specialInstructions || ''}`.toLowerCase();
+    return /24\s*[- ]?hour|24\s*hr|timed urine|timed collection/.test(text);
+  }
+
+  function uniqueTests(tests) {
+    const seen = new Set();
+    return tests.filter(test => {
+      if (seen.has(test.id)) return false;
+      seen.add(test.id);
+      return true;
+    });
+  }
+
+  function canonicalCollectionContainer(test) {
+    const draw = String(test.drawContainer || 'Verify collection container').trim();
+    if (isUrineTest(test) && !isTimedUrineTest(test)) {
+      return { key: 'sterile-urine-cup', label: 'Sterile Urine Cup', className: 'tube-urine-cup' };
+    }
+
+    const cls = tubeClass(draw);
+    const labels = {
+      'tube-culture': 'Blood Culture Bottles',
+      'tube-blue': 'Light Blue Citrate',
+      'tube-lavender': 'Lavender EDTA',
+      'tube-pink': 'Pink EDTA',
+      'tube-green': 'Green Heparin',
+      'tube-red': 'Red Top',
+      'tube-royal': 'Royal Blue',
+      'tube-gray': 'Gray Fluoride / Oxalate Blood Tube',
+      'tube-yellow': 'Yellow ACD',
+      'tube-urine-cup': 'Sterile Urine Cup',
+      'tube-ua-swirl': 'Red/Yellow Swirl UA Preservative Tube',
+      'tube-urine-culture': 'Gray-Top Urine Culture Preservative Tube'
+    };
+    const label = labels[cls] || draw;
+    return { key: `${cls || 'other'}|${normalizeSearch(label)}`, label, className: cls };
+  }
+
+  function numberWordValue(value) {
+    const words = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8 };
+    if (/^\d+$/.test(String(value))) return Number(value);
+    return words[String(value).toLowerCase()] || 0;
+  }
+
+  function explicitCollectionCount(test) {
+    const draw = String(test.drawContainer || '').toLowerCase();
+    const note = String(test.specialInstructions || '').toLowerCase();
+    const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
+    let match = draw.match(new RegExp(`\\b${countPattern}\\s+(?:full\\s+)?(?:[a-z][a-z /-]{0,35}\\s+)?(?:tubes?|bottles?|containers?)\\b`));
+    if (!match) match = note.match(new RegExp(`\\b(?:draw|collect|use|requires?)\\D{0,18}${countPattern}\\s+(?:full\\s+)?(?:[a-z][a-z /-]{0,35}\\s+)?(?:tubes?|bottles?|containers?)\\b`));
+    return match ? Math.max(numberWordValue(match[1]), 1) : 1;
+  }
+
+  function buildCollectionPlan(tests, bags) {
+    const items = [];
+    const sstTests = tests.filter(isSstDraw);
+    const totalSst = bags.reduce((sum, bag) => sum + bag.sstEstimate.totalTubes, 0);
+    if (totalSst > 0) {
+      const breakdown = bags
+        .filter(bag => bag.sstEstimate.totalTubes > 0)
+        .map(bag => `${bag.label.replace(/ bag$/i, '')}: ${bag.sstEstimate.totalTubes}`)
+        .join(' · ');
+      items.push({ key: 'sst', label: 'Gold / SST', className: 'tube-sst', count: totalSst, tests: uniqueTests(sstTests), detail: breakdown });
+    }
+
+    const spotUrineTests = tests.filter(test => isUrineTest(test) && !isTimedUrineTest(test));
+    if (spotUrineTests.length) {
+      items.push({
+        key: 'sterile-urine-cup',
+        label: 'Sterile Urine Cup',
+        className: 'tube-urine-cup',
+        count: 1,
+        tests: uniqueTests(spotUrineTests),
+        detail: 'Collect the urine in the sterile cup first, then fill any required preservative or transport tubes.'
+      });
+    }
+
+    const grouped = new Map();
+    tests.forEach(test => {
+      if (isSstDraw(test)) return;
+      if (isUrineTest(test) && !isTimedUrineTest(test)) return;
+      const info = canonicalCollectionContainer(test);
+      if (!grouped.has(info.key)) grouped.set(info.key, { ...info, count: 0, tests: [], detail: '' });
+      const item = grouped.get(info.key);
+      item.count += explicitCollectionCount(test);
+      item.tests.push(test);
+    });
+
+    grouped.forEach(item => {
+      item.tests = uniqueTests(item.tests);
+      items.push(item);
+    });
+    return items;
+  }
+
+  function shortDrawSource(test) {
+    const draw = String(test.drawContainer || '').trim();
+    if (/sst|gold/i.test(draw)) return 'SST';
+    if (/lavender|edta/i.test(draw)) return 'Lavender EDTA';
+    if (/green|heparin/i.test(draw)) return 'Green Heparin';
+    if (/red/i.test(draw)) return 'Red Top';
+    if (/light blue|citrate/i.test(draw)) return 'Light Blue Citrate';
+    if (/royal/i.test(draw)) return 'Royal Blue';
+    return draw && !/^verify/i.test(draw) ? draw : '';
+  }
+
+  function explicitSubmissionCount(test) {
+    const text = `${test.transportContainer || ''} ${test.preferredVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
+    const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
+    const pattern = new RegExp(`\\b${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:frozen\\s+)?(?:aliquots?|transport tubes?|cryovials?|tubes?|containers?)\\b`);
+    const match = text.match(pattern);
+    return match ? Math.max(numberWordValue(match[1]), 1) : 1;
+  }
+
+  function splitSubmissionContainers(test) {
+    const transport = finalTransportContainer(test);
+    const combined = `${transport} ${test.specialInstructions || ''}`.toLowerCase();
+    if (String(test.questCode || '') === '3020' || (/red\s*\/\s*yellow|red-yellow|swirl/.test(combined) && /gray|grey/.test(combined) && /urine|culture/.test(combined))) {
+      return [
+        { key: 'ua-swirl', label: 'Red/Yellow Swirl UA Preservative Tube', className: 'tube-ua-swirl', count: 1 },
+        { key: 'urine-culture', label: 'Gray-Top Urine Culture Preservative Tube', className: 'tube-urine-culture', count: 1 }
+      ];
+    }
+
+    const specimen = String(test.specimenType || 'Specimen').replace(/\b\w/g, char => char.toUpperCase());
+    const source = shortDrawSource(test);
+    if (/transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/i.test(transport)) {
+      return [{
+        key: `transport|${normalizeSearch(specimen)}|${normalizeSearch(source)}`,
+        label: `${specimen} Transport Tube${source ? ` (from ${source})` : ''}`,
+        className: 'tube-transport',
+        count: explicitSubmissionCount(test)
+      }];
+    }
+
+    return [{
+      key: `container|${normalizeSearch(transport)}`,
+      label: transport || 'Verify Submission Container',
+      className: tubeClass(transport),
+      count: explicitSubmissionCount(test)
+    }];
+  }
+
+  function isSpunSstSubmission(test) {
+    const transport = finalTransportContainer(test).toLowerCase();
+    return isSstDraw(test) && /sst|gold|serum separator/.test(transport) && !/transport tube|aliquot|cryovial/.test(transport);
+  }
+
+  function buildSubmissionContents(bag) {
+    const items = new Map();
+    const spunSstTests = bag.tests.filter(isSpunSstSubmission);
+    const spunEstimate = sstEstimateForTests(spunSstTests);
+    if (spunEstimate.totalTubes > 0) {
+      items.set('sst-spun', {
+        key: 'sst-spun',
+        label: 'SST / Gold (spun)',
+        className: 'tube-sst',
+        count: spunEstimate.totalTubes,
+        tests: uniqueTests(spunSstTests)
+      });
+    }
+
+    bag.tests.forEach(test => {
+      if (isSpunSstSubmission(test)) return;
+      splitSubmissionContainers(test).forEach(container => {
+        if (!items.has(container.key)) items.set(container.key, { ...container, tests: [] });
+        const item = items.get(container.key);
+        item.count += items.get(container.key).tests.length ? container.count : 0;
+        item.tests.push(test);
+      });
+    });
+
+    return Array.from(items.values()).map(item => ({ ...item, tests: uniqueTests(item.tests) }));
+  }
+
+  function testReferences(tests) {
+    return uniqueTests(tests).map(test => `<li><strong>${escapeHtml(displayCode(test))}</strong> ${escapeHtml(test.testName)}</li>`).join('');
+  }
+
+  function printContainerBadges(container) {
+    const value = String(container || '').trim();
+    const lower = value.toLowerCase();
+    if ((/red\s*\/\s*yellow|red-yellow|swirl/.test(lower)) && /gray|grey/.test(lower) && /urine|culture/.test(lower)) {
+      return `<span class="print-tube-badge tube tube-ua-swirl">Red/Yellow Swirl UA Tube</span><br><span class="print-tube-badge tube tube-urine-culture">Gray-Top Urine Culture Tube</span>`;
+    }
+    return `<span class="print-tube-badge tube ${tubeClass(value)}">${escapeHtml(value || 'Verify')}</span>`;
+  }
+
+  function printCollectionSubmissionPlan(tests) {
     const bags = buildTransportBagPlan(tests);
-    const totalSstTubes = bags.reduce((sum, bag) => sum + bag.totalSstTubes, 0);
-    return `<section class="print-bag-plan">
-      <div class="print-bag-heading">
-        <div><strong>Transport bag plan and SST tube estimate</strong><span>Keep each transport temperature in a separate bag.</span></div>
-        <div class="print-sst-total"><span>Total SST tubes to draw</span><strong>${totalSstTubes}</strong></div>
+    const collectionItems = buildCollectionPlan(tests, bags);
+    const totalCollect = collectionItems.reduce((sum, item) => sum + item.count, 0);
+    const bagLabels = bags.map(bag => `<span class="print-bag-pill ${bag.className}">${escapeHtml(bag.label)}</span>`).join('');
+
+    return `<section class="print-logistics-plan">
+      <div class="print-logistics-heading"><strong>Collection and submission plan</strong><span>Collection containers are separated from processed specimens placed into transport bags.</span></div>
+      <div class="print-logistics-totals">
+        <div class="print-total-box collect-total"><span>TOTAL TO COLLECT</span><strong>${totalCollect}</strong><small>tubes / collection containers</small></div>
+        <div class="print-collect-chips">${collectionItems.map(item => `<span class="print-collect-chip tube ${item.className}"><b>${item.count}</b> ${escapeHtml(item.label)}</span>`).join('')}</div>
+        <div class="print-total-box submit-total"><span>TOTAL TO SUBMIT</span><strong>${bags.length}</strong><small>${bags.length === 1 ? 'transport bag' : 'transport bags'}</small></div>
+        <div class="print-submit-bags">${bagLabels}</div>
       </div>
+
+      <div class="print-logistics-subheading">What to collect</div>
+      <div class="print-collection-grid">${collectionItems.map(item => `<article class="print-collection-card">
+        <div class="print-container-count"><strong>${item.count}</strong><span class="tube ${item.className}">${escapeHtml(item.label)}</span></div>
+        ${item.detail ? `<div class="print-container-detail">${escapeHtml(item.detail)}</div>` : ''}
+        <div class="print-for-tests"><b>For tests:</b><ul>${testReferences(item.tests)}</ul></div>
+      </article>`).join('')}</div>
+
+      <div class="print-logistics-subheading">What to submit after processing</div>
       <div class="print-bag-grid">${bags.map(bag => {
-        const calculationParts = [];
-        if (bag.sharedSstMl > 0) calculationParts.push(`${formatMl(bag.sharedSstMl)} pooled preferred volume ÷ ${SST_USABLE_ML_PER_TUBE} mL`);
-        if (bag.dedicatedSstTubes) calculationParts.push(`${bag.dedicatedSstTubes} dedicated`);
-        if (bag.unmeasuredSstTubes) calculationParts.push(`${bag.unmeasuredSstTubes} reserved for volume to verify`);
+        const contents = buildSubmissionContents(bag);
+        const totalContainers = contents.reduce((sum, item) => sum + item.count, 0);
         return `<article class="print-bag-card ${bag.className}">
-          <div class="print-bag-card-header"><div><strong>${escapeHtml(bag.label)}</strong><span>${bag.tests.length} ${bag.tests.length === 1 ? 'specimen' : 'specimens'}</span></div><div class="print-bag-sst-count"><span>SST tubes</span><strong>${bag.totalSstTubes}</strong></div></div>
-          <ul class="print-bag-items">${bag.tests.map(test => `<li><strong>${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</strong><span>${specimenBadge(test.specimenType, 'print-specimen-badge')} · ${escapeHtml(finalTransportContainer(test))}</span></li>`).join('')}</ul>
-          <div class="print-bag-calculation">${bag.totalSstTubes ? escapeHtml(calculationParts.join(' + ')) : 'No SST draw tubes calculated for this bag.'}</div>
+          <div class="print-bag-card-header"><div><strong>${escapeHtml(bag.label)}</strong><span>Keep separate from other temperatures</span></div><div class="print-bag-container-total"><strong>${totalContainers}</strong><span>containers</span></div></div>
+          <div class="print-submit-content">${contents.map(item => `<div class="print-submit-item">
+            <div class="print-submit-item-title"><strong>${item.count}</strong><span class="tube ${item.className}">${escapeHtml(item.label)}</span></div>
+            <div class="print-for-tests"><b>For tests:</b><ul>${testReferences(item.tests)}</ul></div>
+          </div>`).join('')}</div>
         </article>`;
       }).join('')}</div>
-      <div class="print-bag-note"><strong>Planning rule:</strong> The estimate assumes 2 mL of usable serum/plasma per SST and rounds each temperature group up separately. Tests marked for a dedicated or full tube are not pooled. One SST is reserved when a listed SST volume cannot be parsed. Verify specialty collection instructions and actual tube yield before collection.</div>
+      <div class="print-bag-note"><strong>Planning rules:</strong> SST collection assumes 2 mL of usable serum/plasma per tube and rounds up independently by transport temperature. Routine non-SST blood tubes are estimated as one tube per test unless the record specifies more. Spot urine tests add one sterile urine cup for initial collection; timed or 24-hour urine collections follow their test-specific container instructions. Submission contents reflect the processed specimen or transport container and identify the tests assigned to each item. Verify specialty, dedicated-tube, aliquot, and actual-yield requirements before collection.</div>
     </section>`;
   }
 
@@ -759,9 +977,9 @@
       <table class="print-table">
         <colgroup><col style="width:6%"><col style="width:14%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:5%"><col style="width:8%"><col style="width:7%"><col style="width:8%"><col style="width:25%"></colgroup>
         <thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Draw container</th><th>Transport tube</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
-        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><strong>${escapeHtml(test.testName)}</strong>${test.alternativeContainer ? `<br>Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span>` : ''}</td><td>${specimenBadge(test.specimenType, 'print-specimen-badge')}</td><td><span class="print-tube-badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span></td><td><span class="print-tube-badge tube ${tubeClass(test.transportContainer || '')}">${escapeHtml(test.transportContainer || 'Verify')}</span></td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(test.preferredVolume || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(test.minimumVolume || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
+        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><strong>${escapeHtml(test.testName)}</strong>${test.alternativeContainer ? `<br>Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span>` : ''}</td><td>${specimenBadge(test.specimenType, 'print-specimen-badge')}</td><td><span class="print-tube-badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span></td><td>${printContainerBadges(test.transportContainer || 'Verify')}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(test.preferredVolume || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(test.minimumVolume || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
       </table>
-      ${printTransportBagPlan(tests)}
+      ${printCollectionSubmissionPlan(tests)}
       <div class="print-footer"><strong>Missing entry?</strong> Contact Sam for any missing entries you would like added. Verify current specimen requirements, service-area availability, rejection criteria, dedicated-tube requirements, and actual specimen yield in the official Quest Test Directory before collection. Order-of-draw sources: Quest Diagnostics; pink is grouped with the EDTA step based on BD tube labeling. “Listed minimum total” is a simple sum of parseable minimum-volume fields. The SST estimate uses the preferred volume when parseable, otherwise the minimum volume, and keeps transport temperatures separate.</div>`;
     window.print();
   }
@@ -805,7 +1023,10 @@
 
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
+    if (/sterile\s+urine\s+cup|urine\s+collection\s+cup/.test(value)) return 'tube-urine-cup';
+    if (/blood culture|culture bottle|bactec|\bsps\b/.test(value)) return 'tube-culture';
     if (value.includes('red/yellow') && (value.includes('gray') || value.includes('grey'))) return 'tube-ua-pair';
+    if (/gray|grey/.test(value) && /urine|culture|boric/.test(value)) return 'tube-urine-culture';
     if (value.includes('red/yellow') || value.includes('swirl')) return 'tube-ua-swirl';
     if (value.includes('sst') || value.includes('gold')) return 'tube-sst';
     if (value.includes('lavender')) return 'tube-lavender';

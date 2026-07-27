@@ -1,4 +1,7 @@
-# Quest Lab Calculator
+# Quest Lab Calculator v3.7
+
+**v3.7:** The printout now separates what staff collect from the patient from what staff submit after processing. Spot urine orders automatically add one sterile urine cup, and UA with culture displays separate red/yellow swirl UA and gray-top urine culture tube badges. Each transport-temperature bag lists its processed contents and the tests assigned to them.
+
 
 Static GitHub Pages website for searching multiple Quest tests, building a specimen collection summary, and printing a nurse- and lab-friendly workflow.
 
@@ -11,7 +14,7 @@ Static GitHub Pages website for searching multiple Quest tests, building a speci
 5. Verify missing or specialty tests in the official Quest Test Directory.
 6. Select **Print summary / Save PDF**.
 
-The printout includes tube colors, temperature colors, specimen-type text colors, preferred volume, and order of draw.
+The printout includes tube colors, temperature colors, specimen-type text colors, preferred volume, order of draw, a clearly counted Total to Collect section, and a temperature-separated Total to Submit bag plan.
 
 ## Missing entries
 

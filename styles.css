@@ -89,6 +89,7 @@ tr:hover td { background: #fbfdfd; }
 .tube-blue::before { background: #75b7e6; }
 .tube-royal::before { background: #3458a5; }
 .tube-gray::before { background: #8c969d; }
+.tube-urine-culture::before { background: repeating-linear-gradient(135deg, #8c969d 0 4px, #d9dee1 4px 7px); border-style: dashed; }
 .tube-pink::before { background: #e9a4c4; }
 .tube-yellow::before { background: #f1d85b; }
 .tube-ua-swirl::before { background: repeating-linear-gradient(135deg, #d95851 0 3px, #f1d85b 3px 6px); }
@@ -463,4 +464,177 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     font-size: 7px;
     line-height: 1.35;
   }
+}
+
+/* v3.7 urine collection badge and print-only collection/submission plan */
+.tube-urine-cup::before {
+  width: 12px;
+  height: 11px;
+  border-radius: 2px 2px 5px 5px;
+  background: linear-gradient(180deg, #ffffff 0 28%, #dcecf1 28% 100%);
+  border: 1.5px solid #6f8d98;
+}
+.tube-transport::before {
+  background: linear-gradient(180deg, #f4f7f8 0 28%, #cfdde2 28% 100%);
+  border-color: #718991;
+}
+
+@media print {
+  .print-logistics-plan {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 2px solid #1e5963;
+    break-inside: auto;
+  }
+  .print-logistics-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 7px;
+  }
+  .print-logistics-heading strong { color: #1f363d; font-size: 11px; }
+  .print-logistics-heading span { color: #59666c; font-size: 7.3px; text-align: right; }
+  .print-logistics-totals {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 6px;
+    align-items: stretch;
+    margin-bottom: 8px;
+  }
+  .print-total-box {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    gap: 1px 7px;
+    min-width: 105px;
+    padding: 6px 8px;
+    border: 2px solid #27636d;
+    border-radius: 7px;
+    background: #eaf5f6 !important;
+    color: #173f46 !important;
+  }
+  .print-total-box > span {
+    grid-column: 1 / -1;
+    font-size: 7.2px;
+    font-weight: 950;
+    letter-spacing: .05em;
+  }
+  .print-total-box > strong { font-size: 20px; line-height: 1; }
+  .print-total-box > small { font-size: 7px; font-weight: 800; line-height: 1.15; }
+  .print-total-box.submit-total {
+    border-color: #6e579e;
+    background: #f1edff !important;
+    color: #35245d !important;
+  }
+  .print-collect-chips, .print-submit-bags {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 4px;
+    padding: 5px 6px;
+    border: 1px solid #c7d2d6;
+    border-radius: 7px;
+    background: #fafbfb !important;
+  }
+  .print-collect-chip, .print-bag-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 19px;
+    padding: 3px 6px 3px 17px;
+    border: 1px solid #aebbc0;
+    border-radius: 999px;
+    background: #fff !important;
+    color: #263b42 !important;
+    font-size: 7px;
+    font-weight: 850;
+    position: relative;
+  }
+  .print-collect-chip b { margin-right: 3px; font-size: 9px; }
+  .print-bag-pill { padding-left: 7px; }
+  .print-bag-pill.bag-room { border-color: #c99c12; background: #fff0a8 !important; color: #5f4305 !important; }
+  .print-bag-pill.bag-refrigerated { border-color: #4b9dce; background: #d9efff !important; color: #0c4f76 !important; }
+  .print-bag-pill.bag-frozen { border-color: #7d66c8; background: #e8e0ff !important; color: #392371 !important; }
+  .print-bag-pill.bag-mixed, .print-bag-pill.bag-verify { border-color: #8d969b; background: #eceff1 !important; color: #4f585d !important; }
+  .print-logistics-subheading {
+    margin: 7px 0 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #9fb2b8;
+    color: #1f363d;
+    font-size: 9px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .035em;
+  }
+  .print-collection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .print-collection-card {
+    padding: 6px;
+    border: 1px solid #b9c6ca;
+    border-radius: 6px;
+    background: #fff !important;
+    break-inside: avoid;
+  }
+  .print-container-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #d5dde0;
+  }
+  .print-container-count > strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 21px;
+    height: 21px;
+    border-radius: 999px;
+    background: #dceff1 !important;
+    color: #174b54 !important;
+    font-size: 12px;
+  }
+  .print-container-count > span { font-size: 8px; font-weight: 900; }
+  .print-container-detail { margin-top: 4px; color: #53636b; font-size: 6.7px; line-height: 1.25; }
+  .print-for-tests { margin-top: 4px; color: #425159; font-size: 6.7px; line-height: 1.25; }
+  .print-for-tests > b { font-size: 6.8px; }
+  .print-for-tests ul { margin: 2px 0 0 11px; padding: 0; }
+  .print-for-tests li { margin: 0 0 1px; }
+  .print-bag-container-total {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 6px;
+    border: 1px solid #87999f;
+    border-radius: 5px;
+    background: #fff !important;
+    white-space: nowrap;
+  }
+  .print-bag-container-total strong { font-size: 13px; }
+  .print-bag-container-total span { font-size: 6.5px; font-weight: 850; text-transform: uppercase; }
+  .print-submit-content { display: grid; gap: 4px; margin-top: 5px; }
+  .print-submit-item {
+    padding: 4px 5px;
+    border: 1px solid #d0d9dc;
+    border-radius: 5px;
+    background: rgba(255,255,255,.82) !important;
+    break-inside: avoid;
+  }
+  .print-submit-item-title { display: flex; align-items: center; gap: 5px; }
+  .print-submit-item-title > strong {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #e3eaed !important;
+    color: #263b42 !important;
+    font-size: 10px;
+  }
+  .print-submit-item-title > span { font-size: 7.5px; font-weight: 900; }
+  .print-tube-badge + br + .print-tube-badge { margin-top: 3px; }
 }
