@@ -1,5 +1,4 @@
-Version 4.7
-- Serum transport tubes use the green-top-third transport badge.
-- Plasma transport tubes use the green-top-third transport badge.
-- Platelet-poor plasma transport tubes use the green-top-third transport badge.
-- Acid-washed, acid-rinsed, metal-free, and trace-metal transport tubes always use the neutral transport badge.
+Version 4.8
+- Copper code 363 now clearly displays an Acid-Washed / Metal-Free Plasma Transport Tube in the submission bag.
+- The badge remains neutral because this is a specialty trace-metal container, not a standard green-top plasma transport tube.
+- The source remains clearly identified as plasma from the Royal Blue trace-metal tube.

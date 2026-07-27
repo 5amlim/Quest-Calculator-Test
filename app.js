@@ -957,9 +957,13 @@
     if (/transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/i.test(transport)) {
       const sourcePhrase = sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen;
       const isSwab = /swab/i.test(sourceSpecimen);
+      const isSpecialtyMetalContainer = /acid[- ]?washed|acid[- ]?rinsed|metal[- ]?free|trace[- ]?metal/i.test(transport);
+      const label = isSwab
+        ? 'Swab Transport Tube'
+        : (isSpecialtyMetalContainer ? `Acid-Washed / Metal-Free ${specimen} Transport Tube` : `${specimen} Transport Tube`);
       return [{
         key: `transport|${normalizeSearch(sourcePhrase)}|${normalizeSearch(transport)}`,
-        label: isSwab ? 'Swab Transport Tube' : `${specimen} Transport Tube`,
+        label,
         className: transportTubeClass(test, transport),
         count: explicitSubmissionCount(test),
         detail: isSwab ? `${sourceSpecimen} in transport tube` : sourcePhrase

@@ -1,4 +1,9 @@
-## Version 4.7 updates
+## Version 4.8 updates
+
+- Quest code 363 Copper now displays **Acid-Washed / Metal-Free Plasma Transport Tube** in the transport bag.
+- It intentionally uses the neutral specialty-container badge.
+- The source is shown as **Plasma from Royal Blue**.
+
 
 - **Platelet-poor plasma** uses the same green-top-third transport-tube badge as other serum/plasma transport tubes.
 - The printed label remains **Platelet-Poor Plasma Transport Tube** so the specimen type is explicit.

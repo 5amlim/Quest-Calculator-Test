@@ -140,3 +140,8 @@ Manual swab and transport-tube entries now carry a visible reminder to document 
 
 - Acid-washed / metal-free transport tubes are displayed with the neutral transport badge, regardless of whether the specimen is serum or plasma.
 - Green-top-third transport badges remain reserved for standard serum, plasma, and platelet-poor plasma transport tubes.
+
+
+## v4.8 copper submission clarification
+
+- `363` — Copper: the bag label now explicitly says **Acid-Washed / Metal-Free Plasma Transport Tube**. The badge remains neutral because Quest requires a specialty acid-washed or metal-free vial. The specimen source remains plasma from a Royal Blue trace-metal tube.
