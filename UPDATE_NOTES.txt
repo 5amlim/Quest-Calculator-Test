@@ -1,6 +1,7 @@
-Version 5.0
-- Added a print-only Processing instructions section directly above What to submit after processing.
-- Processing is grouped by room-temperature, refrigerated, frozen, and verify/mixed bags.
-- Each step states whether to centrifuge, keep the specimen in the original tube, transfer or aliquot it, how many processed containers to prepare, and which bag receives them.
-- Each processing step lists the Quest tests supported by that processed specimen.
-- No changes were made to the staff-facing search, add/edit, or database workflows.
+Quest Lab Calculator v5.1
+
+Printout cleanup:
+- Removed the print-only Processing instructions section added in v5.0.
+- Removed the repetitive tube summary cards from the top of the printout.
+- Removed the large tube/specimen/temperature color legend from the top.
+- Kept the detailed test table, order of draw, What to collect, and What to submit after processing sections unchanged.

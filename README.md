@@ -83,3 +83,7 @@ The custom draw-container text box is always visible below the dropdown. Staff c
 ### v4.7 badge refinement
 
 Acid-washed, acid-rinsed, metal-free, and trace-metal transport containers use the neutral transport-tube badge. They do not use the green-top-third serum/plasma badge. Standard serum, plasma, and platelet-poor plasma transport tubes remain green-top-third.
+
+## Version 5.1 print cleanup
+
+The printout no longer includes the separate Processing instructions section or the repetitive tube-summary and color-legend tiles at the top. Collection counts and tube badges remain in **What to collect**, and processed contents remain in **What to submit after processing**.
