@@ -83,6 +83,7 @@
     els.deleteTestButton.addEventListener('click', deleteCustomTest);
     els.openQuestFromDialogButton.addEventListener('click', openQuestFromDialog);
     els.drawContainer.addEventListener('change', toggleCustomDrawContainer);
+    els.customDrawContainer.addEventListener('input', handleCustomDrawContainerInput);
   }
 
   function renderAll() {
@@ -1110,8 +1111,18 @@
 
   function toggleCustomDrawContainer() {
     const isOther = els.drawContainer.value === '__other__';
-    els.customDrawContainerRow.classList.toggle('hidden', !isOther);
+    // Keep the manual field visible at all times so it is easy for staff to find.
+    els.customDrawContainerRow.classList.remove('hidden');
     els.customDrawContainer.required = isOther;
+    els.customDrawContainerRow.classList.toggle('is-active', isOther);
+    if (isOther) setTimeout(() => els.customDrawContainer.focus(), 0);
+  }
+
+  function handleCustomDrawContainerInput() {
+    if (els.customDrawContainer.value.trim()) {
+      els.drawContainer.value = '__other__';
+      toggleCustomDrawContainer();
+    }
   }
 
   function selectedDrawContainer() {

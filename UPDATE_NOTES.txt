@@ -1,3 +1,11 @@
+QUEST LAB CALCULATOR v4.1
+
+- Fixed the custom draw-container workflow.
+- The manual text field is now always visible directly below the Draw container dropdown.
+- Typing in the manual field automatically selects “Other / manually type.”
+- The field becomes required when Other is selected.
+- All other calculator features remain unchanged.
+
 Quest Lab Calculator v4.0
 
 - Renamed the final Draw container option to “Other / manually type.”

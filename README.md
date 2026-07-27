@@ -1,4 +1,4 @@
-# Quest Lab Calculator v4.0
+# Quest Lab Calculator v4.1
 
 **v3.8:** The printout now keeps the same tube badge when a specimen is submitted in its original collection tube. Original-tube submissions clearly identify the specimen inside, such as “Royal Blue EDTA · Whole Blood · Submit in original tube” for arsenic. Transferred serum, plasma, and RBC specimens continue to use transport-tube labels.
 
@@ -41,3 +41,7 @@ Quest code 3020 now clearly shows the required red/yellow swirl-top UA preservat
 
 ## Manual container entry
 Choose **Other / manually type** in the Draw container dropdown to enter an uncommon tube, cup, swab, or collection kit.
+
+
+## Manual draw container
+The custom draw-container text box is always visible below the dropdown. Staff can either select **Other / manually type** first or simply start typing; the calculator automatically selects Other and saves the typed container.
