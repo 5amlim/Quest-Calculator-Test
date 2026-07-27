@@ -25,8 +25,7 @@
     libraryFilter: $('libraryFilter'), tempFilter: $('tempFilter'), showBlocked: $('showBlocked'),
     libraryBody: $('libraryBody'), libraryStatus: $('libraryStatus'), loadMoreButton: $('loadMoreButton'),
     addTestButton: $('addTestButton'), addSelectedTestButton: $('addSelectedTestButton'),
-    exportDbButton: $('exportDbButton'), exportSeedButton: $('exportSeedButton'), importDbInput: $('importDbInput'),
-    resetDbButton: $('resetDbButton'), selectedCount: $('selectedCount'), selectedList: $('selectedList'),
+    selectedCount: $('selectedCount'), selectedList: $('selectedList'),
     drawPlan: $('drawPlan'), orderOfDraw: $('orderOfDraw'), collectionAlerts: $('collectionAlerts'), clearOrderButton: $('clearOrderButton'),
     orderLabel: $('orderLabel'), printButton: $('printButton'), exportSummaryButton: $('exportSummaryButton'),
     printSheet: $('printSheet'), testDialog: $('testDialog'), testForm: $('testForm'), dialogTitle: $('dialogTitle'),
@@ -36,8 +35,7 @@
     preferredVolume: $('preferredVolume'), minimumVolume: $('minimumVolume'), transportTemperature: $('transportTemperature'),
     transportTemperatureRaw: $('transportTemperatureRaw'), stability: $('stability'), spin: $('spin'),
     specialInstructions: $('specialInstructions'), blockedStatus: $('blockedStatus'), addToSummary: $('addToSummary'),
-    addToSummaryRow: $('addToSummaryRow'), openQuestFromDialogButton: $('openQuestFromDialogButton'),
-    copyAiPromptButton: $('copyAiPromptButton'), applyAiResultButton: $('applyAiResultButton'), aiResult: $('aiResult'), toast: $('toast')
+    addToSummaryRow: $('addToSummaryRow'), openQuestFromDialogButton: $('openQuestFromDialogButton'), toast: $('toast')
   };
 
   let database = loadDatabase();
@@ -74,10 +72,6 @@
     els.selectedList.addEventListener('click', handleSelectedClick);
     els.addTestButton.addEventListener('click', () => openDialog(null, { addToSummary: true }));
     els.addSelectedTestButton.addEventListener('click', () => openDialog(null, { addToSummary: true }));
-    els.exportDbButton.addEventListener('click', exportDatabase);
-    els.exportSeedButton.addEventListener('click', exportSeedFile);
-    els.importDbInput.addEventListener('change', importDatabase);
-    els.resetDbButton.addEventListener('click', resetDatabase);
     els.clearOrderButton.addEventListener('click', clearOrder);
     els.orderLabel.addEventListener('input', () => localStorage.setItem(LABEL_KEY, els.orderLabel.value));
     els.printButton.addEventListener('click', printSummary);
@@ -87,8 +81,6 @@
     els.testForm.addEventListener('submit', saveTestFromForm);
     els.deleteTestButton.addEventListener('click', deleteCustomTest);
     els.openQuestFromDialogButton.addEventListener('click', openQuestFromDialog);
-    els.copyAiPromptButton.addEventListener('click', copyAiLookupRequest);
-    els.applyAiResultButton.addEventListener('click', applyAiLookupResult);
   }
 
   function renderAll() {
@@ -543,7 +535,6 @@
     setSelectValue(els.spin, record.spin, 'Verify');
     els.specialInstructions.value = record.specialInstructions;
     els.blockedStatus.checked = record.status === 'blocked';
-    els.aiResult.value = '';
     els.addToSummary.checked = options.addToSummary !== false;
     els.addToSummaryRow.classList.toggle('hidden', isExisting);
     els.saveTestButton.textContent = isExisting ? 'Save changes' : 'Save test';
@@ -600,92 +591,8 @@
   }
 
   function openQuestFromDialog() {
-    const url = questUrl({ questCode: els.questCode.value.trim() });
+    const url = questUrl({ questCode: els.questCode.value.trim(), testName: els.testName.value.trim() });
     window.open(url, '_blank', 'noopener,noreferrer');
-  }
-
-  async function copyAiLookupRequest() {
-    const code = els.questCode.value.trim();
-    const name = els.testName.value.trim();
-    if (!code && !name) {
-      showToast('Enter a test name or Quest code first.');
-      els.testName.focus();
-      return;
-    }
-
-    const target = [code ? `Quest code: ${code}` : '', name ? `Test name: ${name}` : ''].filter(Boolean).join('\n');
-    const prompt = `Search the official Quest Diagnostics Test Directory only for the test below. Do not guess. If a field is unavailable or unclear, use an empty string or "Verify". Return exactly one JSON object and no explanatory text. Do not include patient information.\n\n${target}\n\nUse this exact structure:\n{\n  "questCode": "",\n  "testName": "",\n  "specimenType": "Serum | Plasma | RBCs | Whole Blood | Urine | Stool | Swab | Saliva | CSF | Body Fluid | Other / Verify",\n  "drawContainer": "",\n  "alternativeContainer": "",\n  "transportContainer": "",\n  "preferredVolume": "",\n  "minimumVolume": "",\n  "transportTemperature": "Room Temperature | Refrigerated | Frozen | Room / Refrigerated | Mixed | Not specified",\n  "transportTemperatureRaw": "",\n  "stability": "",\n  "spin": "Yes | No | Verify",\n  "specialInstructions": "Include all special collection, processing, transfer, timing, protection, and rejection instructions",\n  "sourceUrl": "Official Quest page URL"\n}`;
-
-    const chatWindow = window.open('https://chatgpt.com/', '_blank', 'noopener,noreferrer');
-    const copied = await copyText(prompt);
-    if (!chatWindow) showToast(copied ? 'Request copied. Open ChatGPT and paste it.' : 'Could not copy the request.');
-    else showToast(copied ? 'Request copied. Paste it into the ChatGPT tab.' : 'ChatGPT opened, but the request could not be copied.');
-  }
-
-  function applyAiLookupResult() {
-    const raw = els.aiResult.value.trim();
-    if (!raw) {
-      showToast('Paste ChatGPT’s answer first.');
-      els.aiResult.focus();
-      return;
-    }
-
-    try {
-      const data = parseAiJson(raw);
-      if (data.questCode != null) els.questCode.value = String(data.questCode).trim();
-      if (data.testName) els.testName.value = String(data.testName).trim();
-      if (data.specimenType) setSelectValue(els.specimenType, String(data.specimenType).trim(), 'Other / Verify');
-      if (data.drawContainer != null) els.drawContainer.value = String(data.drawContainer).trim();
-      if (data.alternativeContainer != null) els.alternativeContainer.value = String(data.alternativeContainer).trim();
-      if (data.transportContainer != null) els.transportContainer.value = String(data.transportContainer).trim();
-      if (data.preferredVolume != null) els.preferredVolume.value = String(data.preferredVolume).trim();
-      if (data.minimumVolume != null) els.minimumVolume.value = String(data.minimumVolume).trim();
-      if (data.transportTemperature) setSelectValue(els.transportTemperature, String(data.transportTemperature).trim(), 'Not specified');
-      if (data.transportTemperatureRaw != null) els.transportTemperatureRaw.value = String(data.transportTemperatureRaw).trim();
-      if (data.stability != null) els.stability.value = String(data.stability).trim();
-      if (data.spin) setSelectValue(els.spin, String(data.spin).trim(), 'Verify');
-      if (data.specialInstructions != null) els.specialInstructions.value = String(data.specialInstructions).trim();
-      if (data.sourceUrl) {
-        const sourceLine = `Quest source: ${String(data.sourceUrl).trim()}`;
-        if (!els.specialInstructions.value.includes(sourceLine)) {
-          els.specialInstructions.value = [els.specialInstructions.value, sourceLine].filter(Boolean).join('\n');
-        }
-      }
-      showToast('Form filled. Verify every field against the official Quest page.');
-    } catch (error) {
-      window.alert('The pasted answer could not be read. Ask ChatGPT to return only the JSON object, then paste it again.');
-    }
-  }
-
-  function parseAiJson(raw) {
-    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
-    const start = cleaned.indexOf('{');
-    const end = cleaned.lastIndexOf('}');
-    if (start < 0 || end <= start) throw new Error('No JSON object found.');
-    const parsed = JSON.parse(cleaned.slice(start, end + 1));
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Expected an object.');
-    return parsed;
-  }
-
-  async function copyText(text) {
-    try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-        return true;
-      }
-      const area = document.createElement('textarea');
-      area.value = text;
-      area.setAttribute('readonly', '');
-      area.style.position = 'fixed';
-      area.style.opacity = '0';
-      document.body.appendChild(area);
-      area.select();
-      const copied = document.execCommand('copy');
-      area.remove();
-      return copied;
-    } catch {
-      return false;
-    }
   }
 
   function deleteCustomTest() {
@@ -707,52 +614,6 @@
     els.recordCount.textContent = `${database.length} local tests`;
   }
 
-  function exportDatabase() {
-    downloadBlob(JSON.stringify(database, null, 2), `quest-lab-calculator-backup-${isoDate()}.json`, 'application/json');
-    showToast('Backup downloaded. Keep it somewhere safe.');
-  }
-
-  function exportSeedFile() {
-    const content = `// Generated by Quest Lab Calculator on ${new Date().toISOString()}\nwindow.SEED_TESTS = ${JSON.stringify(database, null, 2)};\n`;
-    downloadBlob(content, 'data.js', 'text/javascript;charset=utf-8');
-    showToast('Website update file created. Replace data.js in GitHub to publish the changes.');
-  }
-
-  async function importDatabase(event) {
-    const file = event.target.files && event.target.files[0];
-    event.target.value = '';
-    if (!file) return;
-    try {
-      const parsed = JSON.parse(await file.text());
-      const incoming = Array.isArray(parsed) ? parsed : parsed.tests;
-      if (!Array.isArray(incoming)) throw new Error('Expected an array of test records.');
-      const normalized = incoming.map(normalizeRecord).filter(test => test.testName);
-      const merged = new Map(database.map(test => [`${normalizeSearch(test.questCode)}|${normalizeSearch(test.testName)}`, test]));
-      normalized.forEach((test, index) => {
-        const key = `${normalizeSearch(test.questCode)}|${normalizeSearch(test.testName)}`;
-        const previous = merged.get(key);
-        if (previous) test.id = previous.id;
-        else if (!test.id || database.some(item => item.id === test.id)) test.id = `custom-import-${Date.now()}-${index}`;
-        merged.set(key, test);
-      });
-      database = Array.from(merged.values());
-      persistDatabase();
-      renderAll();
-      showToast(`Backup restored. ${normalized.length} test records were loaded.`);
-    } catch (error) {
-      window.alert(`Could not import this file: ${error.message}`);
-    }
-  }
-
-  function resetDatabase() {
-    if (!window.confirm('Discard all changes saved in this browser and return to the published website test list?')) return;
-    database = (window.SEED_TESTS || []).map(normalizeRecord);
-    selectedIds = selectedIds.filter(id => database.some(test => test.id === id));
-    localStorage.removeItem(DB_KEY);
-    saveSelected();
-    renderAll();
-    showToast('Local changes discarded. The published test list has been restored.');
-  }
 
   function printSummary() {
     const tests = selectedTests();

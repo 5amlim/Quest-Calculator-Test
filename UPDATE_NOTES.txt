@@ -1,8 +1,6 @@
-Quest Lab Calculator v3.0
+VERSION 3.3
 
-- Added distinct specimen badges for serum, plasma, RBCs, and whole blood.
-- Applied specimen badges to search results, database rows, selected-test cards, draw plan, print plan, print table, and print legend.
-- Added RBCs as a manual-entry specimen option and to the ChatGPT lookup format.
-- Corrected Folate RBC, Magnesium RBC, Copper RBC, Zinc RBC, and Selenium RBC from Whole Blood to RBCs.
-- Kept CBC as Whole Blood because RBC is an analyte within the unseparated whole-blood specimen.
-- Bumped browser database version so published corrections load while preserving staff-created custom tests.
+- Removed the Website maintenance and backup section.
+- Removed the ChatGPT helper from Add missing test.
+- Kept manual test entry and the official Quest directory lookup.
+- All other calculator, print, data, and styling features remain unchanged.

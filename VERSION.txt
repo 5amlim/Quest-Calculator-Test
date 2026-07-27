@@ -1,2 +1,2 @@
-Quest Lab Calculator v3.0
-Specimen-type differentiation update
+Quest Lab Calculator v3.3
+Removed staff maintenance/backup controls and ChatGPT helper.

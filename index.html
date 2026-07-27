@@ -85,22 +85,6 @@
           <span id="libraryStatus"></span>
           <button class="button ghost" id="loadMoreButton">Load more</button>
         </div>
-
-        <details class="maintenance-tools">
-          <summary>Website maintenance and backup</summary>
-          <div class="maintenance-content">
-            <p>Most lab staff will not need these tools. Use them to protect changes or update the published GitHub website.</p>
-            <div class="maintenance-actions">
-              <button class="button secondary" id="exportDbButton">Download backup</button>
-              <label class="button secondary file-button">Restore saved backup<input type="file" id="importDbInput" accept="application/json,.json"></label>
-              <button class="button secondary" id="exportSeedButton">Create website update file</button>
-              <button class="button danger-ghost" id="resetDbButton">Discard local changes</button>
-            </div>
-            <div class="maintenance-help">
-              To publish additions for everyone: select <strong>Create website update file</strong>, then replace the existing <code>data.js</code> file in GitHub with the downloaded file.
-            </div>
-          </div>
-        </details>
       </div>
     </section>
 
@@ -148,7 +132,7 @@
         <button class="button secondary wide" id="exportSummaryButton">Download summary spreadsheet</button>
       </div>
       <div class="contact-summary"><strong>Missing an entry?</strong> Contact Sam for any missing entries you would like added.</div>
-      <p class="disclaimer">The local list is not the complete Quest menu. Verify current requirements and service-area availability in the official Quest Test Directory before collection. Manually entered and ChatGPT-assisted information must be reviewed before use.</p>
+      <p class="disclaimer">The local list is not the complete Quest menu. Verify current requirements and service-area availability in the official Quest Test Directory before collection. Manually entered information must be reviewed before use.</p>
     </aside>
   </main>
 
@@ -168,20 +152,10 @@
       <div class="form-grid">
         <label>Quest code <span class="optional">optional if unknown</span><input id="questCode" placeholder="Example: 496"></label>
         <label>Test name<input id="testName" required placeholder="Exact Quest test name"></label>
-
-        <details class="ai-helper full-width">
-          <summary>Use ChatGPT to help find a missing test</summary>
-          <div class="ai-helper-content">
-            <p>Enter a test name or code above. This helper copies a structured lookup request and opens ChatGPT. Paste ChatGPT’s answer below to fill the form.</p>
-            <div class="ai-actions">
-              <button type="button" class="button secondary" id="openQuestFromDialogButton">Search official Quest directory ↗</button>
-              <button type="button" class="button primary" id="copyAiPromptButton">Copy request and open ChatGPT ↗</button>
-            </div>
-            <label>Paste ChatGPT’s answer here<textarea id="aiResult" rows="5" placeholder="Paste the JSON answer returned by ChatGPT"></textarea></label>
-            <button type="button" class="button secondary" id="applyAiResultButton">Fill the form from this answer</button>
-            <p class="helper-warning">Do not enter patient information. ChatGPT can make mistakes, so verify every field against the official Quest page before collection.</p>
-          </div>
-        </details>
+        <div class="dialog-lookup-row full-width">
+          <button type="button" class="button secondary" id="openQuestFromDialogButton">Search official Quest directory ↗</button>
+          <span>Use the official Quest directory to verify collection details before saving a missing test.</span>
+        </div>
 
         <label>Specimen type<select id="specimenType">
           <option>Serum</option><option>Plasma</option><option>RBCs</option><option>Whole Blood</option><option>Urine</option><option>Stool</option><option>Swab</option><option>Saliva</option><option>CSF</option><option>Body Fluid</option><option>Other / Verify</option>
