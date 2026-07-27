@@ -28,3 +28,7 @@ Upload all files to the repository root, then configure **Settings → Pages** t
 - Verify current collection requirements and service-area availability in the official Quest Test Directory before collection.
 - Confirm tube additives from the label, not stopper color alone.
 - Follow facility policy and test-specific instructions.
+
+## Version 3.4 printout
+
+The printed summary includes a transport bag plan. Room-temperature, refrigerated, frozen, and mixed/verify specimens are kept separate. SST tube estimates use a planning assumption of 2 mL usable serum/plasma per SST, round up within each temperature group, and keep dedicated/full-tube requirements separate. Staff must verify specialty instructions and actual specimen yield before collection.

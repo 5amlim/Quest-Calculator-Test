@@ -319,3 +319,146 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   }
   .print-specimen-list { margin-top: 2px; gap: 2px; }
 }
+
+/* Print-only transport bag plan and SST tube estimate */
+@media print {
+  .print-bag-plan {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 2px solid #1e5963;
+  }
+  .print-bag-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 7px;
+  }
+  .print-bag-heading > div:first-child strong {
+    display: block;
+    color: #1f363d;
+    font-size: 11px;
+  }
+  .print-bag-heading > div:first-child span {
+    display: block;
+    margin-top: 2px;
+    color: #59666c;
+    font-size: 7.5px;
+  }
+  .print-sst-total {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 165px;
+    padding: 6px 9px;
+    border: 2px solid #9b6c00;
+    border-radius: 7px;
+    background: #fff0a8 !important;
+    color: #523b00 !important;
+  }
+  .print-sst-total span {
+    flex: 1;
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .print-sst-total strong {
+    font-size: 20px;
+    line-height: 1;
+  }
+  .print-bag-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+  .print-bag-card {
+    border: 1.5px solid #aebbc0;
+    border-radius: 7px;
+    padding: 7px;
+    break-inside: avoid;
+    background: #fff;
+  }
+  .print-bag-card.bag-room { border-color: #c99c12; background: #fffaf0 !important; }
+  .print-bag-card.bag-refrigerated { border-color: #4b9dce; background: #f2f9ff !important; }
+  .print-bag-card.bag-frozen { border-color: #7d66c8; background: #f8f5ff !important; }
+  .print-bag-card.bag-mixed, .print-bag-card.bag-verify { border-color: #8d969b; background: #f7f8f9 !important; }
+  .print-bag-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #cfd8dc;
+  }
+  .print-bag-card-header > div:first-child strong {
+    display: block;
+    color: #1f363d;
+    font-size: 9.5px;
+  }
+  .print-bag-card-header > div:first-child span {
+    color: #59666c;
+    font-size: 7px;
+  }
+  .print-bag-sst-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 6px;
+    border: 1px solid #9b6c00;
+    border-radius: 5px;
+    background: #fff0a8 !important;
+    color: #523b00 !important;
+    white-space: nowrap;
+  }
+  .print-bag-sst-count span {
+    font-size: 6.8px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .print-bag-sst-count strong {
+    font-size: 13px;
+    line-height: 1;
+  }
+  .print-bag-items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px 8px;
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .print-bag-items li {
+    min-width: 0;
+    padding-bottom: 3px;
+    border-bottom: 1px dotted #cfd8dc;
+    font-size: 7px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .print-bag-items li > strong {
+    display: block;
+    color: #263b42;
+    font-size: 7.2px;
+  }
+  .print-bag-items li > span {
+    display: block;
+    margin-top: 1px;
+    color: #59666c;
+  }
+  .print-bag-calculation {
+    margin-top: 5px;
+    padding-top: 4px;
+    border-top: 1px solid #d7dfe2;
+    color: #4e5a60;
+    font-size: 6.8px;
+    font-weight: 750;
+    line-height: 1.3;
+  }
+  .print-bag-note {
+    margin-top: 6px;
+    color: #4e5a60;
+    font-size: 7px;
+    line-height: 1.35;
+  }
+}

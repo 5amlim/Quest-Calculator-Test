@@ -1,6 +1,10 @@
-VERSION 3.3
+VERSION 3.4
 
-- Removed the Website maintenance and backup section.
-- Removed the ChatGPT helper from Add missing test.
-- Kept manual test entry and the official Quest directory lookup.
-- All other calculator, print, data, and styling features remain unchanged.
+- Added a print-only transport bag plan.
+- Separates room-temperature, refrigerated, frozen, mixed, and verify-temperature specimens.
+- Lists which selected tests and final transport containers go in each bag.
+- Calculates SST draw tubes independently for each temperature group using 2 mL usable specimen per SST.
+- Uses preferred volume when parseable and minimum volume as a fallback.
+- Rounds up per temperature group and reserves separate tubes for dedicated/full-tube tests.
+- Clearly displays the SST count for each bag and a bold grand total.
+- Website interface remains unchanged.

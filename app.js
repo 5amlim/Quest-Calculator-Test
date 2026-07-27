@@ -6,6 +6,7 @@
   const SELECTED_KEY = 'questLabCalculator.selected.v1';
   const LABEL_KEY = 'questLabCalculator.orderLabel.v1';
   const PAGE_STEP = 80;
+  const SST_USABLE_ML_PER_TUBE = 2;
   const ORDER_OF_DRAW = [
     { key: 'culture', number: 1, label: 'Blood cultures', additive: 'See bottle label', tubeClass: 'tube-culture' },
     { key: 'citrate', number: 2, label: 'Light blue', additive: 'Sodium citrate', tubeClass: 'tube-blue' },
@@ -615,6 +616,130 @@
   }
 
 
+  function transportBagInfo(test) {
+    const value = `${test.transportTemperature || ''} ${test.transportTemperatureRaw || ''}`.toLowerCase();
+    const hasRoom = /room|ambient/.test(value);
+    const hasRefrigerated = /refriger|2\s*[-–]\s*8|chill|cold/.test(value);
+    const hasFrozen = /frozen|freeze/.test(value);
+    const categoryCount = [hasRoom, hasRefrigerated, hasFrozen].filter(Boolean).length;
+
+    if (/mixed|see instructions|multiple/.test(value) || categoryCount > 1) {
+      return { key: 'mixed', label: 'Mixed / verify instructions', className: 'bag-mixed', order: 4 };
+    }
+    if (hasFrozen) return { key: 'frozen', label: 'Frozen bag', className: 'bag-frozen', order: 3 };
+    if (hasRefrigerated) return { key: 'refrigerated', label: 'Refrigerated bag', className: 'bag-refrigerated', order: 2 };
+    if (hasRoom) return { key: 'room', label: 'Room-temperature bag', className: 'bag-room', order: 1 };
+    return { key: 'verify', label: 'Temperature to verify', className: 'bag-verify', order: 5 };
+  }
+
+  function isSstDraw(test) {
+    const value = String(test.drawContainer || '').toLowerCase();
+    return /\bsst\b|gold|serum separator|red\s*\/\s*black/.test(value);
+  }
+
+  function parseVolumeMl(value) {
+    const text = String(value || '').replace(/,/g, ' ');
+    const explicitTotal = text.match(/(?:total|yield|submit|preferred)\D{0,12}(\d+(?:\.\d+)?)\s*m\s*l\b/i);
+    if (explicitTotal) return Number(explicitTotal[1]);
+
+    const multiplication = text.match(/(\d+)\s*(?:x|×)\s*(\d+(?:\.\d+)?)\s*m\s*l\b/i);
+    if (multiplication) return Number(multiplication[1]) * Number(multiplication[2]);
+
+    const first = text.match(/(\d+(?:\.\d+)?)\s*m\s*l\b/i);
+    return first ? Number(first[1]) : null;
+  }
+
+  function explicitSstTubeCount(test) {
+    const text = `${test.drawContainer || ''} ${test.preferredVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
+    const numeric = text.match(/\b(\d+)\s+(?:full\s+)?(?:gold\s*\/\s*)?sst\s+tubes?\b/);
+    if (numeric) return Number(numeric[1]);
+    const words = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+    const wordMatch = text.match(/\b(one|two|three|four|five|six)\s+(?:full\s+)?(?:gold\s*\/\s*)?sst\s+tubes?\b/);
+    return wordMatch ? words[wordMatch[1]] : 0;
+  }
+
+  function requiresDedicatedSst(test) {
+    const text = `${test.drawContainer || ''} ${test.transportContainer || ''} ${test.specialInstructions || ''}`.toLowerCase();
+    return /dedicated|own tube|separate (?:sst|gold|tube)|do not share|full sst|full gold|each tube|individual tube/.test(text)
+      || explicitSstTubeCount(test) > 0;
+  }
+
+  function finalTransportContainer(test) {
+    const transport = String(test.transportContainer || '').trim();
+    if (transport && !/^verify/i.test(transport)) return transport;
+    return String(test.drawContainer || 'Verify container').trim();
+  }
+
+  function buildTransportBagPlan(tests) {
+    const bags = new Map();
+    tests.forEach(test => {
+      const info = transportBagInfo(test);
+      if (!bags.has(info.key)) {
+        bags.set(info.key, {
+          ...info,
+          tests: [],
+          sharedSstMl: 0,
+          sharedSstTests: 0,
+          dedicatedSstTubes: 0,
+          unmeasuredSstTubes: 0,
+          unmeasuredSstTests: []
+        });
+      }
+      const bag = bags.get(info.key);
+      bag.tests.push(test);
+
+      if (!isSstDraw(test)) return;
+      const preferredMl = parseVolumeMl(test.preferredVolume);
+      const fallbackMl = preferredMl === null ? parseVolumeMl(test.minimumVolume) : null;
+      const plannedMl = preferredMl === null ? fallbackMl : preferredMl;
+      const explicitCount = explicitSstTubeCount(test);
+
+      if (requiresDedicatedSst(test)) {
+        const calculated = plannedMl === null ? 1 : Math.ceil(plannedMl / SST_USABLE_ML_PER_TUBE);
+        bag.dedicatedSstTubes += Math.max(explicitCount, calculated, 1);
+      } else if (plannedMl !== null) {
+        bag.sharedSstMl += plannedMl;
+        bag.sharedSstTests += 1;
+      } else {
+        // Reserve one tube so an unparseable volume cannot make the estimate too low.
+        bag.unmeasuredSstTubes += 1;
+        bag.unmeasuredSstTests.push(test.testName);
+      }
+    });
+
+    return Array.from(bags.values())
+      .sort((a, b) => a.order - b.order)
+      .map(bag => {
+        bag.sharedSstTubes = bag.sharedSstMl > 0 ? Math.ceil(bag.sharedSstMl / SST_USABLE_ML_PER_TUBE) : 0;
+        bag.totalSstTubes = bag.sharedSstTubes + bag.dedicatedSstTubes + bag.unmeasuredSstTubes;
+        return bag;
+      });
+  }
+
+  function printTransportBagPlan(tests) {
+    const bags = buildTransportBagPlan(tests);
+    const totalSstTubes = bags.reduce((sum, bag) => sum + bag.totalSstTubes, 0);
+    return `<section class="print-bag-plan">
+      <div class="print-bag-heading">
+        <div><strong>Transport bag plan and SST tube estimate</strong><span>Keep each transport temperature in a separate bag.</span></div>
+        <div class="print-sst-total"><span>Total SST tubes to draw</span><strong>${totalSstTubes}</strong></div>
+      </div>
+      <div class="print-bag-grid">${bags.map(bag => {
+        const calculationParts = [];
+        if (bag.sharedSstMl > 0) calculationParts.push(`${formatMl(bag.sharedSstMl)} pooled preferred volume ÷ ${SST_USABLE_ML_PER_TUBE} mL`);
+        if (bag.dedicatedSstTubes) calculationParts.push(`${bag.dedicatedSstTubes} dedicated`);
+        if (bag.unmeasuredSstTubes) calculationParts.push(`${bag.unmeasuredSstTubes} reserved for volume to verify`);
+        return `<article class="print-bag-card ${bag.className}">
+          <div class="print-bag-card-header"><div><strong>${escapeHtml(bag.label)}</strong><span>${bag.tests.length} ${bag.tests.length === 1 ? 'specimen' : 'specimens'}</span></div><div class="print-bag-sst-count"><span>SST tubes</span><strong>${bag.totalSstTubes}</strong></div></div>
+          <ul class="print-bag-items">${bag.tests.map(test => `<li><strong>${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</strong><span>${specimenBadge(test.specimenType, 'print-specimen-badge')} · ${escapeHtml(finalTransportContainer(test))}</span></li>`).join('')}</ul>
+          <div class="print-bag-calculation">${bag.totalSstTubes ? escapeHtml(calculationParts.join(' + ')) : 'No SST draw tubes calculated for this bag.'}</div>
+        </article>`;
+      }).join('')}</div>
+      <div class="print-bag-note"><strong>Planning rule:</strong> The estimate assumes 2 mL of usable serum/plasma per SST and rounds each temperature group up separately. Tests marked for a dedicated or full tube are not pooled. One SST is reserved when a listed SST volume cannot be parsed. Verify specialty collection instructions and actual tube yield before collection.</div>
+    </section>`;
+  }
+
+
   function printSummary() {
     const tests = selectedTests();
     if (!tests.length) return showToast('Add at least one test before printing.');
@@ -635,7 +760,8 @@
         <thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Draw container</th><th>Transport tube</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
         <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><strong>${escapeHtml(test.testName)}</strong>${test.alternativeContainer ? `<br>Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span>` : ''}</td><td>${specimenBadge(test.specimenType, 'print-specimen-badge')}</td><td><span class="print-tube-badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span></td><td><span class="print-tube-badge tube ${tubeClass(test.transportContainer || '')}">${escapeHtml(test.transportContainer || 'Verify')}</span></td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(test.preferredVolume || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(test.minimumVolume || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
       </table>
-      <div class="print-footer"><strong>Missing entry?</strong> Contact Sam for any missing entries you would like added. Verify current specimen requirements, service-area availability, and rejection criteria in the official Quest Test Directory before collection. Order-of-draw sources: Quest Diagnostics; pink is grouped with the EDTA step based on BD tube labeling. “Listed minimum total” is a simple sum of parseable minimum-volume fields, not a recommendation for tube count or specimen sharing.</div>`;
+      ${printTransportBagPlan(tests)}
+      <div class="print-footer"><strong>Missing entry?</strong> Contact Sam for any missing entries you would like added. Verify current specimen requirements, service-area availability, rejection criteria, dedicated-tube requirements, and actual specimen yield in the official Quest Test Directory before collection. Order-of-draw sources: Quest Diagnostics; pink is grouped with the EDTA step based on BD tube labeling. “Listed minimum total” is a simple sum of parseable minimum-volume fields. The SST estimate uses the preferred volume when parseable, otherwise the minimum volume, and keeps transport temperatures separate.</div>`;
     window.print();
   }
 
