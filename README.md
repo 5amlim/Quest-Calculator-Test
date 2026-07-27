@@ -1,3 +1,10 @@
+## Version 4.4 updates
+
+- Swab and transport-tube entries identify their specimen source, such as **throat swab**, **serum from SST**, or **plasma from Lavender EDTA**.
+- The Add/Edit Missing Test form includes a source-clarification reminder.
+- Generic swabs are labeled **source must be clarified** until the collection source is documented.
+- Serum/plasma transport-tube badges use a green top third.
+
 ## Version 4.3 updates
 
 - Quest code **70049** now displays **Aptima** in the submission section with **Submit as Aptima**.

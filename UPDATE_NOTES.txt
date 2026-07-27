@@ -1,5 +1,8 @@
-Quest Lab Calculator v4.3
+Quest Lab Calculator v4.4
 
-- Updated Quest code 70049 so the submission plan displays an Aptima badge with “Throat swab · Submit as Aptima.”
-- Kept the full Aptima Multitest collection-tube description in What to Collect.
-- Refreshed built-in records while preserving staff-created custom tests.
+- Swab submission entries now identify the collection source, such as throat swab, vaginal swab, or lesion swab.
+- Serum and plasma transport tubes now identify the original draw source, such as serum from SST or plasma from Lavender EDTA.
+- Serum/plasma transport-tube badges have a green top third in the printout and submission plan.
+- All other calculator behavior remains unchanged.
+- Add/Edit Missing Test now includes a visible note requiring a clear source for swabs and transport tubes.
+- Generic swabs print as source needing clarification until the source is documented.
