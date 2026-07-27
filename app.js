@@ -478,7 +478,8 @@
       ['Royal blue', 'tube-royal'],
       ['Gray', 'tube-gray'],
       ['Pink EDTA', 'tube-pink'],
-      ['Yellow', 'tube-yellow']
+      ['Yellow', 'tube-yellow'],
+      ['UA red/yellow swirl + gray culture', 'tube-ua-pair']
     ];
     const temperatures = [
       ['Room temperature', 'temp-room'],
@@ -804,6 +805,8 @@
 
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
+    if (value.includes('red/yellow') && (value.includes('gray') || value.includes('grey'))) return 'tube-ua-pair';
+    if (value.includes('red/yellow') || value.includes('swirl')) return 'tube-ua-swirl';
     if (value.includes('sst') || value.includes('gold')) return 'tube-sst';
     if (value.includes('lavender')) return 'tube-lavender';
     if (value.includes('heparin') || value.includes('green')) return 'tube-green';

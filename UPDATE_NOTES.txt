@@ -1,10 +1,8 @@
-VERSION 3.4
+VERSION 3.5
 
-- Added a print-only transport bag plan.
-- Separates room-temperature, refrigerated, frozen, mixed, and verify-temperature specimens.
-- Lists which selected tests and final transport containers go in each bag.
-- Calculates SST draw tubes independently for each temperature group using 2 mL usable specimen per SST.
-- Uses preferred volume when parseable and minimum volume as a fallback.
-- Rounds up per temperature group and reserves separate tubes for dedicated/full-tube tests.
-- Clearly displays the SST count for each bag and a bold grand total.
-- Website interface remains unchanged.
+- Corrected Quest code 3020, Urinalysis Complete with Reflex to Culture.
+- The workflow now clearly requires two preservative tubes:
+  1. Red/yellow swirl-top urinalysis tube for UA.
+  2. Gray-top urine culture tube for culture.
+- Added a combined UA/culture tube color indicator in the website and printout.
+- Kept all v3.4 transport bag and SST calculation features unchanged.

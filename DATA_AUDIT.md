@@ -100,3 +100,7 @@ Quest advertises more than 3,500 tests, with service-area-specific availability 
 - `91735` — Cardio IQ® Vitamin D, 25-Hydroxy: official Quest page correction
 - `38683` — TRAb (TSH Receptor Binding Antibody): official Quest page correction
 - `36378` — Analyzer ANA with reflex panel: official Quest page correction
+
+## Version 3.5 correction
+
+- `3020` — Urinalysis, Complete, with Reflex to Culture: corrected the workflow to require both a red/yellow swirl-top urinalysis preservative tube and a gray-top urine culture preservative tube. Both tubes must be filled to their marked lines and submitted.
