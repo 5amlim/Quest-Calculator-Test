@@ -1,5 +1,7 @@
-QUEST LAB CALCULATOR v3.9
+Lab Collection Calculator v6.0
 
-Upload every file in this folder to the root of the GitHub repository and commit to main.
+Upload every file in this folder to the root of your GitHub repository.
+Replace files with the same names, commit to the main branch, and GitHub Pages will republish automatically.
 
-The printout separates TOTAL TO COLLECT from TOTAL TO SUBMIT. Spot urine tests add a sterile urine cup; processed urine preservative tubes appear under the correct transport bag and never in blood order of draw.
+The website is static and stores manual edits in the individual browser.
+The official directory links remain available for verification of current requirements.

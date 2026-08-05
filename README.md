@@ -1,9 +1,67 @@
-## Version 5.5 updates
+## Version 7.3
 
-- Renamed **Optional visit/order label** to **Name / MRN**.
-- The Name / MRN is displayed prominently near the top of the printout.
-- Patient identifiers are not saved to browser storage and clear when the page is reloaded.
-- All other website and print behavior remains unchanged.
+- Added 34473 Interleukin-6 (IL-6), Serum.
+- Added 34485 Tumor Necrosis Factor-Alpha, Highly Sensitive.
+- Both entries include draw container, centrifugation/transfer instructions, frozen transport, preferred/minimum volume, and relevant preparation notes.
+- Built-in data refreshes while preserving custom staff entries.
+
+## Version 7.2
+
+- The nurse order-of-draw uses a solid Royal Blue badge for the grouped Royal Blue step.
+- Stripe-specific Royal Blue badges remain visible everywhere outside order of draw.
+- No collection logic or test data changed.
+
+## Version 7.1
+
+- Corrected processed-specimen source labels for Royal Blue EDTA (purple stripe) and Royal Blue No Additive (red stripe).
+- All royal-blue trace-metal tubes now appear together in one Royal Blue nurse order-of-draw step.
+- Royal Blue No Additive is no longer shown beside ordinary Red Top tubes.
+
+## Version 6.9 updates
+
+- Fixed nurse order-of-draw activation for Green Sodium Heparin and Green Lithium Heparin when they are the preferred draw tube.
+- Alternative containers no longer create unnecessary order-of-draw highlights.
+- Added separate Royal Blue badges for EDTA with a purple stripe and no-additive with a red stripe.
+- Superseded in v7.0: all Royal Blue tubes are grouped in one dedicated Royal Blue order-of-draw step, while their stripe/additive remains explicit on the tube badge.
+- Increased the browser database version so published corrections replace stale built-in records while preserving custom entries.
+
+- Audited every built-in record that mentions green heparin against the current Quest Test Directory.
+- Required/preferred collection: 528 uses Green Sodium Heparin as preferred (EDTA or Yellow ACD also accepted); 14596 requires sodium heparin with green top preferred; 36970 requires a no-gel Green Lithium Heparin tube.
+- Alternative-only collection: 16265, 17180, 17182, 17183, 19894, and 8579 accept either sodium or lithium heparin plasma; 22060 accepts sodium heparin only.
+- The calculator now spells out the additive instead of using a generic Green Heparin alternative.
+
+## Version 6.6 updates
+
+### Fasting preparation audit
+
+- Reviewed all 257 built-in records for fasting requirements and recommendations.
+- Added structured fasting status and instructions to 27 verified tests.
+- Fasting notices appear in the selected-test summary and in the printout near Total to Collect, with the affected test code and name.
+- Standard lipid panels remain unflagged because fasting is not required when they are ordered as lipid panels.
+- Improved recognition of wording such as “fast 12 hours,” “fasting state,” and “fasting recommended but not required.”
+- See `DATA_AUDIT.md` for the full list of flagged records and audit limitations.
+
+## Version 6.4 updates
+
+- Added a prominent fasting-instructions panel directly below **Total to Collect** on the printout.
+- The panel identifies whether fasting is **required** or **preferred** and lists each affected test code and name.
+- Added fasting badges to the on-screen selected-test summary and the printed test list.
+- Fasting details are pulled from each test's collection instructions.
+- All version 6.3 test additions and workflow rules remain unchanged.
+
+## Version 6.3 updates
+
+- Added test codes **36562**, **37859**, **90559**, and **94612** from the current official test directory.
+- **36562 Cryoglobulin (% Cryocrit), Serum** is marked **Do Not Collect Onsite** because it requires the specimen to clot for 1 hour at 37°C in a water bath, incubator, heat block, or heel warmer.
+- Added collection and processing details for frozen complement serum aliquots, very-long-chain fatty acids, and copper-free serum/plasma.
+- The database refresh preserves staff-created custom tests.
+
+## Version 5.6 updates
+
+- Removed the **Name / MRN** field and all patient-information entry from the website and printout.
+- Updated the independent-project notice to state that organizational use requires separate authorization, does not itself transfer ownership, and that access to the personally hosted version may be withdrawn.
+- Added the ownership notice to both the website and printed summary.
+- All other v5.5 behavior remains unchanged.
 
 ## Version 5.4 updates
 
@@ -18,7 +76,7 @@
 
 ## Version 4.9 updates
 
-- Quest code 363 Copper now displays **Acid-Washed / Metal-Free Plasma Transport Tube** in the transport bag.
+- Test code 363 Copper now displays **Acid-Washed / Metal-Free Plasma Transport Tube** in the transport bag.
 - It intentionally uses the neutral specialty-container badge.
 - The source is shown as **Plasma from Royal Blue**.
 
@@ -35,33 +93,33 @@
 
 ## Version 4.3 updates
 
-- Quest code **70049** now displays **Aptima** in the submission section with **Submit as Aptima**.
+- Test code **70049** now displays **Aptima** in the submission section with **Submit as Aptima**.
 - The collection section still identifies the Aptima Multitest tube with the orange label.
 
 ## Version 4.2 updates
 
 - Yellow blood tubes are labeled **Yellow ACD**.
-- Quest code **70049** uses a dedicated **Aptima Multitest (orange label)** badge.
+- Test code **70049** uses a dedicated **Aptima Multitest (orange label)** badge.
 - The standard urinalysis preservative tube remains the separate red/yellow swirl urine tube.
 
-# Quest Lab Calculator
+# Lab Collection Calculator
 
-**Version 5.2** v4.1
+**Version 7.1**
 
 **v3.8:** The printout now keeps the same tube badge when a specimen is submitted in its original collection tube. Original-tube submissions clearly identify the specimen inside, such as “Royal Blue EDTA · Whole Blood · Submit in original tube” for arsenic. Transferred serum, plasma, and RBC specimens continue to use transport-tube labels.
 
 **v3.7:** The printout separates what staff collect from the patient from what staff submit after processing. Spot urine orders automatically add one sterile urine cup, and UA with culture displays separate red/yellow swirl UA and gray-top urine culture tube badges. Each transport-temperature bag lists its processed contents and the tests assigned to them.
 
 
-Static GitHub Pages website for searching multiple Quest tests, building a specimen collection summary, and printing a nurse- and lab-friendly workflow.
+Static GitHub Pages website for searching multiple laboratory tests, building a specimen collection summary, and printing a nurse- and lab-friendly workflow.
 
 ## Staff workflow
 
-1. Enter one Quest test code or test name per line.
+1. Enter one test code or test name per line.
 2. Select **Add best matches**.
 3. Review the draw tube, specimen type, processing, preferred and minimum volume, transport temperature, and special handling instructions.
 4. Use **Add missing test** when a test is not in the local list.
-5. Verify missing or specialty tests in the official Quest Test Directory.
+5. Verify missing or specialty tests in the official test directory.
 6. Select **Print summary / Save PDF**.
 
 The printout includes tube colors, temperature colors, specimen-type text colors, preferred volume, order of draw, a clearly counted Total to Collect section, and a temperature-separated Total to Submit bag plan.
@@ -74,17 +132,30 @@ Contact Sam for any missing entries you would like added or for corrections to e
 
 Upload all files to the repository root, then configure **Settings → Pages** to deploy from the `main` branch and `/ (root)` folder. Committing replacement files to `main` triggers a new deployment.
 
+
+## Fasting alerts
+
+When a selected test record states that fasting is required or preferred, the printout displays a prominent fasting panel beside the collection totals. The panel identifies the affected test code and test name and repeats the relevant fasting note. A fasting badge also appears in the selected-test summary and printed test list.
+
+## Ownership and hosting
+
+Independently developed and maintained by **Sam Hay** as a personal software project and hosted through a personally controlled account. Use by any organization is subject to separate authorization and does not, by itself, transfer ownership of the software or source code. Access to this hosted version is provided by permission and may be modified, suspended, or withdrawn by Sam Hay at any time and for any reason.
+
+## Copyright and licensing
+
+Copyright © 2026 Sam Hay. All rights reserved. No license or ownership interest is granted without express written authorization. See `LICENSE.md` for the proprietary notice and `WORKPLACE_USE_AGREEMENT_TEMPLATE.md` for a reusable organizational license template.
+
 ## Important
 
-- Do not enter patient information.
-- The local list is curated and is not the complete Quest menu.
-- Verify current collection requirements and service-area availability in the official Quest Test Directory before collection.
+- The calculator does not include patient-information entry fields. Do not add patient identifiers to manual test records or notes.
+- The local list is curated and is not the complete test menu.
+- Verify current collection requirements and service-area availability in the official test directory before collection.
 - Confirm tube additives from the label, not stopper color alone.
 - Follow facility policy and test-specific instructions.
 
 ## Version 3.5
 
-Quest code 3020 now clearly shows the required red/yellow swirl-top UA preservative tube plus the gray-top urine culture preservative tube. The printed summary also includes a transport bag plan. Room-temperature, refrigerated, frozen, and mixed/verify specimens are kept separate. SST tube estimates use a planning assumption of 2 mL usable serum/plasma per SST, round up within each temperature group, and keep dedicated/full-tube requirements separate. Staff must verify specialty instructions and actual specimen yield before collection.
+Test code 3020 now clearly shows the required red/yellow swirl-top UA preservative tube plus the gray-top urine culture preservative tube. The printed summary also includes a transport bag plan. Room-temperature, refrigerated, frozen, and mixed/verify specimens are kept separate. SST tube estimates use a planning assumption of 2 mL usable serum/plasma per SST, round up within each temperature group, and keep dedicated/full-tube requirements separate. Staff must verify specialty instructions and actual specimen yield before collection.
 
 
 ## Manual container entry
@@ -106,3 +177,32 @@ The printout no longer includes the separate Processing instructions section or 
 ## Version 5.2
 
 The on-screen test cart and collection summary are restored. The printout remains streamlined as in v5.1.
+
+
+## Version 5.9 update
+
+The website footer now includes a visible **Download Editable Workplace Use Agreement** link. The link downloads `Sam_Hay_Workplace_Use_Agreement.docx`, which can be edited in Microsoft Word, Google Docs, or compatible software. The Markdown template remains bundled as `WORKPLACE_USE_AGREEMENT_TEMPLATE.md`.
+
+
+## Green heparin differentiation (v6.7)
+
+The calculator now distinguishes Green Sodium Heparin from Green Lithium Heparin in the database, collection plan, submission plan, search results, and manual-entry dropdown. HLA-B27 Antigen (528) and Chromosome Analysis, Blood (14596) use sodium heparin. QuantiFERON-TB Gold Plus, 1 Tube (36970) uses no-gel lithium heparin.
+
+
+### Version 6.9 tube-additive update
+
+The nurse order-of-draw panel distinguishes the tube additive rather than relying only on stopper color. Green sodium-heparin and lithium-heparin tubes trigger the heparin step when they are the preferred draw container. Royal Blue EDTA (purple stripe) and Royal Blue No Additive (red stripe) have separate badges and order-of-draw behavior. Alternative containers are listed with the test but do not add unnecessary tubes to the draw plan.
+
+### Version 7.1 order-of-draw spacing
+
+- In the printed nurse order-of-draw strip, the tube color/name now appears on its own line.
+- The additive remains directly underneath it, including all existing “verify” wording.
+- No tube classifications, order, or collection logic changed.
+
+## Version 7.0 Royal Blue correction
+
+- All Royal Blue additives are grouped in one nurse order-of-draw step.
+- Individual badges continue to identify EDTA with purple stripe, no additive with red stripe, and sodium heparin.
+- Processed specimen labels now preserve the exact Royal Blue source tube instead of shortening them to Lavender EDTA or Red Top.
+- All built-in Royal Blue and trace-metal records were reviewed and corrected where needed.
+

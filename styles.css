@@ -87,7 +87,10 @@ tr:hover td { background: #fbfdfd; }
 .tube-green::before { background: #56a66d; }
 .tube-red::before { background: #d95851; }
 .tube-blue::before { background: #75b7e6; }
-.tube-royal::before { background: #3458a5; }
+.tube-royal::before { background: repeating-linear-gradient(180deg, #3458a5 0 5px, #d6dde4 5px 7px); }
+.tube-royal-edta::before { background: linear-gradient(180deg, #3458a5 0 32%, #8d58aa 32% 47%, #3458a5 47% 100%); }
+.tube-royal-no-additive::before { background: linear-gradient(180deg, #3458a5 0 32%, #d95851 32% 47%, #3458a5 47% 100%); }
+.tube-royal-heparin::before { background: linear-gradient(180deg, #3458a5 0 32%, #56a66d 32% 47%, #3458a5 47% 100%); }
 .tube-gray::before { background: #8c969d; }
 .tube-urine-culture::before { background: repeating-linear-gradient(135deg, #8c969d 0 4px, #d9dee1 4px 7px); border-style: dashed; }
 .tube-pink::before { background: #e9a4c4; }
@@ -96,6 +99,7 @@ tr:hover td { background: #fbfdfd; }
 .tube-ua-swirl::before { background: repeating-linear-gradient(135deg, #d95851 0 3px, #f1d85b 3px 6px); }
 .tube-ua-pair::before { background: linear-gradient(180deg, #d95851 0 30%, #f1d85b 30% 62%, #8c969d 62% 100%); }
 .order-panel { position: sticky; top: 18px; padding: 20px; max-height: calc(100vh - 36px); overflow: auto; }
+.order-tube-group { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .order-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
 #selectedCount { display: inline-flex; min-width: 25px; height: 25px; align-items: center; justify-content: center; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 12px; vertical-align: 2px; }
 .summary-section { margin-top: 19px; }
@@ -115,6 +119,11 @@ tr:hover td { background: #fbfdfd; }
 .alert.danger { border-left-color: #cf665a; background: #fff1ef; color: #7d332d; }
 .order-actions { display: grid; gap: 8px; margin-top: 20px; }
 .disclaimer { margin: 13px 2px 0; color: #74828a; font-size: 10px; line-height: 1.45; }
+.ownership-notice { max-width: 1512px; margin: -20px auto 34px; padding: 13px 16px; border: 1px solid rgba(13,102,114,.24); border-left: 4px solid var(--brand); border-radius: 10px; background: rgba(255,255,255,.78); color: #4f626c; font-size: 11px; line-height: 1.5; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.ownership-copy { display: flex; gap: 7px; flex-wrap: wrap; flex: 1 1 720px; }
+.ownership-notice strong { color: var(--brand-dark); }
+.agreement-download { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 7px 12px; border: 1px solid var(--brand); border-radius: 8px; background: #fff; color: var(--brand-dark); font-size: 11px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+.agreement-download:hover, .agreement-download:focus-visible { background: #eaf5f6; text-decoration: none; }
 dialog { border: 0; border-radius: 17px; padding: 0; width: min(850px, calc(100vw - 28px)); box-shadow: 0 30px 90px rgba(20,40,50,.28); }
 dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
 #testForm { padding: 22px; }
@@ -149,9 +158,6 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   .print-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; border-bottom: 2px solid #1e5963; padding-bottom: 9px; margin-bottom: 10px; }
   .print-title { font-size: 22px; margin: 0 0 3px; }
   .print-subtitle, .print-meta { font-size: 10px; color: #4e5a60; }
-  .print-patient-banner { display: flex; align-items: baseline; gap: 12px; margin: 0 0 10px; padding: 8px 11px; border: 2px solid #1e5963; border-radius: 7px; background: #eef8f9; break-inside: avoid; }
-  .print-patient-banner span { flex: 0 0 auto; font-size: 10px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: #1e5963; }
-  .print-patient-banner strong { flex: 1; font-size: 16px; line-height: 1.2; color: #102f35; overflow-wrap: anywhere; }
   .print-plan { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
   .print-plan-card { border: 1px solid #cfd8dc; border-radius: 6px; padding: 6px 7px; font-size: 9px; break-inside: avoid; }
   .print-plan-card strong { display: block; font-size: 10px; margin-bottom: 2px; }
@@ -162,6 +168,7 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   .print-table td { padding: 5px 4px; vertical-align: top; overflow-wrap: anywhere; }
   .print-table tr { break-inside: avoid; }
   .print-footer { margin-top: 8px; border-top: 1px solid #ccd5d9; padding-top: 5px; font-size: 7.5px; color: #59666c; }
+  .print-ownership { margin-top: 5px; padding: 5px 7px; border-left: 3px solid #1e5963; background: #f1f7f8; font-size: 7.3px; line-height: 1.35; color: #42545c; break-inside: avoid; }
 }
 
 /* Staff-friendly manual entry */
@@ -213,7 +220,8 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   .print-order-step { min-height: 39px; border: 1px solid #d4dcdf; border-radius: 4px; padding: 4px 3px; font-size: 6.8px; line-height: 1.2; background: #fafbfb; }
   .print-order-step.is-selected { border: 1.5px solid #2e6973; background: #eaf5f6; }
   .print-order-step strong { display: block; margin: 2px 0 1px; font-size: 7.2px; }
-  .print-order-step span:last-child { color: #59666c; }
+  .print-order-step .order-tube-group { display: flex; margin: 2px 0 2px; }
+  .print-order-additive { display: block; clear: both; margin-top: 2px; color: #59666c; }
   .print-order-number { display: inline-flex; width: 12px; height: 12px; align-items: center; justify-content: center; border-radius: 999px; background: #dfe7e9; font-weight: 900; color: #213940; }
   .print-order-note { margin-top: 5px; color: #4e5a60; font-size: 7px; line-height: 1.3; }
 }
@@ -762,4 +770,94 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     font-weight: 800;
     line-height: 1.2;
   }
+}
+
+/* v6.4 fasting requirements in the selected summary and print collection plan */
+.fasting-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 3px 7px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: .015em;
+}
+.fasting-required { color: #842b22; background: #fff0ed; border-color: #e3a29a; }
+.fasting-preferred { color: #6b4b05; background: #fff8d9; border-color: #dfc260; }
+.fasting-verify { color: #4d5960; background: #f0f3f4; border-color: #c7d0d4; }
+.selected-fasting-badge { margin-top: 5px; }
+
+@media print {
+  .print-fasting-panel {
+    display: grid;
+    grid-template-columns: 126px minmax(0, 1fr);
+    gap: 7px;
+    margin: -1px 0 8px;
+    padding: 6px 7px;
+    border: 2px solid #d19b24;
+    border-radius: 7px;
+    background: #fff9df !important;
+    break-inside: avoid;
+  }
+  .print-fasting-panel-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 7px;
+    border-right: 1px solid #d8bd72;
+    color: #5d4309;
+  }
+  .print-fasting-panel-title strong {
+    font-size: 10px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .035em;
+  }
+  .print-fasting-panel-title span { margin-top: 2px; font-size: 6.8px; font-weight: 800; }
+  .print-fasting-list { display: grid; gap: 3px; }
+  .print-fasting-item {
+    display: grid;
+    grid-template-columns: 91px minmax(0, 1fr);
+    gap: 6px;
+    align-items: start;
+    padding: 3px 5px;
+    border: 1px solid #dcc778;
+    border-radius: 5px;
+    background: #fffdf2 !important;
+  }
+  .print-fasting-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 18px;
+    padding: 2px 4px;
+    border: 1px solid;
+    border-radius: 999px;
+    font-size: 6.7px;
+    font-weight: 950;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .print-fasting-item.fasting-required .print-fasting-status { color: #842b22; background: #ffe8e3 !important; border-color: #d99389; }
+  .print-fasting-item.fasting-preferred .print-fasting-status { color: #6b4b05; background: #fff2b7 !important; border-color: #d4b23e; }
+  .print-fasting-item.fasting-verify .print-fasting-status { color: #4d5960; background: #edf1f2 !important; border-color: #bdc7cb; }
+  .print-fasting-item strong { display: block; color: #3c340e; font-size: 7.5px; line-height: 1.2; }
+  .print-fasting-item small { display: block; margin-top: 1px; color: #5d552d; font-size: 6.4px; line-height: 1.22; }
+  .print-test-fasting-badge {
+    display: inline-flex;
+    margin: 3px 0 0;
+    padding: 2px 4px;
+    font-size: 6.4px;
+    break-inside: avoid;
+  }
+}
+
+/* v7.2: Order-of-draw uses one solid Royal Blue badge. Stripe/additive badges remain elsewhere. */
+.order-tube.tube-royal::before,
+.print-order-tube.tube-royal::before {
+  background: #3458a5;
 }

@@ -1,6 +1,6 @@
 Official sources reviewed for v2.7
 
-Quest Test Directory overview and specimen guidance
+Official test directory overview and specimen guidance
 - https://testdirectory.questdiagnostics.com/
 - https://www.questdiagnostics.com/healthcare-professionals/test-directory/specimen-handling/specimen-collection
 - https://www.questdiagnostics.com/healthcare-professionals/test-directory/specimen-handling/laboratory-general
@@ -29,11 +29,36 @@ Verified transfer-tube exceptions
 - 91737 Cardio IQ hs-CRP
 - 36378 ANAlyzeR panel
 
-Important: Quest requirements can vary by service area and may change. The official current test page remains the source of truth.
+Important: Test requirements can vary by service area and may change. The current official test page remains the source of truth.
 
 Additional official records corrected
 - 3102 Mercury, RBCs
 - 16265 Procalcitonin
-- 90271 von Willebrand Screen (Quest Bleeding and Thrombosis Test Menu)
+- 90271 von Willebrand Screen (bleeding and thrombosis reference menu)
 
-Quest test 70049, Neisseria gonorrhoeae RNA, TMA, Throat: https://testdirectory.questdiagnostics.com/test/test-detail/70049/neisseria-gonorrhoeae-rna-tma-throat?cc=MASTER&q=70049
+Test 70049, Neisseria gonorrhoeae RNA, TMA, Throat: https://testdirectory.questdiagnostics.com/test/test-detail/70049/neisseria-gonorrhoeae-rna-tma-throat?cc=MASTER&q=70049
+
+
+Version 6.9 additive and order-of-draw verification
+- Quest Specimen Collection Tubes: https://www.questdiagnostics.com/content/dam/corporate/restricted/documents/test-center/specimen_collection_tubes/specimen_collection_tubes.pdf
+- Quest Blood Collection Order of Draw: https://www.questdiagnostics.com/content/dam/corporate/restricted/documents/test-center/order_of_draw/order_of_draw.pdf
+- 363 Copper
+- 3481 Copper, RBC
+- 6354 Zinc, RBC
+- 17133 Selenium, RBC
+- 94612 Copper-Free, Serum/Plasma
+
+Royal-blue tube appearance is a visual aid only. Confirm the additive on the tube label and do not rely on stopper or stripe color alone.
+
+
+Version 7.3 cytokine additions
+- 34473 Interleukin-6 (IL-6), Serum: https://testdirectory.questdiagnostics.com/test/test-detail/34473/?cc=MASTER
+- 34485 Tumor Necrosis Factor-Alpha, Highly Sensitive: https://testdirectory.questdiagnostics.com/test/test-detail/34485/tumor-necrosis-factor-alpha-highly-sensitive?cc=MASTER
+
+Version 7.4 tube-source consistency audit
+- 945 Zinc: https://testdirectory.questdiagnostics.com/test/test-detail/945/zinc?cc=MASTER
+- 363 Copper: https://testdirectory.questdiagnostics.com/test/test-detail/363/?cc=MASTER
+- 599 Lead (Venous): https://testdirectory.questdiagnostics.com/test/test-detail/599/?cc=MASTER
+- 636 Mercury, Blood: https://testdirectory.questdiagnostics.com/test/test-detail/636/?cc=MASTER
+- 6354 Zinc, RBC: https://testdirectory.questdiagnostics.com/test/test-detail/6354/?cc=MASTER
+- Quest tube/source parsing was audited across all 259 built-in records, with Royal Blue matching prioritized before generic EDTA, red-top, or heparin matching.
