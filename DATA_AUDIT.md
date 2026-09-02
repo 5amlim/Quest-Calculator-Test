@@ -1,3 +1,21 @@
+## Version 7.8 calculation correction
+
+- This release changes collection-count logic only; no built-in test specimen requirements were changed.
+- SSTs submitted in the original tube are now estimated separately from SSTs used as source material for transferred/aliquoted serum or plasma.
+- Regression case: 34429 T3 Free, 58984 TSH and Free T4, 7260 Thyroid Peroxidase and Thyroglobulin Antibodies, 10124 hs-CRP, and 809 ESR now produce 3 Gold/SST + 1 Lavender EDTA for collection, while the room-temperature submission bag contains 2 original SSTs + 1 serum transport tube + 1 Lavender EDTA tube.
+
+## Version 7.7 additions and verification
+- Added 16963 — Streptococcus pneumoniae Antibody (IgG) (23 Serotypes), MAID: serum, 0.5 mL preferred, 0.25 mL minimum, room-temperature transport; special PRE/POST vaccination note retained.
+- Added 35135 — Haemophilus influenzae Type b Antibody (IgG): serum, 1 mL preferred, 0.2 mL minimum, plastic screw-cap serum transport vial, room-temperature transport.
+- Reverified existing 7083 — Immunoglobulins Panel, Serum (IgA, IgG, IgM): 2 mL serum, 0.5 mL minimum, SST transport container; room-temperature stability 72 hours, refrigerated 7 days, frozen 90 days.
+- Added 34042 — Diphtheria and Tetanus Antitoxoids: 4 mL total serum submitted as two separate transport aliquots (2 mL each), room-temperature transport. The collection plan does not automatically equate this with two phlebotomy tubes.
+- Corrected 37847 and 37849 NMR lipoprotein transport from mixed room/refrigerated to refrigerated only.
+- Built-in record count after this update: 263.
+
+## Version 7.6 audit
+- Quest code 19826 Coenzyme Q10 verified 2026-08-14 against the official directory.
+- Preferred: 1 mL serum from SST; minimum 0.3 mL. Protect from direct light. Amber transport tube; refrigerated transport. Same-day shipment preferred; if not shipped same day, foil-wrap or transfer to amber tube.
+
 # Version 6.6 Fasting Preparation Audit
 
 ## Scope
@@ -138,3 +156,7 @@ Logic checks across the full built-in database:
 - Standard serum/plasma/platelet-poor-plasma transport tubes retain the green-top transport badge.
 
 This was a full structural consistency audit of the built-in database for tube/source classification. Current official test pages remain the source of truth for service-area-specific requirements.
+
+
+### Quest code 1715
+- Protein, Total, Random Urine with Creatinine: preferred 10 mL well-mixed random urine, no preservative. Calculator collection container set to Sterile Urine Cup; transport container plastic urine container; yellow-top urinalysis transport tube retained as alternative.

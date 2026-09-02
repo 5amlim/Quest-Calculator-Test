@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'labCollectionCalculator.database.v18';
-  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
+  const DB_KEY = 'labCollectionCalculator.database.v21';
+  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
   const LEGACY_STORAGE_PREFIX = ['que', 'stLabCalculator'].join('');
   const LEGACY_DB_KEYS = [...PRIOR_DB_KEYS, ...[9, 8, 7, 6, 5, 4, 3, 2, 1].map(version => `${LEGACY_STORAGE_PREFIX}.database.v${version}`)];
   const SELECTED_KEY = 'labCollectionCalculator.selected.v1';
@@ -764,6 +764,28 @@
     };
   }
 
+  function sstCollectionEstimateForTests(tests) {
+    const sstTests = tests.filter(isSstDraw);
+    const originalSubmissionTests = sstTests.filter(test => isSpunSstSubmission(test) || isOriginalContainerSubmission(test));
+    const transferSourceTests = sstTests.filter(test => !originalSubmissionTests.includes(test));
+
+    // Keep SSTs that must be submitted in their original tube separate from
+    // SSTs used as the source for transferred/aliquoted serum. Pooling those
+    // two workflows can understate the nurse collection count. Volume sharing
+    // is still allowed within each workflow, subject to the one-tube-per-test
+    // ceiling unless the record explicitly requires multiple collection tubes.
+    const originalEstimate = sstEstimateForTests(originalSubmissionTests);
+    const transferEstimate = sstEstimateForTests(transferSourceTests);
+
+    return {
+      originalEstimate,
+      transferEstimate,
+      originalTubes: originalEstimate.totalTubes,
+      transferSourceTubes: transferEstimate.totalTubes,
+      totalTubes: originalEstimate.totalTubes + transferEstimate.totalTubes
+    };
+  }
+
   function buildTransportBagPlan(tests) {
     const bags = new Map();
     tests.forEach(test => {
@@ -774,7 +796,7 @@
 
     return Array.from(bags.values())
       .sort((a, b) => a.order - b.order)
-      .map(bag => ({ ...bag, sstEstimate: sstEstimateForTests(bag.tests) }));
+      .map(bag => ({ ...bag, sstEstimate: sstCollectionEstimateForTests(bag.tests) }));
   }
 
   function isUrineTest(test) {
@@ -851,7 +873,12 @@
     if (totalSst > 0) {
       const breakdown = bags
         .filter(bag => bag.sstEstimate.totalTubes > 0)
-        .map(bag => `${bag.label.replace(/ bag$/i, '')}: ${bag.sstEstimate.totalTubes}`)
+        .map(bag => {
+          const parts = [];
+          if (bag.sstEstimate.originalTubes > 0) parts.push(`${bag.sstEstimate.originalTubes} original-submit`);
+          if (bag.sstEstimate.transferSourceTubes > 0) parts.push(`${bag.sstEstimate.transferSourceTubes} source-for-transfer`);
+          return `${bag.label.replace(/ bag$/i, '')}: ${parts.join(' + ')}`;
+        })
         .join(' · ');
       items.push({ key: 'sst', label: 'Gold / SST', className: 'tube-sst', count: totalSst, tests: uniqueTests(sstTests), detail: breakdown });
     }
@@ -960,6 +987,7 @@
     const isSpecialtyMetalContainer = /acid[- ]?washed|acid[- ]?rinsed|metal[- ]?free|trace[- ]?metal/.test(value);
 
     if (/aptima/.test(value)) return 'tube-aptima';
+    if (/amber|protect from light|light[- ]?protected/.test(value)) return 'tube-amber';
 
     // Specialty acid-washed/metal-free tubes must stay neutral, regardless of specimen type.
     if (isSpecialtyMetalContainer) return 'tube-transport';
@@ -1020,6 +1048,18 @@
     const specimen = titleCaseSpecimen(normalizeSpecimenType(test.specimenType));
     const sourceSpecimen = specificSpecimenSource(test);
     const sourceTube = shortDrawSource(test);
+
+    if (/amber|protect from light|light[- ]?protected/i.test(transport)) {
+      const sourcePhrase = sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen;
+      return [{
+        key: `amber|${normalizeSearch(sourcePhrase)}|${normalizeSearch(transport)}`,
+        label: `Amber ${specimen} Transport Tube — Protect From Light`,
+        className: 'tube-amber',
+        count: explicitSubmissionCount(test),
+        detail: sourcePhrase
+      }];
+    }
+
     if (/transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/i.test(transport)) {
       const sourcePhrase = sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen;
       const isSwab = /swab/i.test(sourceSpecimen);
@@ -1147,7 +1187,7 @@
           </article>`;
         }).join('')}</div>
       </section>
-      <div class="print-bag-note"><strong>Planning rules:</strong> SST collection assumes 2 mL of usable serum/plasma per tube and rounds up independently by transport temperature. Routine non-SST blood tubes are estimated as one tube per test unless the record specifies more. Spot urine tests add one sterile urine cup for initial collection; timed or 24-hour urine collections follow their test-specific container instructions. Submission contents reflect the processed specimen or transport container and identify the tests assigned to each item. Specimens submitted in their original collection tube keep the same tube badge and are marked “submit in original tube.” Verify specialty, dedicated-tube, aliquot, and actual-yield requirements before collection.</div>
+      <div class="print-bag-note"><strong>Planning rules:</strong> SST collection assumes 2 mL of usable serum/plasma per tube and rounds up independently by transport temperature and processing path. SSTs that must be submitted in the original tube are counted separately from SSTs used as the source for transferred or aliquoted serum. Routine non-SST blood tubes are estimated as one tube per test unless the record specifies more. Spot urine tests add one sterile urine cup for initial collection; timed or 24-hour urine collections follow their test-specific container instructions. Submission contents reflect the processed specimen or transport container and identify the tests assigned to each item. Specimens submitted in their original collection tube keep the same tube badge and are marked “submit in original tube.” Verify specialty, dedicated-tube, aliquot, and actual-yield requirements before collection.</div>
     </section>`;
   }
 
