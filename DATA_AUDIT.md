@@ -1,3 +1,47 @@
+## Version 8.3 label-display refinement
+
+- Standard SST serum is displayed as `Serum` without an automatic `Serum from SST` label reminder.
+- An SST source label is still shown when the test has an explicit label instruction.
+- Plasma always receives a label reminder and includes the source tube when it is known.
+- RBCs retain their source-tube reminder, including original-tube submissions.
+- Urine and stool receive specimen-type reminders. Swabs receive the specific collection site when it can be identified, or a prompt to clarify the source.
+- Serum from special-color or additive tubes retains its source label.
+
+## Version 8.1 automatic specimen-source labeling
+
+- This is a system-wide display rule rather than a list of one-off test edits.
+- RBC specimens display `RBCs from [source tube]`, including original-tube submissions.
+- Transferred plasma displays `[plasma type] from [source tube]` for EDTA, citrate, heparin, ACD, and other recognized additive or special-color sources.
+- Transferred serum displays `Serum from [source tube]` for SST/Gold and special-color sources such as Royal Blue No Additive.
+- An ordinary Red Top source does not generate an extra generic reminder unless the official test record has its own specific label requirement.
+- Explicit official label instructions are retained and merged with the automatic source wording without duplicating plain SERUM or PLASMA instructions.
+
+## Version 8.0 transport-temperature and special-label audit
+
+- Audit date: 2026-09-02.
+- Scope: all 263 built-in records.
+- The 247 records with numeric codes represent 245 unique Quest codes. Each unique code was queried against the current Quest MASTER Test Directory.
+- 239 unique codes returned a current MASTER record. The exact `TransportTemperature` value was copied into the raw-temperature field for every resolved record, with only obvious source typos/spacing normalized for display.
+- Six codes did not return a MASTER record: 6447, 34329, 34483, 34499, 39749, and 91001. Their temperature is now `Not specified`, and each record tells staff to verify the active code and service-area instructions.
+- The remaining 16 records are local `XXX` do-not-collect placeholders without an order code; no Quest temperature was inferred for them.
+- Eleven resolved records required a categorical temperature correction: 466, 793, 10256, 15447, 17569, 19955, 31348, 32499, 34897, 36577, and 91003.
+- Quest codes 3020 and 7909 list preserved urine at room temperature and unpreserved urine refrigerated. The calculator's modeled workflows use preservative tubes, so their bag category remains Room Temperature while the raw field retains both official conditions.
+- Quest codes 17569 and 31348 list Frozen, with room temperature acceptable only when received within 72 hours. The bag category is Frozen and the complete condition remains visible in the raw field.
+- Specific label text was separated from general handling instructions and added for 13595, 13600, 31789, 35202, 37847, 37849, and 91431.
+- Generic labeling statements and collection-device color descriptions were intentionally excluded from the compact bag label note.
+- `QUEST_TEMPERATURE_AUDIT_2026-09-02.csv` provides a record-by-record audit trail for all 263 built-ins.
+- Service-area requirements may differ from MASTER. The active service-area test page remains the final source of truth before collection.
+
+## Version 7.9 collection-pooling correction
+
+- This release changes collection and submission counting logic only; no built-in test requirements were changed.
+- Compatible Lavender EDTA whole-blood tests can share one collection tube when their combined planned volume fits and no test requires a full or dedicated tube.
+- Lavender whole-blood submissions are kept separate from Lavender source tubes used to prepare plasma or RBC specimens.
+- Compatible Red Top serum tests can share collection source tubes within the same transport-temperature group; their required transport aliquots remain separately listed for submission.
+- Original-submit Lavender or Red Top tubes are pooled consistently in both the collection count and the bag contents.
+- A single test is capped at one collection tube of the same kind based on volume alone. Multiple tubes are permitted only for explicit collection counts, full/dedicated requirements, or different required tube types.
+- Regression checks include compatible whole-blood Lavender pooling, Lavender whole blood versus plasma separation, Red Top serum pooling, temperature separation, full-tube handling, two-aliquot submission cases, and explicit two- or three-SST collection instructions.
+
 ## Version 7.8 calculation correction
 
 - This release changes collection-count logic only; no built-in test specimen requirements were changed.

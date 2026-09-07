@@ -1,3 +1,128 @@
+## Version 10.7
+- Restored the v10.6 printout layout.
+- The “Skip to test search” link is not included in printed output.
+- Calculator logic and test data are unchanged.
+
+## Version 10.3
+- Added the estimated number of collection containers beside the test count on each Draw plan card.
+- Container counts use the existing collection-planning logic, including pooling, dedicated-tube requirements, and separate transport-temperature workflows.
+- Kept the Draw plan order and the collapsible Order of draw card unchanged.
+
+## Version 10.1
+- Replaced always-visible Remove text in the Tests summary and detail cards with a compact trash-can control that expands to **Remove** on hover or keyboard focus.
+- Sorted Draw plan collection cards by the same blood-tube sequence used in Order of draw; non-blood containers follow afterward.
+- Kept the Order of draw collapsible card and its content unchanged.
+
+## Version 9.9
+- Main manual-entry action buttons now read **Add missing tests** for consistent wording.
+- The manual-entry dialog still adds one verified test record at a time.
+- No calculator logic changed.
+
+## Version 9.6
+- Changed the top Tests overview in the Test Cart from collapsible to always visible.
+- Restyled the Tests overview as a compact receipt-style list with test code and test name only.
+- Kept the separate Test details section collapsible.
+- No collection, pooling, processing, labeling, order-of-draw, or print logic changed.
+
+## Version 9.5
+- Moved test information above Draw plan and Order of draw in the Test Cart.
+- Added a compact collapsible Tests list that shows only test code and test name.
+- Kept the existing full test cards in a separate collapsible Test details section.
+- Removed the repeated “Verify dedicated-tube requirements” text from Draw plan cards.
+- No collection, pooling, processing, labeling, order-of-draw, or print logic changed.
+
+## Version 9.4
+
+- Converted Draw plan, Order of draw, and Tests in the Test Cart into compact click-to-expand sections.
+- Collapsed headers keep useful totals visible: collection types, blood tube types in the draw sequence, and selected test count.
+- Sections start collapsed to reduce visual clutter; print output and collection logic are unchanged.
+
+## Version 9.3
+
+- Changed the multi-test search hint from “20 tests” to “multiple tests.”
+- Simplified the Add Missing Test label reminder wording.
+
+- Add Missing Test required stars now sit inline with their field labels.
+- Placeholder and unselected prompt text in the Add Missing Test form is lighter so it is visually distinct from entered values.
+- No validation, collection, or calculation logic changed.
+
+- Printed footer now uses **Order of draw:** instead of **Counts:**.
+- Removed the repeated SST volume-count sentence and the divider line above the footer notes.
+- Print background is forced to white below the copyright notice.
+- No test records, collection calculations, pooling, processing, or labeling rules changed.
+
+## Version 9.0
+- Add Missing Test now requires Test code, Test name, Specimen type, Draw container, Transport tube / container, and Transport temperature.
+- `Not specified` remains a valid Transport temperature selection.
+- Minimum volume remains optional.
+- The custom draw-container text field is disabled unless `Other / manually type` is selected.
+- No test records, collection calculations, pooling, processing, or labeling rules changed.
+
+## Version 8.6
+- Multi-test searches now call out every search term that was not added or did not produce a reliable local match.
+- After **Add best matches**, a dedicated **Not added** box lists each missed test name/code and the reason.
+- Searches that are already selected are treated as accounted for rather than incorrectly reported as missing.
+- No test records, collection calculations, pooling, processing, or labeling rules changed.
+
+## Version 8.5
+- Removed duplicate Labels explanatory footer text while keeping all actual specimen-label badges and rules unchanged.
+- Improved visibility of total/selected test counts on screen and in print.
+- Highlighted Missing a test? Contact Sam callouts.
+- Made the copyright/ownership background more compact.
+- No collection or test-requirement logic changed.
+
+## Version 8.4
+
+- Restored `Serum from SST` in the bag/submission detail so staff can see where the serum came from.
+- Standard SST serum does not receive a `Label` badge unless the test has an explicit labeling instruction.
+- Plasma, RBC, urine, stool, swab, and special-source serum label rules are unchanged.
+- Collection counts, pooling, processing, and test requirements are unchanged.
+
+## Version 8.3
+
+- Serum prepared from a standard SST is now shown simply as `Serum`; an SST source label appears only when the test specifically requires it.
+- Plasma always receives a label reminder and includes its source tube when known.
+- RBCs retain source-tube labels. Urine and stool receive specimen-type labels, and swabs show the collection site when it can be identified.
+- Serum from special-color or additive tubes, such as Royal Blue No Additive, retains its source label.
+- Shortened the print footnotes and standardized the instruction to `Submit in original tube`.
+- The browser database version was increased so the revised wording reaches existing installations while preserving custom entries.
+
+## Version 8.2
+
+- Fasting badges in the printed test table now always appear on their own line beneath the test name.
+- Reworked the printed planning notes and footer into short, clearly labeled instructions that are easier to scan.
+- No collection calculations or built-in test requirements changed in this release.
+
+## Version 8.1
+
+- Added automatic specimen-source label reminders to the transport-bag summary.
+- RBC specimens are labeled with their source tube even when the original collection tube is submitted.
+- Transferred plasma is labeled with its source tube, including Lavender EDTA, Pink EDTA, Royal Blue EDTA, Light Blue Citrate, heparin, ACD, and other recognized additive tubes.
+- Transferred serum is labeled when it comes from SST/Gold or a special-color source such as Royal Blue No Additive.
+- Ordinary Red Top serum does not receive a redundant generic source reminder unless the test has a specific label requirement.
+- Existing test-specific instructions, such as “No Additive Serum Red,” remain visible and are merged without duplicating generic SERUM or PLASMA wording.
+- The rules apply to current built-ins and future manually added tests when their specimen type and draw container are entered.
+
+## Version 8.0
+
+- Audited all 245 unique numeric test codes against the Quest MASTER Test Directory on 2026-09-02; 239 current records resolved and 6 unresolved codes are now marked for verification instead of retaining an unverified transport temperature.
+- Refreshed the exact transport-temperature wording for every resolved numeric record.
+- Corrected 623 to refrigerated with cold packs, 32499 to room temperature, and 37847/37849 to refrigerated with cold packs.
+- Corrected additional categorical temperature errors found during the full audit, including Folate Serum, Reticulocyte Count, hepatic function panel, EBV antibody panel, PSA tests, celiac panel, Candida antibody, TSH antibody, and Methylmalonic Acid with Homocysteine.
+- Added a small, low-emphasis label note inside the applicable submission-container card. Only test-specific labeling content is shown.
+- Added structured labeling instructions for 13595, 13600, 31789, 35202, 37847, 37849, and 91431.
+- Updated QuantiFERON-TB Gold Plus 1 Tube to match the current MASTER listing; unsupported date/time-label and light-protection claims were removed.
+- Added `QUEST_TEMPERATURE_AUDIT_2026-09-02.csv`, with one row for every built-in record and its verification status.
+- The browser database version was increased so these published corrections replace stale built-ins while preserving custom entries.
+
+## Version 7.9
+
+- Compatible Lavender EDTA and Red Top collection tubes are now pooled by specimen workflow and transport temperature.
+- Whole-blood Lavender tubes are kept separate from Lavender tubes used to prepare plasma or RBC specimens.
+- Original collection tubes are never treated as available source tubes for separate transport aliquots.
+- A listed volume alone cannot create more than one collection tube for one test. Additional tubes of the same kind require explicit multiple-tube, dedicated-tube, or full-tube instructions.
+- Different required tube types remain separate.
+
 ## Version 7.8
 
 - Fixed the SST collection estimator so original-submit SSTs and SSTs used to create transfer/aliquot specimens are counted as separate collection workflows.
@@ -165,7 +290,7 @@ Copyright © 2026 Sam Hay. All rights reserved. No license or ownership interest
 
 ## Version 3.5
 
-Test code 3020 now clearly shows the required red/yellow swirl-top UA preservative tube plus the gray-top urine culture preservative tube. The printed summary also includes a transport bag plan. Room-temperature, refrigerated, frozen, and mixed/verify specimens are kept separate. SST tube estimates use a planning assumption of 2 mL usable serum/plasma per SST, round up within each temperature group, and keep dedicated/full-tube requirements separate. Staff must verify specialty instructions and actual specimen yield before collection.
+Test code 3020 now clearly shows the required red/yellow swirl-top UA preservative tube plus the gray-top urine culture preservative tube. The printed summary also includes a transport bag plan. Room-temperature, refrigerated, frozen, and mixed/verify specimens are kept separate. SST, Lavender EDTA, and Red Top tubes pool only within compatible specimen workflows and temperature groups. Planning uses 2 mL of usable serum/plasma/processed specimen per source tube and 4 mL of whole blood per Lavender tube. Original-submit tubes, transfer-source tubes, dedicated/full tubes, and different tube types remain separate. One test is capped at one tube of the same kind unless multiple tubes are explicitly required. Staff must verify specialty instructions and actual specimen yield before collection.
 
 
 ## Manual container entry
@@ -216,3 +341,43 @@ The nurse order-of-draw panel distinguishes the tube additive rather than relyin
 - Processed specimen labels now preserve the exact Royal Blue source tube instead of shortening them to Lavender EDTA or Red Top.
 - All built-in Royal Blue and trace-metal records were reviewed and corrected where needed.
 
+### v8.9 UI cleanup
+- Reverted the printed copyright notice to the compact gray block used before v8.8.
+- Kept the printed missing-test contact line as plain bold text.
+- Reorganized Add Missing Test into clearer required sections plus collapsible optional details.
+- Custom draw-container typing is hidden unless Other / manually type is selected.
+- Required-field validation is unchanged; minimum volume remains optional.
+
+
+### v9.0 print footer refinement
+- Copyright and ownership notice now uses a compact full border in print, with a white background so it does not create a large gray block.
+
+
+### v9.7 cart cleanup
+- Consolidated the Tests overview and detailed test cards into one section.
+- The Tests summary is always visible and each row now has a Remove button.
+- A Details button reveals/hides the full test cards in place.
+- Add missing test is available directly from the Tests header.
+
+### v9.8 cart layout
+- The Tests section switches between the compact test summary and the full test-detail cards rather than displaying both at once.
+- Use **Show details** / **Hide details** to flip between the two views.
+- **Clear all** is in the Tests action row beside **Add missing test**.
+
+
+### v10.4 Draw plan hierarchy
+- Draw-plan test counts now appear directly beneath the tube/container name in smaller muted text.
+- Container totals remain highlighted in the compact badge on the right.
+
+
+
+### v10.6 local availability correction
+- Quest 1635 — Calcium, 24-Hour Urine with Creatinine is now marked **Do not perform at SH**.
+- Quest requires acidification with 25 mL of 6N HCl, which is not available onsite.
+- The test remains searchable so staff can see that it is intentionally blocked instead of treating it as a missing test.
+
+### v10.5 test addition
+- Added Quest 1635 — Calcium, 24-Hour Urine with Creatinine.
+- Collection: 24-hour urine, refrigerated during/after collection, with 25 mL 6N HCl to maintain pH <2.
+- Submission: well-mixed 10 mL aliquot preferred (2 mL minimum) in a plastic screw-cap container; room-temperature transport.
+- Record total 24-hour volume and collection duration on the specimen container and requisition.

@@ -38,9 +38,9 @@
           <button class="button secondary" id="previewButton">Review matches</button>
           <button class="button ghost" id="clearSearchButton">Clear</button>
         </div>
-        <div class="search-hint">For a panel of 20 tests, paste the complete list and select <strong>Add best matches</strong>. Review the collection summary before printing.</div>
+        <div class="search-hint">For multiple tests, paste the complete list and select <strong>Add best matches</strong>. Review the collection summary before printing.</div>
         <div class="search-hint"><strong>Coverage:</strong> This website stores a curated local list. When a test is not found, use <strong>Search Official Directory</strong> to search the full official directory.</div>
-        <div class="contact-banner"><strong>Can’t find a test?</strong> Contact Sam for any missing entries you would like added.</div>
+        <div class="contact-banner"><strong>Missing a test?</strong><span><b>Contact Sam</b> to have it added.</span></div>
       </div>
 
       <div id="batchResults" class="panel batch-panel hidden" aria-live="polite"></div>
@@ -52,7 +52,7 @@
             <p>Search the curated local list or add a missing test. Manually added tests are saved in this browser.</p>
           </div>
           <div class="library-actions">
-            <button class="button secondary" id="addTestButton">+ Add missing test</button>
+            <button class="button secondary" id="addTestButton">+ Add missing tests</button>
           </div>
         </div>
         <div class="filter-row">
@@ -94,42 +94,66 @@
           <div class="eyebrow">TEST CART · COLLECTION SUMMARY</div>
           <h2>Selected tests <span id="selectedCount">0</span></h2>
         </div>
-        <button class="button ghost" id="clearOrderButton">Clear all</button>
       </div>
 
 
       <div id="collectionAlerts" class="alerts"></div>
 
-      <div class="summary-section">
-        <h3>Draw plan</h3>
-        <div id="drawPlan" class="draw-plan empty-state">Add tests to see the draw plan.</div>
-      </div>
+      <section class="summary-section tests-summary" id="testsOverviewSection" aria-labelledby="testsOverviewTitle">
+        <div class="tests-summary-header">
+          <div class="tests-summary-heading-block">
+            <div class="tests-summary-heading">
+              <span class="tests-summary-title" id="testsOverviewTitle">Tests</span>
+              <span class="tests-summary-count" id="testsOverviewSummary">0 tests</span>
+            </div>
+            <button class="mini-button edit tests-details-toggle" id="testsDetailsButton" type="button" aria-expanded="false" aria-controls="testsOverviewList testsDetailsPanel">Show details</button>
+          </div>
+          <div class="tests-summary-actions">
+            <button class="mini-button" id="addSelectedTestButton" type="button">+ Add missing tests</button>
+            <button class="mini-button remove" id="clearOrderButton" type="button">Clear all</button>
+          </div>
+        </div>
+        <div id="testsOverviewList" class="tests-overview-list empty-state">No tests selected.</div>
+        <div id="testsDetailsPanel" class="tests-details-panel hidden" aria-hidden="true">
+          <div id="selectedList" class="selected-list empty-state">No tests selected.</div>
+        </div>
+      </section>
 
-      <div class="summary-section order-of-draw-section">
-        <div class="summary-heading">
-          <h3>Order of draw for nurses</h3>
-          <a class="reference-link" href="https://www.questdiagnostics.com/content/dam/corporate/restricted/documents/test-center/order_of_draw/order_of_draw.pdf" target="_blank" rel="noreferrer">Order-of-draw reference ↗</a>
+      <details class="summary-section cart-collapse" id="drawPlanSection">
+        <summary class="cart-collapse-summary">
+          <span class="cart-collapse-title">Draw plan</span>
+          <span class="cart-collapse-meta" id="drawPlanSummary">No collection types</span>
+          <span class="cart-collapse-action" aria-hidden="true"></span>
+        </summary>
+        <div class="cart-collapse-body">
+          <div id="drawPlan" class="draw-plan empty-state">Add tests to see the draw plan.</div>
         </div>
-        <div id="orderOfDraw" class="order-of-draw" aria-label="Standard blood tube order of draw"></div>
-        <div class="order-of-draw-note">
-          <strong>Butterfly collection:</strong> If a light-blue citrate tube is the first specimen, draw a partially filled citrate discard tube first to fill the tubing dead space, then fill the test tube completely.<br>
-          <strong>Important:</strong> Confirm the additive on the tube label. Do not rely on stopper color alone. This sequence applies when collecting multiple blood tubes; follow test-specific official instructions and facility policy.
-        </div>
-      </div>
+      </details>
 
-      <div class="summary-section">
-        <div class="summary-heading">
-          <h3>Tests</h3>
-          <button class="mini-button" id="addSelectedTestButton">+ Add missing test</button>
+      <details class="summary-section cart-collapse order-of-draw-section" id="orderOfDrawSection">
+        <summary class="cart-collapse-summary">
+          <span class="cart-collapse-title">Order of draw</span>
+          <span class="cart-collapse-meta" id="orderOfDrawSummary">No blood tubes</span>
+          <span class="cart-collapse-action" aria-hidden="true"></span>
+        </summary>
+        <div class="cart-collapse-body">
+          <div class="cart-collapse-toolbar">
+            <span class="cart-collapse-subtitle">For nurses</span>
+            <a class="reference-link" href="https://www.questdiagnostics.com/content/dam/corporate/restricted/documents/test-center/order_of_draw/order_of_draw.pdf" target="_blank" rel="noreferrer">Order-of-draw reference ↗</a>
+          </div>
+          <div id="orderOfDraw" class="order-of-draw" aria-label="Standard blood tube order of draw"></div>
+          <div class="order-of-draw-note">
+            <strong>Butterfly collection:</strong> If a light-blue citrate tube is the first specimen, draw a partially filled citrate discard tube first to fill the tubing dead space, then fill the test tube completely.<br>
+            <strong>Important:</strong> Confirm the additive on the tube label. Do not rely on stopper color alone. This sequence applies when collecting multiple blood tubes; follow test-specific official instructions and facility policy.
+          </div>
         </div>
-        <div id="selectedList" class="selected-list empty-state">No tests selected.</div>
-      </div>
+      </details>
 
       <div class="order-actions">
         <button class="button primary wide" id="printButton">Print summary / Save PDF</button>
         <button class="button secondary wide" id="exportSummaryButton">Download summary spreadsheet</button>
       </div>
-      <div class="contact-summary"><strong>Missing an entry?</strong> Contact Sam for any missing entries you would like added.</div>
+      <div class="contact-summary"><strong>Missing a test?</strong><span><b>Contact Sam</b> to have it added.</span></div>
       <p class="disclaimer">The local list is not the complete test menu. Verify current requirements and service-area availability in the official test directory before collection. Manually entered information must be reviewed before use.</p>
     </aside>
   </main>
@@ -155,60 +179,92 @@
         <button type="button" class="icon-button" id="closeDialogButton" aria-label="Close">×</button>
       </div>
       <input type="hidden" id="testId">
-      <div class="form-grid">
-        <label>Test code <span class="optional">optional if unknown</span><input id="testCode" placeholder="Example: 496"></label>
-        <label>Test name<input id="testName" required placeholder="Exact test name"></label>
-        <div class="dialog-lookup-row full-width">
-          <button type="button" class="button secondary" id="openDirectoryFromDialogButton">Search official test directory ↗</button>
-          <span>Use the official test directory to verify collection details before saving a missing test.</span>
-        </div>
+      <div class="dialog-required-note"><span aria-hidden="true">*</span> Required fields</div>
 
-        <label>Specimen type<select id="specimenType">
-          <option>Serum</option><option>Plasma</option><option>RBCs</option><option>Whole Blood</option><option>Urine</option><option>Stool</option><option>Swab</option><option>Saliva</option><option>CSF</option><option>Body Fluid</option><option>Other / Verify</option>
-        </select></label>
-        <label>Draw container<select id="drawContainer" required>
-          <option value="">Choose a collection container</option>
-          <option>SST / Gold</option>
-          <option>Red Top</option>
-          <option>Lavender EDTA</option>
-          <option>Pink EDTA</option>
-          <option>Green Sodium Heparin</option>
-          <option>Green Lithium Heparin</option>
-          <option>Green Heparin — verify additive</option>
-          <option>Light Blue Citrate</option>
-          <option>Royal Blue EDTA (purple stripe)</option>
-          <option>Royal Blue No Additive (red stripe)</option>
-          <option>Royal Blue Sodium Heparin — verify label</option>
-          <option>Royal Blue — verify additive</option>
-          <option>Yellow ACD (blood tube)</option>
-          <option>Gray Fluoride/Oxalate</option>
-          <option>Sterile Urine Cup</option>
-          <option>Red/Yellow Swirl UA Preservative Tube</option>
-          <option>Gray-Top Urine Culture Preservative Tube</option>
-          <option>Urine Container</option>
-          <option>Stool Container</option>
-          <option>Swab / Collection Kit</option>
-          <option>Aptima Multitest Transport Tube (orange label)</option>
-          <option>Viral transport media (VCM/M4)</option>
-          <option>Do Not Collect</option>
-          <option>Verify Official Instructions</option>
-          <option value="__other__">Other / manually type</option>
-        </select></label>
-        <label id="customDrawContainerRow" class="custom-draw-container-row">Custom draw container <span class="optional">use when Other is selected</span><input id="customDrawContainer" placeholder="Type any tube, cup, swab, or collection kit" autocomplete="off"><span class="field-help">Typing here automatically selects “Other / manually type.”</span></label>
-        <label>Alternative container<input id="alternativeContainer" placeholder="Optional alternative"></label>
-        <label>Transport tube / container<input id="transportContainer" placeholder="Example: transport tube"></label>
-        <div class="source-clarification-note full-width" role="note"><strong>Clarify the specimen source for every swab and transport tube.</strong> Examples: <em>throat swab</em>, <em>serum from SST</em>, or <em>plasma from Lavender EDTA</em>. Include the source in the test name or special handling notes.</div>
-        <label>Preferred volume<input id="preferredVolume" placeholder="Example: 1 mL serum"></label>
-        <label>Minimum volume<input id="minimumVolume" placeholder="Example: 0.5 mL"></label>
-        <label>Transport temperature<select id="transportTemperature">
-          <option>Room Temperature</option><option>Refrigerated</option><option>Frozen</option><option>Room / Refrigerated</option><option>Mixed</option><option>Not specified</option>
-        </select></label>
-        <label>Exact temperature wording<input id="transportTemperatureRaw" placeholder="Optional wording from the official directory"></label>
-        <label>Stability / viability<input id="stability" placeholder="Example: 7 days refrigerated"></label>
-        <label>Spin?<select id="spin"><option>Yes</option><option>No</option><option>Verify</option></select></label>
-        <label class="full-width">Special handling and collection notes<textarea id="specialInstructions" rows="5" placeholder="Include timing, mixing, light protection, freezing, labeling, rejection criteria, or dedicated tube requirements."></textarea></label>
-        <label class="check-label full-width" id="addToSummaryRow"><input type="checkbox" id="addToSummary" checked> Add this test to the current collection summary</label>
-        <label class="check-label full-width"><input type="checkbox" id="blockedStatus"> Mark as do not perform / blocked</label>
+      <div class="dialog-form-sections">
+        <section class="form-section" aria-labelledby="testInfoHeading">
+          <div class="form-section-heading">
+            <div>
+              <h3 id="testInfoHeading">Test info</h3>
+              <p>Identify the exact test being added.</p>
+            </div>
+            <button type="button" class="directory-text-button" id="openDirectoryFromDialogButton">Verify in official directory ↗</button>
+          </div>
+          <div class="form-grid form-grid-compact">
+            <label><span class="form-label-text">Test code <span class="required-mark" aria-hidden="true">*</span></span><input id="testCode" required placeholder="Example: 496"></label>
+            <label><span class="form-label-text">Test name <span class="required-mark" aria-hidden="true">*</span></span><input id="testName" required placeholder="Exact test name"></label>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="collectionInfoHeading">
+          <div class="form-section-heading">
+            <div>
+              <h3 id="collectionInfoHeading">Collection &amp; transport</h3>
+              <p>Complete the required specimen and shipping details.</p>
+            </div>
+          </div>
+          <div class="form-grid form-grid-compact">
+            <label><span class="form-label-text">Specimen type <span class="required-mark" aria-hidden="true">*</span></span><select id="specimenType" required>
+              <option value="">Choose a specimen type</option><option>Serum</option><option>Plasma</option><option>RBCs</option><option>Whole Blood</option><option>Urine</option><option>Stool</option><option>Swab</option><option>Saliva</option><option>CSF</option><option>Body Fluid</option><option>Other / Verify</option>
+            </select></label>
+            <label><span class="form-label-text">Draw container <span class="required-mark" aria-hidden="true">*</span></span><select id="drawContainer" required>
+              <option value="">Choose a collection container</option>
+              <option>SST / Gold</option>
+              <option>Red Top</option>
+              <option>Lavender EDTA</option>
+              <option>Pink EDTA</option>
+              <option>Green Sodium Heparin</option>
+              <option>Green Lithium Heparin</option>
+              <option>Green Heparin — verify additive</option>
+              <option>Light Blue Citrate</option>
+              <option>Royal Blue EDTA (purple stripe)</option>
+              <option>Royal Blue No Additive (red stripe)</option>
+              <option>Royal Blue Sodium Heparin — verify label</option>
+              <option>Royal Blue — verify additive</option>
+              <option>Yellow ACD (blood tube)</option>
+              <option>Gray Fluoride/Oxalate</option>
+              <option>Sterile Urine Cup</option>
+              <option>Red/Yellow Swirl UA Preservative Tube</option>
+              <option>Gray-Top Urine Culture Preservative Tube</option>
+              <option>Urine Container</option>
+              <option>Stool Container</option>
+              <option>Swab / Collection Kit</option>
+              <option>Aptima Multitest Transport Tube (orange label)</option>
+              <option>Viral transport media (VCM/M4)</option>
+              <option>Do Not Collect</option>
+              <option>Verify Official Instructions</option>
+              <option value="__other__">Other / manually type</option>
+            </select></label>
+            <label id="customDrawContainerRow" class="custom-draw-container-row full-width hidden"><span class="form-label-text">Custom draw container <span class="required-mark" aria-hidden="true">*</span></span><input id="customDrawContainer" disabled placeholder="Type any tube, cup, swab, or collection kit" autocomplete="off"></label>
+            <label><span class="form-label-text">Transport tube / container <span class="required-mark" aria-hidden="true">*</span></span><input id="transportContainer" required placeholder="Example: serum transport tube"></label>
+            <label><span class="form-label-text">Transport temperature <span class="required-mark" aria-hidden="true">*</span></span><select id="transportTemperature" required>
+              <option value="">Choose a transport temperature</option><option>Room Temperature</option><option>Refrigerated</option><option>Frozen</option><option>Room / Refrigerated</option><option>Mixed</option><option>Not specified</option>
+            </select></label>
+            <div class="source-clarification-note full-width" role="note"><strong>Label reminder:</strong> Label plasma and RBCs with the source tube. Label urine and stool containers with the specimen type. For swabs, include the collection site when known.</div>
+          </div>
+        </section>
+
+        <details class="form-section optional-details" id="optionalDetails">
+          <summary>
+            <span>Optional details</span>
+            <small>Volumes, stability, special handling, and alternatives</small>
+          </summary>
+          <div class="form-grid form-grid-compact optional-details-grid">
+            <label>Alternative container<input id="alternativeContainer" placeholder="Optional alternative"></label>
+            <label>Preferred volume<input id="preferredVolume" placeholder="Example: 1 mL serum"></label>
+            <label>Minimum volume<input id="minimumVolume" placeholder="Example: 0.5 mL"></label>
+            <label>Exact temperature wording<input id="transportTemperatureRaw" placeholder="Optional wording from the official directory"></label>
+            <label>Stability / viability<input id="stability" placeholder="Example: 7 days refrigerated"></label>
+            <label>Spin?<select id="spin"><option>Yes</option><option>No</option><option>Verify</option></select></label>
+            <label class="full-width">Special label for submission <span class="optional">shown quietly in the bag summary</span><input id="specialLabeling" placeholder="Example: Label transport tube PLASMA"></label>
+            <label class="full-width">Special handling and collection notes<textarea id="specialInstructions" rows="4" placeholder="Timing, mixing, light protection, freezing, rejection criteria, or dedicated tube requirements."></textarea></label>
+          </div>
+        </details>
+
+        <div class="form-status-options">
+          <label class="check-label" id="addToSummaryRow"><input type="checkbox" id="addToSummary" checked> Add this test to the current collection summary</label>
+          <label class="check-label"><input type="checkbox" id="blockedStatus"> Mark as do not perform / blocked</label>
+        </div>
       </div>
       <div class="dialog-actions">
         <button type="button" class="button danger-ghost hidden" id="deleteTestButton">Delete manually added test</button>

@@ -1,14 +1,16 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'labCollectionCalculator.database.v21';
-  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
+  const DB_KEY = 'labCollectionCalculator.database.v25';
+  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v24', 'labCollectionCalculator.database.v23', 'labCollectionCalculator.database.v22', 'labCollectionCalculator.database.v21', 'labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
   const LEGACY_STORAGE_PREFIX = ['que', 'stLabCalculator'].join('');
   const LEGACY_DB_KEYS = [...PRIOR_DB_KEYS, ...[9, 8, 7, 6, 5, 4, 3, 2, 1].map(version => `${LEGACY_STORAGE_PREFIX}.database.v${version}`)];
   const SELECTED_KEY = 'labCollectionCalculator.selected.v1';
   const LEGACY_SELECTED_KEYS = [`${LEGACY_STORAGE_PREFIX}.selected.v1`];
   const PAGE_STEP = 80;
   const SST_USABLE_ML_PER_TUBE = 2;
+  const PROCESSED_SPECIMEN_USABLE_ML_PER_TUBE = 2;
+  const WHOLE_BLOOD_USABLE_ML_PER_TUBE = 4;
   const ORDER_OF_DRAW = [
     { key: 'culture', number: 1, label: 'Blood cultures', additive: 'See bottle label', tubeClass: 'tube-culture' },
     { key: 'citrate', number: 2, label: 'Light blue', additive: 'Sodium citrate', tubeClass: 'tube-blue' },
@@ -33,9 +35,9 @@
     previewButton: $('previewButton'), clearSearchButton: $('clearSearchButton'), batchResults: $('batchResults'),
     libraryFilter: $('libraryFilter'), tempFilter: $('tempFilter'), showBlocked: $('showBlocked'),
     libraryBody: $('libraryBody'), libraryStatus: $('libraryStatus'), loadMoreButton: $('loadMoreButton'),
-    addTestButton: $('addTestButton'), addSelectedTestButton: $('addSelectedTestButton'),
-    selectedCount: $('selectedCount'), selectedList: $('selectedList'),
-    drawPlan: $('drawPlan'), orderOfDraw: $('orderOfDraw'), collectionAlerts: $('collectionAlerts'), clearOrderButton: $('clearOrderButton'),
+    addTestButton: $('addTestButton'), addSelectedTestButton: $('addSelectedTestButton'), testsDetailsButton: $('testsDetailsButton'), testsDetailsPanel: $('testsDetailsPanel'),
+    selectedCount: $('selectedCount'), selectedList: $('selectedList'), testsOverviewList: $('testsOverviewList'), testsOverviewSummary: $('testsOverviewSummary'),
+    drawPlan: $('drawPlan'), drawPlanSummary: $('drawPlanSummary'), orderOfDraw: $('orderOfDraw'), orderOfDrawSummary: $('orderOfDrawSummary'), collectionAlerts: $('collectionAlerts'), clearOrderButton: $('clearOrderButton'),
     printButton: $('printButton'), exportSummaryButton: $('exportSummaryButton'),
     printSheet: $('printSheet'), testDialog: $('testDialog'), testForm: $('testForm'), dialogTitle: $('dialogTitle'),
     closeDialogButton: $('closeDialogButton'), cancelDialogButton: $('cancelDialogButton'), deleteTestButton: $('deleteTestButton'),
@@ -43,8 +45,8 @@
     drawContainer: $('drawContainer'), customDrawContainer: $('customDrawContainer'), customDrawContainerRow: $('customDrawContainerRow'), alternativeContainer: $('alternativeContainer'), transportContainer: $('transportContainer'),
     preferredVolume: $('preferredVolume'), minimumVolume: $('minimumVolume'), transportTemperature: $('transportTemperature'),
     transportTemperatureRaw: $('transportTemperatureRaw'), stability: $('stability'), spin: $('spin'),
-    specialInstructions: $('specialInstructions'), blockedStatus: $('blockedStatus'), addToSummary: $('addToSummary'),
-    addToSummaryRow: $('addToSummaryRow'), openDirectoryFromDialogButton: $('openDirectoryFromDialogButton'), toast: $('toast')
+    specialLabeling: $('specialLabeling'), specialInstructions: $('specialInstructions'), blockedStatus: $('blockedStatus'), addToSummary: $('addToSummary'),
+    addToSummaryRow: $('addToSummaryRow'), optionalDetails: $('optionalDetails'), openDirectoryFromDialogButton: $('openDirectoryFromDialogButton'), toast: $('toast')
   };
 
   let database = loadDatabase();
@@ -78,8 +80,10 @@
     els.libraryBody.addEventListener('click', handleLibraryClick);
     els.batchResults.addEventListener('click', handleBatchClick);
     els.selectedList.addEventListener('click', handleSelectedClick);
+    els.testsOverviewList.addEventListener('click', handleTestsOverviewClick);
     els.addTestButton.addEventListener('click', () => openDialog(null, { addToSummary: true }));
     els.addSelectedTestButton.addEventListener('click', () => openDialog(null, { addToSummary: true }));
+    els.testsDetailsButton.addEventListener('click', toggleTestsDetails);
     els.clearOrderButton.addEventListener('click', clearOrder);
     els.printButton.addEventListener('click', printSummary);
     els.exportSummaryButton.addEventListener('click', exportSummaryCsv);
@@ -89,7 +93,6 @@
     els.deleteTestButton.addEventListener('click', deleteCustomTest);
     els.openDirectoryFromDialogButton.addEventListener('click', openDirectoryFromDialog);
     els.drawContainer.addEventListener('change', toggleCustomDrawContainer);
-    els.customDrawContainer.addEventListener('input', handleCustomDrawContainerInput);
   }
 
   function renderAll() {
@@ -150,6 +153,7 @@
       transportTemperatureRaw: String(record.transportTemperatureRaw || ''),
       stability: String(record.stability || ''),
       spin: String(record.spin || 'Verify'),
+      specialLabeling: String(record.specialLabeling || '').trim(),
       specialInstructions: String(record.specialInstructions || ''),
       fastingStatus: ['required', 'preferred'].includes(String(record.fastingStatus || '').toLowerCase()) ? String(record.fastingStatus).toLowerCase() : '',
       fastingInstructions: String(record.fastingInstructions || '').trim(),
@@ -217,7 +221,7 @@
     const name = normalizeSearch(test.testName);
     const searchable = normalizeSearch([
       test.testCode, test.testName, test.specimenType, test.drawContainer,
-      test.alternativeContainer, test.transportTemperature, test.specialInstructions
+      test.alternativeContainer, test.transportTemperature, test.specialLabeling, test.specialInstructions
     ].join(' '));
     const leadingCode = raw.match(/^([A-Za-z]*\d+[A-Za-z0-9-]*)\b/);
 
@@ -254,29 +258,94 @@
       return;
     }
 
-    const rows = queries.map(query => ({ query, matches: findMatches(query, 3) }));
+    const rows = queries.map(query => ({ query, matches: findMatches(query, 3), outcome: 'review' }));
+    let added = 0;
+
     if (addBest) {
-      let added = 0;
       rows.forEach(row => {
         const best = row.matches[0];
-        if (best && best.score >= 330 && best.test.status !== 'blocked') {
-          if (addSelected(best.test.id, false)) added += 1;
+        if (!best) {
+          row.outcome = 'no-match';
+          return;
+        }
+        if (best.test.status === 'blocked') {
+          row.outcome = 'blocked';
+          return;
+        }
+        if (best.score < 330) {
+          row.outcome = 'low-confidence';
+          return;
+        }
+        if (selectedIds.includes(best.test.id)) {
+          row.outcome = 'already-selected';
+          return;
+        }
+        if (addSelected(best.test.id, false)) {
+          row.outcome = 'added';
+          added += 1;
+        } else {
+          row.outcome = 'not-added';
         }
       });
       saveSelected();
       renderOrder();
-      showToast(`${added} ${added === 1 ? 'test' : 'tests'} added to the summary.`);
+    } else {
+      rows.forEach(row => {
+        const best = row.matches[0];
+        if (!best) row.outcome = 'no-match';
+        else if (best.test.status === 'blocked') row.outcome = 'blocked';
+        else if (best.score < 330) row.outcome = 'low-confidence';
+      });
     }
 
     const matchedCount = rows.filter(row => row.matches.length).length;
+    const unresolved = rows.filter(row => ['no-match', 'blocked', 'low-confidence', 'not-added'].includes(row.outcome));
+    const resultSummary = renderBatchResultSummary(rows, addBest);
+
+    if (addBest) {
+      const alreadySelected = rows.filter(row => row.outcome === 'already-selected').length;
+      const accountedFor = added + alreadySelected;
+      if (unresolved.length) {
+        showToast(`${accountedFor} ${accountedFor === 1 ? 'test is' : 'tests are'} in the summary. ${unresolved.length} not added — see list.`);
+      } else {
+        showToast(`All ${rows.length} ${rows.length === 1 ? 'test is' : 'tests are'} in the summary.`);
+      }
+    }
+
     els.batchResults.classList.remove('hidden');
     els.batchResults.innerHTML = `
       <div class="panel-heading">
         <div><h2>Batch matches</h2><p>${matchedCount} of ${rows.length} lines found a possible match. Review ambiguous names before collection.</p></div>
       </div>
+      ${resultSummary}
       <div class="batch-grid">
         ${rows.map(renderBatchRow).join('')}
       </div>`;
+  }
+
+  function renderBatchResultSummary(rows, addBest) {
+    if (rows.length < 2) return '';
+
+    const unresolved = rows.filter(row => ['no-match', 'blocked', 'low-confidence', 'not-added'].includes(row.outcome));
+    if (!unresolved.length) {
+      if (!addBest) return '';
+      return `<div class="batch-status batch-status-success"><strong>All ${rows.length} searches are in the summary.</strong><span>No tests were missed.</span></div>`;
+    }
+
+    const label = addBest ? 'Not added' : 'Needs attention';
+    return `<div class="batch-status batch-status-warning">
+      <div class="batch-status-heading"><strong>${label} (${unresolved.length})</strong><span>${addBest ? 'These searches were not added to the collection summary.' : 'These searches did not return a reliable local match.'}</span></div>
+      <ul class="batch-missing-list">
+        ${unresolved.map(row => `<li><strong>${escapeHtml(row.query)}</strong><span>${escapeHtml(batchOutcomeReason(row.outcome))}</span></li>`).join('')}
+      </ul>
+    </div>`;
+  }
+
+  function batchOutcomeReason(outcome) {
+    if (outcome === 'no-match') return 'No local match found';
+    if (outcome === 'low-confidence') return 'Possible match was too uncertain to add automatically';
+    if (outcome === 'blocked') return 'Matched a do-not-perform entry';
+    return 'Could not be added';
   }
 
   function renderBatchRow(row) {
@@ -305,7 +374,7 @@
       if (!filter) return true;
       const haystack = normalizeSearch([
         test.testCode, test.testName, test.specimenType, test.drawContainer, test.alternativeContainer,
-        test.transportContainer, test.transportTemperature, test.specialInstructions
+        test.transportContainer, test.transportTemperature, test.specialLabeling, test.specialInstructions
       ].join(' '));
       return filter.split(' ').every(token => haystack.includes(token));
     });
@@ -362,6 +431,21 @@
     if (button.dataset.action === 'edit') openDialog(database.find(test => test.id === button.dataset.id));
   }
 
+  function handleTestsOverviewClick(event) {
+    const button = event.target.closest('button[data-action="remove"]');
+    if (!button) return;
+    removeSelected(button.dataset.id);
+  }
+
+  function toggleTestsDetails() {
+    const showingDetails = els.testsDetailsPanel.classList.contains('hidden');
+    els.testsOverviewList.classList.toggle('hidden', showingDetails);
+    els.testsDetailsPanel.classList.toggle('hidden', !showingDetails);
+    els.testsDetailsPanel.setAttribute('aria-hidden', showingDetails ? 'false' : 'true');
+    els.testsDetailsButton.setAttribute('aria-expanded', showingDetails ? 'true' : 'false');
+    els.testsDetailsButton.textContent = showingDetails ? 'Hide details' : 'Show details';
+  }
+
   function addSelected(id, rerender = true) {
     const test = database.find(item => item.id === id);
     if (!test || test.status === 'blocked') return false;
@@ -403,6 +487,7 @@
   function renderOrder() {
     const tests = selectedTests();
     els.selectedCount.textContent = tests.length;
+    renderTestsOverview(tests);
     renderDrawPlan(tests);
     renderOrderOfDraw(tests);
     renderAlerts(tests);
@@ -416,7 +501,7 @@
       <article class="selected-card">
         <div class="selected-card-top">
           <div><div class="test-name">${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</div><div class="subtext specimen-line">${specimenBadge(test.specimenType)} <span>·</span> <span class="preferred-volume-inline">Preferred ${escapeHtml(test.preferredVolume || 'verify')}</span> <span>· Minimum ${escapeHtml(test.minimumVolume || 'verify')}</span></div>${fastingBadge(test, 'selected-fasting-badge')}</div>
-          <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove" data-action="remove" data-id="${escapeAttr(test.id)}">Remove</button></div>
+          <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove remove-flex" data-action="remove" data-id="${escapeAttr(test.id)}" type="button" aria-label="Remove ${escapeAttr(test.testName)}"><span class="remove-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></span><span class="remove-text">Remove</span></button></div>
         </div>
         <div class="selected-details">
           <span class="badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span>
@@ -425,6 +510,31 @@
         </div>
         ${test.specialInstructions ? `<div class="selected-note">${escapeHtml(truncate(test.specialInstructions, 190))}</div>` : ''}
       </article>`).join('');
+  }
+
+  function renderTestsOverview(tests) {
+    els.testsOverviewSummary.textContent = `${tests.length} ${tests.length === 1 ? 'test' : 'tests'}`;
+    els.testsDetailsButton.disabled = !tests.length;
+    els.clearOrderButton.disabled = !tests.length;
+    if (!tests.length) {
+      els.testsOverviewList.classList.remove('hidden');
+      els.testsDetailsPanel.classList.add('hidden');
+      els.testsDetailsPanel.setAttribute('aria-hidden', 'true');
+      els.testsDetailsButton.setAttribute('aria-expanded', 'false');
+      els.testsDetailsButton.textContent = 'Show details';
+      els.testsOverviewList.className = 'tests-overview-list empty-state';
+      els.testsOverviewList.textContent = 'No tests selected.';
+      return;
+    }
+    els.testsOverviewList.className = 'tests-overview-list';
+    els.testsOverviewList.innerHTML = tests.map(test => `
+      <div class="tests-overview-row">
+        <div class="tests-overview-ident">
+          <strong class="tests-overview-code">${escapeHtml(displayCode(test))}</strong>
+          <span class="tests-overview-name">${escapeHtml(test.testName)}</span>
+        </div>
+        <button class="mini-button remove remove-flex tests-overview-remove" type="button" data-action="remove" data-id="${escapeAttr(test.id)}" aria-label="Remove ${escapeAttr(test.testName)}"><span class="remove-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></span><span class="remove-text">Remove</span></button>
+      </div>`).join('');
   }
 
   function buildDrawGroups(tests) {
@@ -438,20 +548,39 @@
       const ml = parseSimpleMl(test.minimumVolume);
       if (ml !== null) { group.minimumMl += ml; group.volumeCount += 1; }
     });
-    return Array.from(groups.values()).sort((a, b) => a.container.localeCompare(b.container));
+    const orderIndex = new Map(ORDER_OF_DRAW.map((step, index) => [step.key, index]));
+    return Array.from(groups.values()).sort((a, b) => {
+      const aCategory = orderCategory(a.tests[0]);
+      const bCategory = orderCategory(b.tests[0]);
+      const aOrder = aCategory !== null && orderIndex.has(aCategory) ? orderIndex.get(aCategory) : Number.MAX_SAFE_INTEGER;
+      const bOrder = bCategory !== null && orderIndex.has(bCategory) ? orderIndex.get(bCategory) : Number.MAX_SAFE_INTEGER;
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return a.container.localeCompare(b.container);
+    });
+  }
+
+  function drawGroupContainerCount(group) {
+    const groupBags = buildTransportBagPlan(group.tests);
+    return buildCollectionPlan(group.tests, groupBags)
+      .reduce((sum, item) => sum + (Number(item.count) || 0), 0);
   }
 
   function renderDrawPlan(tests) {
     if (!tests.length) {
+      els.drawPlanSummary.textContent = 'No collection types';
       els.drawPlan.className = 'draw-plan empty-state';
       els.drawPlan.textContent = 'Add tests to see the draw plan.';
       return;
     }
     const groups = buildDrawGroups(tests);
+    els.drawPlanSummary.textContent = `${groups.length} collection ${groups.length === 1 ? 'type' : 'types'}`;
     els.drawPlan.className = 'draw-plan';
     els.drawPlan.innerHTML = groups.map(group => {
       const volume = group.volumeCount ? ` · listed minimum total ${formatMl(group.minimumMl)}` : '';
-      return `<div class="draw-card"><strong class="tube ${tubeClass(group.container)}">${escapeHtml(group.container)}</strong><strong>${group.tests.length} ${group.tests.length === 1 ? 'test' : 'tests'}</strong><div class="draw-meta specimen-line">${Array.from(group.specimenTypes).map(type => specimenBadge(type)).join(' ')}${volume ? `<span>${escapeHtml(volume)}</span>` : ''}</div><div class="draw-meta">Verify dedicated-tube requirements</div></div>`;
+      const containerCount = drawGroupContainerCount(group);
+      const testLabel = `${group.tests.length} ${group.tests.length === 1 ? 'test' : 'tests'}`;
+      const containerLabel = `${containerCount} ${containerCount === 1 ? 'container' : 'containers'}`;
+      return `<div class="draw-card"><div class="draw-title-block"><strong class="tube ${tubeClass(group.container)}">${escapeHtml(group.container)}</strong><span class="draw-test-count">${escapeHtml(testLabel)}</span></div><strong class="draw-container-badge">${escapeHtml(containerLabel)}</strong><div class="draw-meta specimen-line">${Array.from(group.specimenTypes).map(type => specimenBadge(type)).join(' ')}${volume ? `<span>${escapeHtml(volume)}</span>` : ''}</div></div>`;
     }).join('');
   }
 
@@ -490,6 +619,9 @@
 
   function renderOrderOfDraw(tests) {
     const selectedCategories = new Set(tests.map(orderCategory).filter(Boolean));
+    els.orderOfDrawSummary.textContent = selectedCategories.size
+      ? `${selectedCategories.size} blood tube ${selectedCategories.size === 1 ? 'type' : 'types'} used`
+      : 'No blood tubes';
     els.orderOfDraw.innerHTML = ORDER_OF_DRAW.map(step => {
       const selected = selectedCategories.has(step.key);
       return `<div class="order-step ${selected ? 'is-selected' : ''}">
@@ -581,22 +713,26 @@
     els.testId.value = isExisting ? record.id : '';
     els.testCode.value = record.testCode;
     els.testName.value = record.testName;
-    setSelectValue(els.specimenType, record.specimenType, 'Other / Verify');
+    if (isExisting) setSelectValue(els.specimenType, record.specimenType, 'Other / Verify');
+    else els.specimenType.value = '';
     setDrawContainerValue(record.drawContainer === 'Verify Official Instructions' && !isExisting ? '' : record.drawContainer);
     els.alternativeContainer.value = record.alternativeContainer;
     els.transportContainer.value = record.transportContainer;
     els.preferredVolume.value = record.preferredVolume;
     els.minimumVolume.value = record.minimumVolume;
-    setSelectValue(els.transportTemperature, record.transportTemperature, 'Not specified');
+    if (isExisting) setSelectValue(els.transportTemperature, record.transportTemperature, 'Not specified');
+    else els.transportTemperature.value = '';
     els.transportTemperatureRaw.value = record.transportTemperatureRaw;
     els.stability.value = record.stability;
     setSelectValue(els.spin, record.spin, 'Verify');
+    els.specialLabeling.value = record.specialLabeling;
     els.specialInstructions.value = record.specialInstructions;
     els.blockedStatus.checked = record.status === 'blocked';
     els.addToSummary.checked = options.addToSummary !== false;
     els.addToSummaryRow.classList.toggle('hidden', isExisting);
     els.saveTestButton.textContent = isExisting ? 'Save changes' : 'Save test';
     els.deleteTestButton.classList.toggle('hidden', !isExisting || !record.id.startsWith('custom-'));
+    if (els.optionalDetails) els.optionalDetails.open = isExisting;
     els.testDialog.showModal();
     setTimeout(() => (isExisting ? els.testName : els.testCode).focus(), 0);
   }
@@ -623,14 +759,29 @@
       transportTemperatureRaw: els.transportTemperatureRaw.value,
       stability: els.stability.value,
       spin: els.spin.value,
+      specialLabeling: els.specialLabeling.value,
       specialInstructions: els.specialInstructions.value,
       status: els.blockedStatus.checked ? 'blocked' : 'active',
       source: existingIndex >= 0 ? database[existingIndex].source : 'Custom entry',
       sourceRow: existingIndex >= 0 ? database[existingIndex].sourceRow : null
     });
-    if (!record.testName) {
-      showToast('Enter a test name before saving.');
-      els.testName.focus();
+    const requiredFields = [
+      { element: els.testCode, value: els.testCode.value.trim(), message: 'Enter a test code before saving.' },
+      { element: els.testName, value: els.testName.value.trim(), message: 'Enter a test name before saving.' },
+      { element: els.specimenType, value: els.specimenType.value, message: 'Select a specimen type before saving.' },
+      { element: els.drawContainer, value: selectedDrawContainer(true), message: 'Select a draw container before saving.' },
+      { element: els.transportContainer, value: els.transportContainer.value.trim(), message: 'Enter a transport tube or container before saving.' },
+      { element: els.transportTemperature, value: els.transportTemperature.value, message: 'Select a transport temperature before saving.' }
+    ];
+    if (els.drawContainer.value === '__other__' && !els.customDrawContainer.value.trim()) {
+      showToast('Enter the custom draw container before saving.');
+      els.customDrawContainer.focus();
+      return;
+    }
+    const missingField = requiredFields.find(field => !field.value);
+    if (missingField) {
+      showToast(missingField.message);
+      missingField.element.focus();
       return;
     }
     if (existingIndex >= 0) database[existingIndex] = record;
@@ -674,7 +825,10 @@
 
 
   function transportBagInfo(test) {
-    const value = `${test.transportTemperature || ''} ${test.transportTemperatureRaw || ''}`.toLowerCase();
+    const normalized = String(test.transportTemperature || '').trim();
+    const value = (normalized && normalized !== 'Not specified'
+      ? normalized
+      : test.transportTemperatureRaw || '').toLowerCase();
     const hasRoom = /room|ambient/.test(value);
     const hasRefrigerated = /refriger|2\s*[-–]\s*8|chill|cold/.test(value);
     const hasFrozen = /frozen|freeze/.test(value);
@@ -712,12 +866,18 @@
     if (numeric) return Number(numeric[1]);
     const words = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
     const wordMatch = text.match(/\b(one|two|three|four|five|six)\s+(?:full\s+)?(?:gold\s*\/\s*)?sst\s+tubes?\b/);
-    return wordMatch ? words[wordMatch[1]] : 0;
+    if (wordMatch) return words[wordMatch[1]];
+    const describedTubes = text.match(/(?<![\d.])\b(\d+|one|two|three|four|five|six)\s+(?:[a-z0-9.®/()_-]+\s+){0,10}tubes\b/);
+    if (describedTubes && /sst|gold|serum separator|microtainer/.test(describedTubes[0]) && !/transport|aliquot|cryovial|vial/.test(describedTubes[0])) {
+      return Math.max(numberWordValue(describedTubes[1]), 1);
+    }
+    const genericCount = explicitCollectionCount(test);
+    return genericCount > 1 ? genericCount : 0;
   }
 
   function requiresDedicatedSst(test) {
     const text = `${test.drawContainer || ''} ${test.transportContainer || ''} ${test.specialInstructions || ''}`.toLowerCase();
-    return /dedicated|own tube|separate (?:sst|gold|tube)|do not share|full sst|full gold|each tube|individual tube/.test(text)
+    return /dedicated|own tube|separate (?:sst|gold|tube)|do not share|full tube|full sst|full gold|each tube|individual tube/.test(text)
       || explicitSstTubeCount(test) > 0;
   }
 
@@ -786,6 +946,96 @@
     };
   }
 
+  function isLavenderDraw(test) {
+    return tubeClass(test.drawContainer) === 'tube-lavender';
+  }
+
+  function isRedTopDraw(test) {
+    return tubeClass(test.drawContainer) === 'tube-red';
+  }
+
+  function pooledCollectionMaterial(test) {
+    const specimen = normalizeSpecimenType(test.specimenType);
+    const volumeText = `${test.preferredVolume || ''} ${test.minimumVolume || ''}`.toLowerCase();
+    if (/whole\s*blood/.test(volumeText) || specimen === 'Whole Blood') return 'whole blood';
+    if (specimen === 'Plasma') return 'plasma';
+    if (specimen === 'Serum') return 'serum';
+    if (specimen === 'RBCs') return 'RBCs';
+    return String(specimen || 'specimen').toLowerCase();
+  }
+
+  function pooledCollectionPath(test) {
+    return isOriginalContainerSubmission(test) ? 'original' : 'transfer';
+  }
+
+  function pooledCollectionCapacity(material) {
+    return material === 'whole blood'
+      ? WHOLE_BLOOD_USABLE_ML_PER_TUBE
+      : PROCESSED_SPECIMEN_USABLE_ML_PER_TUBE;
+  }
+
+  function requiresDedicatedCollectionTube(test) {
+    const text = `${test.drawContainer || ''} ${test.preferredVolume || ''} ${test.minimumVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
+    return /\bdedicated(?:\s+collection)?\s+tube\b|\bown\s+tube\b|\bdo\s+not\s+share\b|\bfull\s+(?:lavender|red(?:-top)?|edta|collection)?\s*tube\b|\b(?:each|individual)\s+(?:lavender|red(?:-top)?|edta|collection)\s+tube\b/.test(text)
+      || explicitCollectionCount(test) > 1;
+  }
+
+  function pooledTubeEstimateForTests(tests, material) {
+    const capacityMl = pooledCollectionCapacity(material);
+    let sharedMl = 0;
+    let dedicatedTubes = 0;
+    let unmeasuredTubes = 0;
+
+    tests.forEach(test => {
+      const preferredMl = parseVolumeMl(test.preferredVolume);
+      const fallbackMl = preferredMl === null ? parseVolumeMl(test.minimumVolume) : null;
+      const plannedMl = preferredMl === null ? fallbackMl : preferredMl;
+      const explicitCount = explicitCollectionCount(test);
+
+      // One test never creates multiple draw tubes solely because of its listed
+      // volume. Extra tubes are added only for an explicit collection count or
+      // a dedicated/full-tube instruction.
+      if (requiresDedicatedCollectionTube(test)) {
+        dedicatedTubes += Math.max(explicitCount, 1);
+      } else if (plannedMl !== null) {
+        sharedMl += Math.min(plannedMl, capacityMl);
+      } else {
+        unmeasuredTubes += 1;
+      }
+    });
+
+    const sharedTubes = sharedMl > 0 ? Math.ceil(sharedMl / capacityMl) : 0;
+    return {
+      capacityMl,
+      sharedMl,
+      sharedTubes,
+      dedicatedTubes,
+      unmeasuredTubes,
+      totalTubes: sharedTubes + dedicatedTubes + unmeasuredTubes
+    };
+  }
+
+  function pooledCollectionEstimateForTests(tests, matchesTube) {
+    const groups = new Map();
+    tests.filter(matchesTube).forEach(test => {
+      const material = pooledCollectionMaterial(test);
+      const path = pooledCollectionPath(test);
+      const key = `${path}|${normalizeSearch(material)}`;
+      if (!groups.has(key)) groups.set(key, { key, path, material, tests: [] });
+      groups.get(key).tests.push(test);
+    });
+
+    const estimatedGroups = Array.from(groups.values()).map(group => ({
+      ...group,
+      estimate: pooledTubeEstimateForTests(group.tests, group.material)
+    }));
+
+    return {
+      groups: estimatedGroups,
+      totalTubes: estimatedGroups.reduce((sum, group) => sum + group.estimate.totalTubes, 0)
+    };
+  }
+
   function buildTransportBagPlan(tests) {
     const bags = new Map();
     tests.forEach(test => {
@@ -796,7 +1046,12 @@
 
     return Array.from(bags.values())
       .sort((a, b) => a.order - b.order)
-      .map(bag => ({ ...bag, sstEstimate: sstCollectionEstimateForTests(bag.tests) }));
+      .map(bag => ({
+        ...bag,
+        sstEstimate: sstCollectionEstimateForTests(bag.tests),
+        lavenderEstimate: pooledCollectionEstimateForTests(bag.tests, isLavenderDraw),
+        redTopEstimate: pooledCollectionEstimateForTests(bag.tests, isRedTopDraw)
+      }));
   }
 
   function isUrineTest(test) {
@@ -863,7 +1118,49 @@
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
     let match = draw.match(new RegExp(`\\b${countPattern}\\s+(?:full\\s+)?(?:[a-z][a-z /-]{0,35}\\s+)?(?:tubes?|bottles?|containers?)\\b`));
     if (!match) match = note.match(new RegExp(`\\b(?:draw|collect|use|requires?)\\D{0,18}${countPattern}\\s+(?:full\\s+)?(?:[a-z][a-z /-]{0,35}\\s+)?(?:tubes?|bottles?|containers?)\\b`));
+    if (!match) {
+      const genericPattern = new RegExp(`(?<![\\d.])\\b${countPattern}\\s+(?:[a-z0-9.®/()_-]+\\s+){0,8}?(?:tubes?|bottles?|containers?)\\b`, 'g');
+      for (const candidate of note.matchAll(genericPattern)) {
+        const phrase = candidate[0];
+        const nearby = note.slice(Math.max(0, candidate.index - 24), candidate.index + phrase.length);
+        if (/\bm\s*l\b/.test(phrase) || /transport|aliquot|cryovial|vial|submit(?:ted|ting)?|\bnot\s+automatically\b|\b(?:does?|do)\s+not\b/.test(nearby)) continue;
+        match = candidate;
+        break;
+      }
+    }
     return match ? Math.max(numberWordValue(match[1]), 1) : 1;
+  }
+
+  function pooledCollectionGroupLabel(group) {
+    if (group.path === 'original') {
+      return group.material === 'whole blood' ? 'whole blood' : `original ${group.material}`;
+    }
+    return `source for ${group.material}`;
+  }
+
+  function addPooledCollectionItem(items, tests, bags, options) {
+    const matchingTests = tests.filter(options.matchesTube);
+    const total = bags.reduce((sum, bag) => sum + bag[options.estimateKey].totalTubes, 0);
+    if (!total) return;
+
+    const detail = bags
+      .filter(bag => bag[options.estimateKey].totalTubes > 0)
+      .map(bag => {
+        const parts = bag[options.estimateKey].groups
+          .filter(group => group.estimate.totalTubes > 0)
+          .map(group => `${group.estimate.totalTubes} ${pooledCollectionGroupLabel(group)}`);
+        return `${bag.label.replace(/ bag$/i, '')}: ${parts.join(' + ')}`;
+      })
+      .join(' · ');
+
+    items.push({
+      key: options.key,
+      label: options.label,
+      className: options.className,
+      count: total,
+      tests: uniqueTests(matchingTests),
+      detail
+    });
   }
 
   function buildCollectionPlan(tests, bags) {
@@ -883,6 +1180,22 @@
       items.push({ key: 'sst', label: 'Gold / SST', className: 'tube-sst', count: totalSst, tests: uniqueTests(sstTests), detail: breakdown });
     }
 
+    addPooledCollectionItem(items, tests, bags, {
+      key: 'lavender',
+      label: 'Lavender EDTA',
+      className: 'tube-lavender',
+      estimateKey: 'lavenderEstimate',
+      matchesTube: isLavenderDraw
+    });
+
+    addPooledCollectionItem(items, tests, bags, {
+      key: 'red-top',
+      label: 'Red Top',
+      className: 'tube-red',
+      estimateKey: 'redTopEstimate',
+      matchesTube: isRedTopDraw
+    });
+
     const spotUrineTests = tests.filter(test => isUrineTest(test) && !isTimedUrineTest(test));
     if (spotUrineTests.length) {
       items.push({
@@ -898,6 +1211,7 @@
     const grouped = new Map();
     tests.forEach(test => {
       if (isSstDraw(test)) return;
+      if (isLavenderDraw(test) || isRedTopDraw(test)) return;
       if (isUrineTest(test) && !isTimedUrineTest(test)) return;
       const info = canonicalCollectionContainer(test);
       if (!grouped.has(info.key)) grouped.set(info.key, { ...info, count: 0, tests: [], detail: '' });
@@ -925,13 +1239,19 @@
       return 'Royal Blue — verify additive';
     }
 
+    if (/light blue|sodium citrate|citrate/i.test(draw)) return 'Light Blue Citrate';
+    if (/blue/i.test(draw) && /edta/i.test(draw)) return 'Blue Top EDTA';
+    if (/blue/i.test(draw) && /serum|no additive/i.test(draw)) return 'Blue Top No Additive (serum)';
+    if (/pink/i.test(draw)) return 'Pink EDTA';
+    if (/tan/i.test(draw) && /edta/i.test(draw)) return 'Tan EDTA';
     if (/sst|gold/i.test(draw)) return 'SST';
     if (/lavender|edta/i.test(draw)) return 'Lavender EDTA';
     if (/sodium\s+heparin/i.test(draw)) return 'Green Sodium Heparin';
     if (/lithium\s+heparin/i.test(draw)) return 'Green Lithium Heparin';
     if (/green|heparin/i.test(draw)) return 'Green Heparin — verify additive';
     if (/red/i.test(draw)) return 'Red Top';
-    if (/light blue|citrate/i.test(draw)) return 'Light Blue Citrate';
+    if (/yellow|acd/i.test(draw)) return 'Yellow ACD';
+    if (/gray|grey|fluoride|oxalate/i.test(draw)) return 'Gray Fluoride/Oxalate';
     if (/aptima/i.test(draw)) return 'Aptima Multitest';
     return draw && !/^verify/i.test(draw) ? draw : '';
   }
@@ -977,6 +1297,16 @@
     }
 
     return titleCaseSpecimen(normalized || stated || 'Specimen');
+  }
+
+  function specimenSourceDetail(test) {
+    const specimen = titleCaseSpecimen(normalizeSpecimenType(test.specimenType));
+    const sourceSpecimen = specificSpecimenSource(test);
+    const sourceTube = shortDrawSource(test);
+
+    if (/swab/i.test(sourceSpecimen)) return sourceSpecimen;
+    if (/serum/i.test(specimen) && /^sst$/i.test(sourceTube)) return `${specimen} from SST`;
+    return sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen;
   }
 
   function transportTubeClass(test, container) {
@@ -1047,10 +1377,9 @@
 
     const specimen = titleCaseSpecimen(normalizeSpecimenType(test.specimenType));
     const sourceSpecimen = specificSpecimenSource(test);
-    const sourceTube = shortDrawSource(test);
 
     if (/amber|protect from light|light[- ]?protected/i.test(transport)) {
-      const sourcePhrase = sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen;
+      const sourcePhrase = specimenSourceDetail(test);
       return [{
         key: `amber|${normalizeSearch(sourcePhrase)}|${normalizeSearch(transport)}`,
         label: `Amber ${specimen} Transport Tube — Protect From Light`,
@@ -1061,7 +1390,7 @@
     }
 
     if (/transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/i.test(transport)) {
-      const sourcePhrase = sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen;
+      const sourcePhrase = specimenSourceDetail(test);
       const isSwab = /swab/i.test(sourceSpecimen);
       const isSpecialtyMetalContainer = /acid[- ]?washed|acid[- ]?rinsed|metal[- ]?free|trace[- ]?metal/i.test(transport);
       const label = isSwab
@@ -1100,14 +1429,34 @@
         label: 'SST / Gold',
         className: 'tube-sst',
         count: spunEstimate.totalTubes,
-        detail: 'Serum · spun · submit in original tube',
+        detail: 'Serum from SST · spun · submit in original tube',
         originalTube: true,
         tests: uniqueTests(spunSstTests)
       });
     }
 
+    [
+      { estimate: bag.lavenderEstimate, label: 'Lavender EDTA', className: 'tube-lavender' },
+      { estimate: bag.redTopEstimate, label: 'Red Top', className: 'tube-red' }
+    ].forEach(pool => {
+      pool.estimate.groups
+        .filter(group => group.path === 'original' && group.estimate.totalTubes > 0)
+        .forEach(group => {
+          items.set(`pooled-original|${pool.className}|${group.key}`, {
+            key: `pooled-original|${pool.className}|${group.key}`,
+            label: pool.label,
+            className: pool.className,
+            count: group.estimate.totalTubes,
+            detail: `${titleCaseSpecimen(group.material)} · Submit in original tube`,
+            originalTube: true,
+            tests: uniqueTests(group.tests)
+          });
+        });
+    });
+
     bag.tests.forEach(test => {
       if (isSpunSstSubmission(test)) return;
+      if ((isLavenderDraw(test) || isRedTopDraw(test)) && isOriginalContainerSubmission(test)) return;
       splitSubmissionContainers(test).forEach(container => {
         if (!items.has(container.key)) items.set(container.key, { ...container, tests: [] });
         const item = items.get(container.key);
@@ -1124,6 +1473,57 @@
     return uniqueTests(tests).map(test => `<li><strong>${escapeHtml(displayCode(test))}</strong> ${escapeHtml(test.testName)}</li>`).join('');
   }
 
+  function derivedSpecimenSourceLabel(test, item) {
+    const sourceTube = shortDrawSource(test);
+    const specimen = titleCaseSpecimen(normalizeSpecimenType(test.specimenType));
+    const lowerSpecimen = specimen.toLowerCase();
+    const sourceSpecimen = specificSpecimenSource(test);
+
+    if (/\brbcs?\b|red blood cell/.test(lowerSpecimen)) return sourceTube ? `RBCs from ${sourceTube}` : 'RBCs';
+    if (/plasma/.test(lowerSpecimen)) return sourceTube ? `${specimen} from ${sourceTube}` : specimen;
+    if (/urine|stool|swab|saliva|semen|csf|cerebrospinal|tissue/.test(lowerSpecimen) || /swab/i.test(sourceSpecimen)) {
+      return sourceSpecimen;
+    }
+    if (!sourceTube || item.originalTube) return '';
+
+    const specialSerumSource = /sst|gold|blue|pink|lavender|edta|heparin|citrate|acd|gray|grey|tan|green/i.test(sourceTube);
+    const standardSerumSource = /^(?:sst|gold|red top)$/i.test(sourceTube);
+    if (/serum/.test(lowerSpecimen) && specialSerumSource && !standardSerumSource) {
+      return `${specimen} from ${sourceTube}`;
+    }
+    return '';
+  }
+
+  function explicitLabelAddsInformation(explicit, derived) {
+    if (!explicit || !derived) return Boolean(explicit);
+    const text = explicit.toLowerCase();
+    const derivedText = derived.toLowerCase();
+    const onlySerumType = /(?:mark|label).*(?:specimen type|tube).*serum/.test(text)
+      && !/patient|hiv|no additive|identifier/.test(text);
+    const onlyPlasmaType = /(?:mark|label).*(?:specimen type|tube).*plasma/.test(text)
+      && !/patient|hiv|no additive|identifier/.test(text);
+    if (onlySerumType && derivedText.startsWith('serum from ')) return false;
+    if (onlyPlasmaType && /^.*plasma(?: from |$)/.test(derivedText)) return false;
+    return true;
+  }
+
+  function printLabelingNotes(item) {
+    const grouped = new Map();
+    uniqueTests(item.tests).forEach(test => {
+      const derived = derivedSpecimenSourceLabel(test, item);
+      const explicit = String(test.specialLabeling || '').trim();
+      const parts = [];
+      if (derived) parts.push(derived);
+      if (explicitLabelAddsInformation(explicit, derived)) parts.push(explicit);
+      const note = parts.join(' · ');
+      if (!note) return;
+      if (!grouped.has(note)) grouped.set(note, []);
+      grouped.get(note).push(displayCode(test));
+    });
+    if (!grouped.size) return '';
+    return `<div class="print-label-notes">${Array.from(grouped.entries()).map(([note, codes]) => `<div class="print-label-note"><span>Label</span><div>${escapeHtml(note)} <small>${escapeHtml(codes.join(', '))}</small></div></div>`).join('')}</div>`;
+  }
+
   function printContainerBadges(test) {
     const value = String(test.transportContainer || '').trim();
     const lower = value.toLowerCase();
@@ -1131,10 +1531,8 @@
       return `<span class="print-tube-badge tube tube-ua-swirl">Red/Yellow Swirl UA Tube</span><br><span class="print-tube-badge tube tube-urine-culture">Gray-Top Urine Culture Tube</span>`;
     }
     const sourceSpecimen = specificSpecimenSource(test);
-    const sourceTube = shortDrawSource(test);
-    const specimen = titleCaseSpecimen(normalizeSpecimenType(test.specimenType));
     const sourceText = /transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/i.test(value)
-      ? (/swab/i.test(sourceSpecimen) ? sourceSpecimen : (sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen))
+      ? specimenSourceDetail(test)
       : sourceSpecimen;
     return `<span class="print-tube-badge tube ${transportTubeClass(test, value)}">${escapeHtml(value || 'Verify')}</span>${sourceText ? `<div class="print-transport-source">${escapeHtml(sourceText)}</div>` : ''}`;
   }
@@ -1182,12 +1580,17 @@
             <div class="print-submit-content">${contents.map(item => `<div class="print-submit-item${item.originalTube ? ' original-tube-submit' : ''}">
               <div class="print-submit-item-title"><strong>${item.count}</strong><span class="tube ${item.className}">${escapeHtml(item.label)}</span></div>
               ${item.detail ? `<div class="print-submit-item-detail">${escapeHtml(item.detail)}</div>` : ''}
+              ${printLabelingNotes(item)}
               <div class="print-for-tests"><b>For tests:</b><ul>${testReferences(item.tests)}</ul></div>
             </div>`).join('')}</div>
           </article>`;
         }).join('')}</div>
       </section>
-      <div class="print-bag-note"><strong>Planning rules:</strong> SST collection assumes 2 mL of usable serum/plasma per tube and rounds up independently by transport temperature and processing path. SSTs that must be submitted in the original tube are counted separately from SSTs used as the source for transferred or aliquoted serum. Routine non-SST blood tubes are estimated as one tube per test unless the record specifies more. Spot urine tests add one sterile urine cup for initial collection; timed or 24-hour urine collections follow their test-specific container instructions. Submission contents reflect the processed specimen or transport container and identify the tests assigned to each item. Specimens submitted in their original collection tube keep the same tube badge and are marked “submit in original tube.” Verify specialty, dedicated-tube, aliquot, and actual-yield requirements before collection.</div>
+      <div class="print-bag-note">
+        <div><strong>Tube sharing:</strong> Compatible SST, Lavender EDTA, and Red Top tubes can be shared across tests only when the processing steps and temperature match. Lavender whole blood stays separate from Lavender tubes used for plasma or RBCs. Tubes sent whole also stay separate from tubes used to prepare aliquots.</div>
+        <div><strong>Tube counts:</strong> Estimates allow 2 mL of usable serum, plasma, or processed specimen per source tube and 4 mL of whole blood per Lavender tube. A test adds only one tube of each type unless its instructions call for multiple, dedicated, or full tubes. Different tube types are counted separately.</div>
+        <div><strong>Urine:</strong> One sterile cup is included for a spot urine test. Follow the listed container instructions for timed or 24-hour collections.</div>
+      </div>
     </section>`;
   }
 
@@ -1199,25 +1602,28 @@
     els.printSheet.innerHTML = `
       <div class="print-header">
         <div><h1 class="print-title">Lab Collection Summary</h1><div class="print-subtitle">Send-out workflow</div></div>
-        <div class="print-meta">Generated ${escapeHtml(new Date().toLocaleString())}<br>${tests.length} selected tests</div>
+        <div class="print-meta">Generated ${escapeHtml(new Date().toLocaleString())}<span class="print-selected-count">${tests.length} selected ${tests.length === 1 ? 'test' : 'tests'}</span></div>
       </div>
       ${alerts.length ? `<div class="print-alerts">${alerts.map(alert => `<div>${escapeHtml(alert.text)}</div>`).join('')}</div>` : ''}
       <table class="print-table">
         <colgroup><col style="width:6%"><col style="width:14%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:5%"><col style="width:8%"><col style="width:7%"><col style="width:8%"><col style="width:25%"></colgroup>
         <thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Draw container</th><th>Transport tube</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
-        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><strong>${escapeHtml(test.testName)}</strong>${fastingBadge(test, 'print-test-fasting-badge')}${test.alternativeContainer ? `<br>Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span>` : ''}</td><td>${specimenBadge(test.specimenType, 'print-specimen-badge')}</td><td><span class="print-tube-badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span></td><td>${printContainerBadges(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(test.preferredVolume || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(test.minimumVolume || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
+        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${fastingBadge(test, 'print-test-fasting-badge')}</div>${test.alternativeContainer ? `<div class="print-test-alternative">Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span></div>` : ''}</td><td>${specimenBadge(test.specimenType, 'print-specimen-badge')}</td><td><span class="print-tube-badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span></td><td>${printContainerBadges(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(test.preferredVolume || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(test.minimumVolume || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
       </table>
       ${printCollectionSubmissionPlan(tests)}
-      <div class="print-footer"><strong>Missing entry?</strong> Contact Sam for any missing entries you would like added. <strong>Source check:</strong> For every swab and transport tube, confirm the specimen source, such as throat swab, serum from SST, or plasma from Lavender EDTA. Verify current specimen requirements, service-area availability, rejection criteria, dedicated-tube requirements, and actual specimen yield in the official test directory before collection. Order-of-draw sources: the official order-of-draw reference; pink is grouped with the EDTA step based on BD tube labeling. The SST estimate uses the preferred volume when parseable, otherwise the minimum volume, and keeps transport temperatures separate.</div>
-      <div class="print-ownership"><strong>Copyright and ownership:</strong> Copyright © 2026 Sam Hay. All rights reserved. Independently developed and maintained by Sam Hay as a personal software project and hosted through a personally controlled account. No license or ownership interest is granted except through Sam Hay’s express written authorization. Use by any organization does not, by itself, transfer ownership of the software or source code. Access to this hosted version is provided by permission and may be modified, suspended, or withdrawn by Sam Hay at any time and for any reason.</div>`;
+      <div class="print-footer">
+        <div><strong>Order of draw:</strong> Pink tubes are grouped with EDTA. Temperatures are counted separately.</div>
+        <div class="print-missing-test"><strong>Missing a test?</strong> <b>Contact Sam</b> to have it added.</div>
+      </div>
+      <div class="print-ownership"><span><strong>Copyright and ownership:</strong> Copyright © 2026 Sam Hay. All rights reserved. Independently developed and maintained by Sam Hay as a personal software project and hosted through a personally controlled account. No license or ownership interest is granted except through Sam Hay’s express written authorization. Use by any organization does not, by itself, transfer ownership of the software or source code. Access to this hosted version is provided by permission and may be modified, suspended, or withdrawn by Sam Hay at any time and for any reason.</span></div>`;
     window.print();
   }
 
   function exportSummaryCsv() {
     const tests = selectedTests();
     if (!tests.length) return showToast('Add at least one test before exporting.');
-    const headers = ['Test Code','Test Name','Specimen Type','Draw Container','Alternative Container','Transport Tube / Container','Preferred Volume','Minimum Volume','Transport Temperature','Raw Temperature','Stability','Spin','Special Instructions'];
-    const rows = tests.map(test => [test.testCode,test.testName,test.specimenType,test.drawContainer,test.alternativeContainer,test.transportContainer,test.preferredVolume,test.minimumVolume,test.transportTemperature,test.transportTemperatureRaw,test.stability,test.spin,test.specialInstructions]);
+    const headers = ['Test Code','Test Name','Specimen Type','Draw Container','Alternative Container','Transport Tube / Container','Preferred Volume','Minimum Volume','Transport Temperature','Raw Temperature','Stability','Spin','Special Labeling','Special Instructions'];
+    const rows = tests.map(test => [test.testCode,test.testName,test.specimenType,test.drawContainer,test.alternativeContainer,test.transportContainer,test.preferredVolume,test.minimumVolume,test.transportTemperature,test.transportTemperatureRaw,test.stability,test.spin,test.specialLabeling,test.specialInstructions]);
     const csv = [headers, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
     downloadBlob(csv, `lab-collection-summary-${isoDate()}.csv`, 'text/csv;charset=utf-8');
   }
@@ -1306,25 +1712,21 @@
 
   function toggleCustomDrawContainer() {
     const isOther = els.drawContainer.value === '__other__';
-    // Keep the manual field visible at all times so it is easy for staff to find.
-    els.customDrawContainerRow.classList.remove('hidden');
+    els.customDrawContainerRow.classList.toggle('hidden', !isOther);
+    els.customDrawContainer.disabled = !isOther;
     els.customDrawContainer.required = isOther;
     els.customDrawContainerRow.classList.toggle('is-active', isOther);
+    els.customDrawContainerRow.classList.remove('is-disabled');
+    els.customDrawContainer.placeholder = 'Type any tube, cup, swab, or collection kit';
+    if (!isOther) els.customDrawContainer.value = '';
     if (isOther) setTimeout(() => els.customDrawContainer.focus(), 0);
   }
 
-  function handleCustomDrawContainerInput() {
-    if (els.customDrawContainer.value.trim()) {
-      els.drawContainer.value = '__other__';
-      toggleCustomDrawContainer();
-    }
-  }
-
-  function selectedDrawContainer() {
+  function selectedDrawContainer(strict = false) {
     if (els.drawContainer.value === '__other__') {
-      return els.customDrawContainer.value.trim() || 'Verify Official Instructions';
+      return els.customDrawContainer.value.trim() || (strict ? '' : 'Verify Official Instructions');
     }
-    return els.drawContainer.value || 'Verify Official Instructions';
+    return els.drawContainer.value || (strict ? '' : 'Verify Official Instructions');
   }
 
   function setSelectValue(select, value, fallback) {
