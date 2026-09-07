@@ -1,8 +1,3 @@
-## Version 10.7
-- Restored the v10.6 printout layout.
-- The “Skip to test search” link is not included in printed output.
-- Calculator logic and test data are unchanged.
-
 ## Version 10.3
 - Added the estimated number of collection containers beside the test count on each Draw plan card.
 - Container counts use the existing collection-planning logic, including pooling, dedicated-tube requirements, and separate transport-temperature workflows.
