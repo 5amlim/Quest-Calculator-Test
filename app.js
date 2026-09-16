@@ -1,10 +1,23 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'labCollectionCalculator.database.v28';
-  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v27', 'labCollectionCalculator.database.v26', 'labCollectionCalculator.database.v25', 'labCollectionCalculator.database.v24', 'labCollectionCalculator.database.v23', 'labCollectionCalculator.database.v22', 'labCollectionCalculator.database.v21', 'labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
+  // Built-in catalog records live in data.js. Browser storage is reserved for
+  // user-created tests and edits only, so catalog growth cannot exhaust localStorage.
+  const USER_DATA_KEY = 'labCollectionCalculator.userData.v1';
   const LEGACY_STORAGE_PREFIX = ['que', 'stLabCalculator'].join('');
-  const LEGACY_DB_KEYS = [...PRIOR_DB_KEYS, ...[9, 8, 7, 6, 5, 4, 3, 2, 1].map(version => `${LEGACY_STORAGE_PREFIX}.database.v${version}`)];
+  const LEGACY_FULL_DB_KEYS = [
+    'labCollectionCalculator.database.v28',
+    'labCollectionCalculator.database.v27', 'labCollectionCalculator.database.v26',
+    'labCollectionCalculator.database.v25', 'labCollectionCalculator.database.v24',
+    'labCollectionCalculator.database.v23', 'labCollectionCalculator.database.v22',
+    'labCollectionCalculator.database.v21', 'labCollectionCalculator.database.v20',
+    'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18',
+    'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16',
+    'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14',
+    'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12',
+    'labCollectionCalculator.database.v11',
+    ...[9, 8, 7, 6, 5, 4, 3, 2, 1].map(version => `${LEGACY_STORAGE_PREFIX}.database.v${version}`)
+  ];
   const SELECTED_KEY = 'labCollectionCalculator.selected.v1';
   const LEGACY_SELECTED_KEYS = [`${LEGACY_STORAGE_PREFIX}.selected.v1`];
   const PAGE_STEP = 30;
@@ -17,7 +30,7 @@
     { key: 'sst', number: 3, label: 'Gold / SST', additive: 'Gel, serum', tubeClass: 'tube-sst' },
     { key: 'serum', number: 4, label: 'Red', additive: 'No additive, serum', tubeClass: 'tube-red' },
     { key: 'heparin', number: 5, label: 'Green', additive: 'Sodium or lithium heparin — verify test', tubeClass: 'tube-green' },
-    { key: 'edta', number: 6, label: 'Lavender / Pink', additive: 'EDTA', tubeClass: 'tube-lavender' },
+    { key: 'edta', number: 6, label: 'Lavender / Pink / Tan', additive: 'EDTA', tubeClass: 'tube-lavender' },
     {
       key: 'royal',
       number: 7,
@@ -49,8 +62,11 @@
     addToSummaryRow: $('addToSummaryRow'), optionalDetails: $('optionalDetails'), openDirectoryFromDialogButton: $('openDirectoryFromDialogButton'), toast: $('toast')
   };
 
+  const seedDatabase = (window.SEED_TESTS || []).map(normalizeRecord);
+  let pendingUserState = null;
   let database = loadDatabase();
   let selectedIds = loadSelectedIds();
+  finalizeStorageMigration();
   let libraryLimit = PAGE_STEP;
   let toastTimer;
 
@@ -97,29 +113,102 @@
   }
 
   function renderAll() {
-    els.recordCount.textContent = `${database.length} local tests`;
+    els.recordCount.textContent = `${database.length} tests`;
     renderLibrary();
     renderOrder();
   }
 
   function loadDatabase() {
-    const seed = (window.SEED_TESTS || []).map(normalizeRecord);
-    const stored = loadJson(DB_KEY, null);
-    if (Array.isArray(stored) && stored.length) return stored.map(normalizeRecord);
+    let state = loadJson(USER_DATA_KEY, null);
+    if (!isUserState(state)) {
+      state = migrateLegacyUserData();
+      if (!saveUserState(state)) pendingUserState = state;
+    }
+    return applyUserState(state);
+  }
 
-    // Published data corrections should replace older built-in records. Preserve only
-    // staff-created custom tests when migrating from an earlier browser database.
-    const merged = new Map(seed.map(test => [databaseKey(test), test]));
-    LEGACY_DB_KEYS.forEach(key => {
+  function isUserState(state) {
+    return Boolean(state && typeof state === 'object' &&
+      Array.isArray(state.customTests) && Array.isArray(state.overrides));
+  }
+
+  function migrateLegacyUserData() {
+    // Older builds stored the full built-in catalog in localStorage. Only migrate
+    // staff-created custom tests; published built-in data should come from data.js.
+    const custom = new Map();
+    LEGACY_FULL_DB_KEYS.forEach(key => {
       const legacy = loadJson(key, null);
       if (!Array.isArray(legacy)) return;
       legacy.map(normalizeRecord)
         .filter(test => test.id.startsWith('custom-') || test.source === 'Custom entry')
-        .forEach(test => merged.set(databaseKey(test), test));
+        .forEach(test => {
+          if (!custom.has(test.id)) custom.set(test.id, test);
+        });
     });
-    const migrated = Array.from(merged.values());
-    localStorage.setItem(DB_KEY, JSON.stringify(migrated));
-    return migrated;
+    return { customTests: Array.from(custom.values()), overrides: [] };
+  }
+
+  function applyUserState(state) {
+    const builtIns = seedDatabase.map(test => ({ ...test }));
+    const byId = new Map(builtIns.map((test, index) => [test.id, index]));
+    const byKey = new Map(builtIns.map((test, index) => [databaseKey(test), index]));
+
+    (state.overrides || []).map(normalizeRecord).forEach(override => {
+      const index = byId.get(override.id) ?? byKey.get(databaseKey(override));
+      if (index !== undefined) builtIns[index] = override;
+    });
+
+    const customTests = (state.customTests || []).map(normalizeRecord);
+    return [...customTests, ...builtIns];
+  }
+
+  function userStateFromDatabase() {
+    const seedById = new Map(seedDatabase.map(test => [test.id, test]));
+    const seedByKey = new Map(seedDatabase.map(test => [databaseKey(test), test]));
+    const customTests = [];
+    const overrides = [];
+
+    database.forEach(test => {
+      const normalized = normalizeRecord(test);
+      if (normalized.id.startsWith('custom-') || normalized.source === 'Custom entry') {
+        customTests.push(normalized);
+        return;
+      }
+      const seed = seedById.get(normalized.id) || seedByKey.get(databaseKey(normalized));
+      if (seed && JSON.stringify(normalized) !== JSON.stringify(seed)) overrides.push(normalized);
+    });
+
+    return { customTests, overrides };
+  }
+
+  function saveUserState(state) {
+    try {
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(state));
+      return true;
+    } catch (error) {
+      console.warn('User test changes could not be saved.', error);
+      return false;
+    }
+  }
+
+  function finalizeStorageMigration() {
+    // This runs only after selected test IDs have been loaded. Removing obsolete
+    // full-catalog keys releases the storage that caused the expanded-catalog alert.
+    try {
+      LEGACY_FULL_DB_KEYS.forEach(key => localStorage.removeItem(key));
+      if (pendingUserState) {
+        if (!saveUserState(pendingUserState)) {
+          window.alert('The calculator loaded, but custom browser changes could not be saved. Browser storage may be unavailable.');
+        } else {
+          pendingUserState = null;
+        }
+      }
+      if (localStorage.getItem(SELECTED_KEY) !== null) {
+        LEGACY_SELECTED_KEYS.forEach(key => localStorage.removeItem(key));
+      }
+    } catch (error) {
+      console.warn('Legacy browser storage could not be cleaned up.', error);
+    }
   }
 
   function loadSelectedIds() {
@@ -148,6 +237,29 @@
       .replace(/\bQuest(?:\s+Diagnostics)?(?:[’']s)?\b/gi, 'the laboratory');
   }
 
+  function normalizeAdditionalDrawRequirements(value) {
+    if (!Array.isArray(value)) return [];
+    return value.map(item => {
+      const source = typeof item === 'string' ? { container: item } : (item || {});
+      const count = Math.max(Number(source.count) || 1, 1);
+      return {
+        container: interfaceWording(String(source.container || '')).trim(),
+        specimenType: normalizeSpecimenType(source.specimenType || ''),
+        preferredVolume: interfaceWording(String(source.preferredVolume || '')).trim(),
+        minimumVolume: interfaceWording(String(source.minimumVolume || '')).trim(),
+        purpose: interfaceWording(String(source.purpose || '')).trim(),
+        transportContainer: cleanTransportContainer(interfaceWording(String(source.transportContainer || '')).trim()),
+        transportTemperature: interfaceWording(String(source.transportTemperature || '')).trim(),
+        transportTemperatureRaw: interfaceWording(String(source.transportTemperatureRaw || '')).trim(),
+        stability: interfaceWording(String(source.stability || '')).trim(),
+        spin: interfaceWording(String(source.spin || '')).trim(),
+        specialLabeling: interfaceWording(String(source.specialLabeling || '')).trim(),
+        specialInstructions: interfaceWording(String(source.specialInstructions || '')).trim(),
+        count
+      };
+    }).filter(item => item.container);
+  }
+
   function normalizeRecord(record, index = 0) {
     record = { ...record };
     for (const key of ['testName', 'specimenType', 'drawContainer', 'alternativeContainer',
@@ -163,6 +275,7 @@
       specimenType: normalizeSpecimenType(record.specimenType),
       drawContainer: String(record.drawContainer || 'Verify Official Instructions'),
       alternativeContainer: String(record.alternativeContainer || ''),
+      additionalDrawRequirements: normalizeAdditionalDrawRequirements(record.additionalDrawRequirements),
       transportContainer: cleanTransportContainer(record.transportContainer),
       preferredVolume: String(record.preferredVolume || ''),
       minimumVolume: String(record.minimumVolume || ''),
@@ -178,6 +291,77 @@
       source: String(record.source || 'Custom entry'),
       sourceRow: record.sourceRow || null
     };
+  }
+
+  function additionalDrawRequirements(test) {
+    return Array.isArray(test.additionalDrawRequirements) ? test.additionalDrawRequirements : [];
+  }
+
+  function expandedCollectionTests(tests) {
+    return tests.flatMap(test => {
+      const expanded = [test];
+      additionalDrawRequirements(test).forEach((requirement, index) => {
+        const count = Math.max(Number(requirement.count) || 1, 1);
+        const requirementNote = requirement.specialInstructions || (count > 1
+          ? `Required additional collection for ${test.testName}. Draw ${count} tubes.`
+          : `Required additional collection for ${test.testName}${requirement.purpose ? ` (${requirement.purpose})` : ''}.`);
+        expanded.push({
+          ...test,
+          id: `${test.id}::additional-draw-${index}`,
+          sourceTestId: test.sourceTestId || test.id,
+          drawContainer: requirement.container,
+          alternativeContainer: '',
+          additionalDrawRequirements: [],
+          specimenType: requirement.specimenType || test.specimenType,
+          preferredVolume: requirement.preferredVolume || '',
+          minimumVolume: requirement.minimumVolume || '',
+          transportContainer: requirement.transportContainer || test.transportContainer,
+          transportTemperature: requirement.transportTemperature || test.transportTemperature,
+          transportTemperatureRaw: requirement.transportTemperatureRaw || test.transportTemperatureRaw,
+          stability: requirement.stability || test.stability,
+          spin: requirement.spin || test.spin,
+          specialLabeling: requirement.specialLabeling || '',
+          specialInstructions: requirementNote
+        });
+      });
+      return expanded;
+    });
+  }
+
+  function requiredDrawContainerBadges(test, className = 'badge') {
+    const primary = `<span class="${className} tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span>`;
+    const extras = additionalDrawRequirements(test).map(requirement => `<span class="${className} tube ${tubeClass(requirement.container)}">${escapeHtml(requirement.container)}</span>`).join(' ');
+    return extras ? `${primary} ${extras}` : primary;
+  }
+
+  function requiredSpecimenBadges(test, extraClass = '') {
+    const labels = [normalizeSpecimenType(test.specimenType), ...additionalDrawRequirements(test).map(requirement => normalizeSpecimenType(requirement.specimenType))]
+      .filter(Boolean);
+    return Array.from(new Set(labels)).map(label => specimenBadge(label, extraClass)).join(' ');
+  }
+
+  function additionalRequirementSummary(test, printMode = false) {
+    const requirements = additionalDrawRequirements(test);
+    if (!requirements.length) return '';
+    const cls = printMode ? 'print-additional-requirement' : 'selected-additional-requirement';
+    return requirements.map(requirement => {
+      const parts = [
+        requirement.purpose,
+        requirement.specimenType,
+        `from ${requirement.container}`,
+        requirement.preferredVolume ? `Preferred ${requirement.preferredVolume}` : '',
+        requirement.minimumVolume ? `Minimum ${requirement.minimumVolume}` : ''
+      ].filter(Boolean);
+      return `<div class="${cls}"><strong>Also required:</strong> ${escapeHtml(parts.join(' · '))}</div>`;
+    }).join('');
+  }
+
+  function combinedVolumeText(test, label) {
+    const primary = label === 'preferred' ? test.preferredVolume : test.minimumVolume;
+    const extras = additionalDrawRequirements(test)
+      .map(requirement => label === 'preferred' ? requirement.preferredVolume : requirement.minimumVolume)
+      .filter(Boolean);
+    return [primary, ...extras].filter(Boolean).join(' + ');
   }
 
   function cleanTransportContainer(value) {
@@ -375,7 +559,7 @@
     return `<div class="batch-row ${blocked ? 'unmatched' : ''}">
       <div class="batch-query">${escapeHtml(row.query)}</div>
       <div class="batch-match"><strong>${escapeHtml(displayCode(best.test))} · ${escapeHtml(best.test.testName)}</strong>
-        <small>${blocked ? 'Marked do not perform. ' : ''}${specimenBadge(best.test.specimenType)} · ${escapeHtml(best.test.drawContainer)}${alternatives ? `<br>Other matches: ${escapeHtml(alternatives)}` : ''}</small>
+        <small>${blocked ? 'Marked do not perform. ' : ''}${requiredSpecimenBadges(best.test)} · ${requiredDrawContainerBadges(best.test)}${alternatives ? `<br>Other matches: ${escapeHtml(alternatives)}` : ''}</small>
       </div>
       <button class="mini-button" data-action="add" data-id="${escapeAttr(best.test.id)}" ${blocked ? 'disabled' : ''}>${selectedIds.includes(best.test.id) ? 'Added' : 'Add'}</button>
     </div>`;
@@ -400,7 +584,7 @@
       if (!filter) return true;
       const haystack = normalizeSearch([
         test.testCode, test.testName, test.specimenType, test.drawContainer, test.alternativeContainer,
-        test.transportContainer, test.transportTemperature, test.specialLabeling, test.specialInstructions
+        additionalDrawRequirements(test).map(item => `${item.specimenType} ${item.container}`).join(' '), test.transportContainer, test.transportTemperature, test.specialLabeling, test.specialInstructions
       ].join(' '));
       return filter.split(' ').every(token => haystack.includes(token));
     });
@@ -419,9 +603,9 @@
     return `<tr class="${selected ? 'is-selected' : ''}">
       <td class="code-cell" data-label="Code">${escapeHtml(displayCode(test))}</td>
       <td data-label="Test"><div class="test-name">${escapeHtml(test.testName)}</div><div class="subtext">${escapeHtml(truncate(test.specialInstructions, 95))}</div></td>
-      <td data-label="Specimen / tube"><span class="badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span><div class="subtext specimen-line">${specimenBadge(test.specimenType)}${test.alternativeContainer ? ` <span>· Alt: ${escapeHtml(test.alternativeContainer)}</span>` : ''}</div></td>
+      <td data-label="Specimen / tube">${requiredDrawContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}${test.alternativeContainer ? ` <span>· Alt: ${escapeHtml(test.alternativeContainer)}</span>` : ''}</div></td>
       <td data-label="Temperature"><span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td>
-      <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(test.preferredVolume || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(test.minimumVolume || '—')}</div></td>
+      <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</div></td>
       <td class="row-actions" data-label="Actions">
         ${blocked ? '<span class="badge temp-unknown">Do not perform</span>' : `<button class="mini-button" data-action="add" data-id="${escapeAttr(test.id)}" ${selected ? 'disabled' : ''} aria-label="${selected ? 'Added' : 'Add'} ${escapeAttr(test.testName)}">${selected ? '✓ Added' : '+ Add'}</button>`}
         <button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a>
@@ -514,13 +698,14 @@
 
   function renderOrder() {
     const tests = selectedTests();
+    const collectionTests = expandedCollectionTests(tests);
     els.selectedCount.textContent = tests.length;
     $('mobileCount').textContent = `${tests.length} ${tests.length === 1 ? 'test' : 'tests'}`;
     els.printButton.disabled = !tests.length;
     els.exportSummaryButton.disabled = !tests.length;
     renderTestsOverview(tests);
-    renderDrawPlan(tests);
-    renderOrderOfDraw(tests);
+    renderDrawPlan(collectionTests);
+    renderOrderOfDraw(collectionTests);
     renderAlerts(tests);
     if (!tests.length) {
       els.selectedList.className = 'selected-list empty-state';
@@ -531,14 +716,15 @@
     els.selectedList.innerHTML = tests.map(test => `
       <article class="selected-card">
         <div class="selected-card-top">
-          <div><div class="test-name">${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</div><div class="subtext specimen-line">${specimenBadge(test.specimenType)} <span>·</span> <span class="preferred-volume-inline">Preferred ${escapeHtml(test.preferredVolume || 'verify')}</span> <span>· Minimum ${escapeHtml(test.minimumVolume || 'verify')}</span></div>${fastingBadge(test, 'selected-fasting-badge')}</div>
+          <div><div class="test-name">${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</div><div class="subtext specimen-line">${requiredSpecimenBadges(test)} <span>·</span> <span class="preferred-volume-inline">Preferred ${escapeHtml(combinedVolumeText(test, 'preferred') || 'verify')}</span> <span>· Minimum ${escapeHtml(combinedVolumeText(test, 'minimum') || 'verify')}</span></div>${fastingBadge(test, 'selected-fasting-badge')}</div>
           <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove selected-card-delete" data-action="remove" data-id="${escapeAttr(test.id)}" type="button" aria-label="Delete ${escapeAttr(test.testName)}">Delete</button></div>
         </div>
         <div class="selected-details">
-          <span class="badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span>
+          ${requiredDrawContainerBadges(test)}
           <span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span>
           <span class="badge temp-unknown">Spin: ${escapeHtml(test.spin)}</span>
         </div>
+        ${additionalRequirementSummary(test)}
         ${test.specialInstructions ? `<div class="selected-note">${escapeHtml(truncate(test.specialInstructions, 190))}</div>` : ''}
       </article>`).join('');
   }
@@ -783,6 +969,7 @@
       specimenType: els.specimenType.value,
       drawContainer: selectedDrawContainer(),
       alternativeContainer: els.alternativeContainer.value,
+      additionalDrawRequirements: existingIndex >= 0 ? database[existingIndex].additionalDrawRequirements : [],
       transportContainer: els.transportContainer.value,
       preferredVolume: els.preferredVolume.value,
       minimumVolume: els.minimumVolume.value,
@@ -850,8 +1037,11 @@
   }
 
   function persistDatabase() {
-    localStorage.setItem(DB_KEY, JSON.stringify(database));
-    els.recordCount.textContent = `${database.length} local tests`;
+    const state = userStateFromDatabase();
+    if (!saveUserState(state)) {
+      window.alert('This change is visible now but could not be saved in this browser. Browser storage may be unavailable.');
+    }
+    els.recordCount.textContent = `${database.length} tests`;
   }
 
 
@@ -1100,8 +1290,9 @@
   function uniqueTests(tests) {
     const seen = new Set();
     return tests.filter(test => {
-      if (seen.has(test.id)) return false;
-      seen.add(test.id);
+      const key = test.sourceTestId || test.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
       return true;
     });
   }
@@ -1118,6 +1309,7 @@
       'tube-blue': 'Light Blue Citrate',
       'tube-lavender': 'Lavender EDTA',
       'tube-pink': 'Pink EDTA',
+      'tube-tan': /heparin/i.test(draw) ? 'Tan Sodium Heparin' : 'K2 EDTA Tan Top',
       'tube-green': /sodium\s+heparin/i.test(draw)
         ? 'Green Sodium Heparin'
         : /lithium\s+heparin/i.test(draw)
@@ -1276,7 +1468,8 @@
     if (/blue/i.test(draw) && /edta/i.test(draw)) return 'Blue Top EDTA';
     if (/blue/i.test(draw) && /serum|no additive/i.test(draw)) return 'Blue Top No Additive (serum)';
     if (/pink/i.test(draw)) return 'Pink EDTA';
-    if (/tan/i.test(draw) && /edta/i.test(draw)) return 'Tan EDTA';
+    if (/tan/i.test(draw) && /heparin/i.test(draw)) return 'Tan Sodium Heparin';
+    if (/tan/i.test(draw) && /edta|k2/i.test(draw)) return 'K2 EDTA Tan Top';
     if (/sst|gold/i.test(draw)) return 'SST';
     if (/lavender|edta/i.test(draw)) return 'Lavender EDTA';
     if (/sodium\s+heparin/i.test(draw)) return 'Green Sodium Heparin';
@@ -1290,8 +1483,17 @@
   }
 
   function explicitSubmissionCount(test) {
+    const containerText = String(test.transportContainer || '').toLowerCase();
     const text = `${test.transportContainer || ''} ${test.preferredVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
+
+    // Prefer an explicit count in the structured transport-container field. Allow
+    // descriptors such as “polypropylene” without interpreting source draw-tube
+    // counts elsewhere in the instructions as submission counts.
+    const containerPattern = new RegExp(`\\b${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:[a-z][a-z-]*\\s+){0,4}(?:transport tubes?|cryovials?|vials?|containers?)\\b`);
+    const containerMatch = containerText.match(containerPattern);
+    if (containerMatch) return Math.max(numberWordValue(containerMatch[1]), 1);
+
     const pattern = new RegExp(`\\b${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:frozen\\s+)?(?:aliquots?|transport tubes?|cryovials?|tubes?|containers?)\\b`);
     const match = text.match(pattern);
     return match ? Math.max(numberWordValue(match[1]), 1) : 1;
@@ -1633,8 +1835,9 @@
   }
 
   function printCollectionSubmissionPlan(tests) {
-    const bags = buildTransportBagPlan(tests);
-    const collectionItems = buildCollectionPlan(tests, bags);
+    const collectionTests = expandedCollectionTests(tests);
+    const bags = buildTransportBagPlan(collectionTests);
+    const collectionItems = buildCollectionPlan(collectionTests, bags);
     const totalCollect = collectionItems.reduce((sum, item) => sum + item.count, 0);
     const bagLabels = bags.map(bag => `<span class="print-bag-pill ${bag.className}">${escapeHtml(bag.label)}</span>`).join('');
     const fastingItems = fastingRequirementsForTests(tests);
@@ -1653,7 +1856,7 @@
       </div>
       ${fastingPanel}
 
-      ${printOrderOfDraw(tests)}
+      ${printOrderOfDraw(collectionTests)}
 
       <div class="print-logistics-subheading">What to collect</div>
       <div class="print-collection-grid">${collectionItems.map(item => `<article class="print-collection-card">
@@ -1703,7 +1906,7 @@
       <table class="print-table">
         <colgroup><col style="width:6%"><col style="width:14%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:5%"><col style="width:8%"><col style="width:7%"><col style="width:8%"><col style="width:25%"></colgroup>
         <thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Draw container</th><th>Transport tube</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
-        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${fastingBadge(test, 'print-test-fasting-badge')}</div>${test.alternativeContainer ? `<div class="print-test-alternative">Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span></div>` : ''}</td><td>${specimenBadge(test.specimenType, 'print-specimen-badge')}</td><td><span class="print-tube-badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span></td><td>${printContainerBadges(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(test.preferredVolume || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(test.minimumVolume || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
+        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${fastingBadge(test, 'print-test-fasting-badge')}</div>${test.alternativeContainer ? `<div class="print-test-alternative">Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span></div>` : ''}${additionalRequirementSummary(test, true)}</td><td>${requiredSpecimenBadges(test, 'print-specimen-badge')}</td><td>${requiredDrawContainerBadges(test, 'print-tube-badge')}</td><td>${printContainerBadges(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
       </table>
       ${printCollectionSubmissionPlan(tests)}
       <div class="print-footer">
@@ -1717,8 +1920,8 @@
   function exportSummaryCsv() {
     const tests = selectedTests();
     if (!tests.length) return showToast('Add at least one test before exporting.');
-    const headers = ['Test Code','Test Name','Specimen Type','Draw Container','Alternative Container','Transport Tube / Container','Preferred Volume','Minimum Volume','Transport Temperature','Raw Temperature','Stability','Spin','Special Labeling','Special Instructions'];
-    const rows = tests.map(test => [test.testCode,test.testName,test.specimenType,test.drawContainer,test.alternativeContainer,test.transportContainer,test.preferredVolume,test.minimumVolume,test.transportTemperature,test.transportTemperatureRaw,test.stability,test.spin,test.specialLabeling,test.specialInstructions]);
+    const headers = ['Test Code','Test Name','Specimen Type','Draw Container','Additional Required Draws','Alternative Container','Transport Tube / Container','Preferred Volume','Minimum Volume','Transport Temperature','Raw Temperature','Stability','Spin','Special Labeling','Special Instructions'];
+    const rows = tests.map(test => [test.testCode,test.testName,[test.specimenType, ...additionalDrawRequirements(test).map(item => item.specimenType)].filter(Boolean).join(' + '),test.drawContainer,additionalDrawRequirements(test).map(item => `${item.container}${item.specimenType ? ` (${item.specimenType})` : ''}`).join(' + '),test.alternativeContainer,test.transportContainer,combinedVolumeText(test, 'preferred'),combinedVolumeText(test, 'minimum'),test.transportTemperature,test.transportTemperatureRaw,test.stability,test.spin,test.specialLabeling,test.specialInstructions]);
     const csv = [headers, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
     downloadBlob(csv, `lab-collection-summary-${isoDate()}.csv`, 'text/csv;charset=utf-8');
   }
@@ -1769,6 +1972,7 @@
       return 'tube-royal';
     }
 
+    if (value.includes('tan')) return 'tube-tan';
     if (value.includes('heparin') || value.includes('green')) return 'tube-green';
     if (value.includes('red')) return 'tube-red';
     if (value.includes('light blue') || value.includes('citrate')) return 'tube-blue';
