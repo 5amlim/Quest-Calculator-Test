@@ -1,6 +1,16 @@
-# Current catalog expansion
+## Version 10.27 Quest catalog expansion
 
-See CATALOG_SCOPE.txt, CATALOG_DECISIONS.json, CATALOG_SOURCE_SNAPSHOT.json, and CATALOG_VALIDATION.txt for the September 2026 expansion. The material below describes the earlier uploaded dataset.
+- Audit date: 2026-09-14.
+- Starting built-in records: 272.
+- Added records: 124.
+- Built-in records after update: 396.
+- Added only order codes whose collection/processing could be mapped to container names already used by the calculator.
+- New draw-container names: none.
+- New transport-container names: none.
+- Existing records and badge/container naming conventions were left unchanged.
+- Pathology, Pap/cytology workflows, invasive fluids not routinely collected in clinic, and tests requiring unconfirmed dedicated kits/preservatives were excluded.
+- Quest states that test codes and availability can vary by service area; staff should verify the active service-area directory when a routed order differs from MASTER.
+- `QUEST_ADDITIONS_v10.27_2026-09-14.csv` is the complete addition list for this release.
 
 ## Version 10.26 requisition additions
 

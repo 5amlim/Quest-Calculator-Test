@@ -1,20 +1,21 @@
-Version 10.27
+v10.29 - 2026-09-14
+- Expanded Show details cards now use a static text Delete button instead of the circular X/remove hover toggle.
+- Collapsed test-summary remove controls are unchanged and still use the existing X-to-Delete hover behavior.
+- No test-data, collection, processing, badge, container, or calculation changes.
 
-Catalog expansion based on the uploaded v10.26 project. Public Quest MASTER directory snapshot: September 15–16, 2026.
+v10.28 - 2026-09-14
+- Re-reviewed all Do Not Perform entries under expanded onsite capability rule.
+- Released compatible tests and replaced legacy XXX placeholders with verified Quest codes.
+- Legacy code 19817 is collectable; current Quest replacement code 13966 added.
+- Remaining blocked tests are limited to unsupported special handling/preservative requirements.
 
-3,749 public entries screened: 2,403 added; 242 already present; 1,104 not added. The original 272 records are retained, giving 2,675 bundled records. The directory did not contain 30 of the original records/placeholders; those were not revalidated or removed.
+v10.27
+- Expanded the Quest collection library by 124 additional current order codes that map to existing clinic collection/processing workflows.
+- Added compatible SST/serum, Red Top transferred serum, EDTA/heparin/ACD whole blood, frozen plasma/serum, sodium-citrate plasma, trace-metal, and Aptima swab workflows.
+- No existing badge, draw-container, or transport-container names were changed or added. Tests requiring unconfirmed/special collection devices, pathology/cytology/Pap workflows, invasive body fluids, or incompatible processing were not added.
+- Added QUEST_ADDITIONS_v10.27_2026-09-14.csv with every added code and its mapped workflow/source.
+- Quest order codes can vary by service area; the active service-area Test Directory remains the final source of truth before collection.
 
-Scope: in-house collection and specimen preparation for send-out testing, not performance of the assays in house. The public MASTER directory is not a guarantee of all regional, account-specific, or orderable Quest codes. Screening used official preferred and acceptable specimen details, with focused checks of alternate routes and special handling. Source links and reasons are included for every decision.
-
-No new container names or badges were introduced. Existing names are reused for all additions. New/unconfirmed supplies found during the search are listed separately and were not enabled. Pathology and Pap tests were excluded from additions.
-
-Existing volume estimates and pooling rules are preserved. Explicit new-record collection and submission counts are retained separately, including Chromium Serum 5248 (one discard tube plus one specimen tube). Full source collection instructions remain accessible in Test details. Meet the stated specimen volume and test-specific handling even when the calculator shows a minimum collection-container estimate.
-
-Some excluded tests may be collectable after clarification of a kit, handling capability, account requirements, or a multi-specimen protocol; exclusion does not mean the assay is unavailable. Original blocked/placeholder records remain as supplied; use the official numeric codes in this additions list.
-
-Validation: 272 existing individual collection and submission plans compared unchanged; all 2,403 additions produce collection and temperature-bag plans. Explicit aliquot counts, browser-storage migration, and saved edits checked. Browser QA results are in CATALOG_VALIDATION.txt.
-
-Earlier notes:
 v10.26
 - Fixed stale browser-database caching so newly added built-in tests (including 38813) load immediately. Existing staff-created custom tests are preserved during migration.
 

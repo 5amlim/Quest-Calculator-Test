@@ -96,6 +96,3 @@ Version 10.25 requisition additions — verified 2026-09-14
 - 683 Angiotensin-1-Converting Enzyme — Quest-performing laboratory directory cross-check: https://lab.parkview.com/test-directory/angiotensin-converting-enzyme/
 - 19817 Streptococcus pneumoniae Antibody (IgG) (12 Serotypes), MAID — Quest discontinued effective 2024-05-28; recommended alternative 13966: https://intellitestmanager.questdiagnostics.com/home/output/267677
 - 38813 Total Glutathione in Whole Blood — Quest IntelliTest Manager: https://intellitestmanager.questdiagnostics.com/home/output/264679 ; collection workflow cross-checked with Quest-performing laboratory directory.
-
-September 15–16, 2026 expansion: Quest public MASTER directory. Full per-code official URLs and source specimen details are in CATALOG_SOURCE_SNAPSHOT.json. All 3,749 fetched detail records were processed; no fetch errors.
-https://testdirectory.questdiagnostics.com/

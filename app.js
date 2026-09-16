@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'labCollectionCalculator.database.v27';
-  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v26', 'labCollectionCalculator.database.v25', 'labCollectionCalculator.database.v24', 'labCollectionCalculator.database.v23', 'labCollectionCalculator.database.v22', 'labCollectionCalculator.database.v21', 'labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
+  const DB_KEY = 'labCollectionCalculator.database.v28';
+  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v27', 'labCollectionCalculator.database.v26', 'labCollectionCalculator.database.v25', 'labCollectionCalculator.database.v24', 'labCollectionCalculator.database.v23', 'labCollectionCalculator.database.v22', 'labCollectionCalculator.database.v21', 'labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
   const LEGACY_STORAGE_PREFIX = ['que', 'stLabCalculator'].join('');
   const LEGACY_DB_KEYS = [...PRIOR_DB_KEYS, ...[9, 8, 7, 6, 5, 4, 3, 2, 1].map(version => `${LEGACY_STORAGE_PREFIX}.database.v${version}`)];
   const SELECTED_KEY = 'labCollectionCalculator.selected.v1';
@@ -105,31 +105,20 @@
   function loadDatabase() {
     const seed = (window.SEED_TESTS || []).map(normalizeRecord);
     const stored = loadJson(DB_KEY, null);
-    if (stored && stored.format === 'seed-overrides-v1' && Array.isArray(stored.overrides)) {
-      const byId = new Map(seed.map(test => [test.id, test]));
-      stored.overrides.map(normalizeRecord).forEach(test => byId.set(test.id, test));
-      return Array.from(byId.values());
-    }
     if (Array.isArray(stored) && stored.length) return stored.map(normalizeRecord);
 
     // Published data corrections should replace older built-in records. Preserve only
     // staff-created custom tests when migrating from an earlier browser database.
-    const merged = new Map(seed.map(test => [test.id, test]));
-    const preservedCustomKeys = new Set();
+    const merged = new Map(seed.map(test => [databaseKey(test), test]));
     LEGACY_DB_KEYS.forEach(key => {
       const legacy = loadJson(key, null);
       if (!Array.isArray(legacy)) return;
       legacy.map(normalizeRecord)
         .filter(test => test.id.startsWith('custom-') || test.source === 'Custom entry')
-        .forEach(test => {
-          const testKey = test.id;
-          if (preservedCustomKeys.has(testKey)) return;
-          preservedCustomKeys.add(testKey);
-          merged.set(testKey, test);
-        });
+        .forEach(test => merged.set(databaseKey(test), test));
     });
     const migrated = Array.from(merged.values());
-    persistDatabase(migrated);
+    localStorage.setItem(DB_KEY, JSON.stringify(migrated));
     return migrated;
   }
 
@@ -182,10 +171,6 @@
       stability: String(record.stability || ''),
       spin: String(record.spin || 'Verify'),
       specialLabeling: String(record.specialLabeling || '').trim(),
-      submissionMode: ['original', 'transfer'].includes(record.submissionMode) ? record.submissionMode : '',
-      verifiedSpecimenSource: String(record.verifiedSpecimenSource || '').trim(),
-      collectionCount: Number.isInteger(record.collectionCount) && record.collectionCount > 0 ? record.collectionCount : null,
-      submissionCount: Number.isInteger(record.submissionCount) && record.submissionCount > 0 ? record.submissionCount : null,
       specialInstructions: String(record.specialInstructions || ''),
       fastingStatus: ['required', 'preferred'].includes(String(record.fastingStatus || '').toLowerCase()) ? String(record.fastingStatus).toLowerCase() : '',
       fastingInstructions: String(record.fastingInstructions || '').trim(),
@@ -547,14 +532,14 @@
       <article class="selected-card">
         <div class="selected-card-top">
           <div><div class="test-name">${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</div><div class="subtext specimen-line">${specimenBadge(test.specimenType)} <span>·</span> <span class="preferred-volume-inline">Preferred ${escapeHtml(test.preferredVolume || 'verify')}</span> <span>· Minimum ${escapeHtml(test.minimumVolume || 'verify')}</span></div>${fastingBadge(test, 'selected-fasting-badge')}</div>
-          <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove remove-flex" data-action="remove" data-id="${escapeAttr(test.id)}" type="button" aria-label="Remove ${escapeAttr(test.testName)}"><span class="remove-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7.3 6.1 12 10.8l4.7-4.7 1.2 1.2-4.7 4.7 4.7 4.7-1.2 1.2-4.7-4.7-4.7 4.7-1.2-1.2 4.7-4.7-4.7-4.7 1.2-1.2Z"/></svg></span><span class="remove-text" aria-hidden="true">Delete</span></button></div>
+          <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove selected-card-delete" data-action="remove" data-id="${escapeAttr(test.id)}" type="button" aria-label="Delete ${escapeAttr(test.testName)}">Delete</button></div>
         </div>
         <div class="selected-details">
           <span class="badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span>
           <span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span>
           <span class="badge temp-unknown">Spin: ${escapeHtml(test.spin)}</span>
         </div>
-        ${test.specialInstructions ? `<div class="selected-note">${escapeHtml(truncate(test.specialInstructions, 190))}</div>${test.submissionMode && test.specialInstructions.length > 190 ? `<details class="selected-note"><summary>Full collection instructions</summary><div>${escapeHtml(test.specialInstructions)}</div></details>` : ''}` : ''}
+        ${test.specialInstructions ? `<div class="selected-note">${escapeHtml(truncate(test.specialInstructions, 190))}</div>` : ''}
       </article>`).join('');
   }
 
@@ -809,11 +794,7 @@
       specialInstructions: els.specialInstructions.value,
       status: els.blockedStatus.checked ? 'blocked' : 'active',
       source: existingIndex >= 0 ? database[existingIndex].source : 'Custom entry',
-      sourceRow: existingIndex >= 0 ? database[existingIndex].sourceRow : null,
-      submissionMode: existingIndex >= 0 && database[existingIndex].drawContainer === selectedDrawContainer() && database[existingIndex].transportContainer === els.transportContainer.value ? database[existingIndex].submissionMode : '',
-      verifiedSpecimenSource: existingIndex >= 0 && database[existingIndex].specimenType === els.specimenType.value && database[existingIndex].drawContainer === selectedDrawContainer() ? database[existingIndex].verifiedSpecimenSource : '',
-      collectionCount: existingIndex >= 0 && database[existingIndex].drawContainer === selectedDrawContainer() && database[existingIndex].specialInstructions === els.specialInstructions.value ? database[existingIndex].collectionCount : null,
-      submissionCount: existingIndex >= 0 && database[existingIndex].transportContainer === els.transportContainer.value && database[existingIndex].specialInstructions === els.specialInstructions.value && database[existingIndex].preferredVolume === els.preferredVolume.value ? database[existingIndex].submissionCount : null
+      sourceRow: existingIndex >= 0 ? database[existingIndex].sourceRow : null
     });
     const requiredFields = [
       { element: els.testCode, value: els.testCode.value.trim(), message: 'Enter a test code before saving.' },
@@ -868,13 +849,9 @@
     showToast('Custom test deleted.');
   }
 
-  function persistDatabase(records = database) {
-    // Keep only local changes in browser storage. The bundled catalog is loaded
-    // from data.js, so a large catalog does not duplicate itself in localStorage.
-    const seedById = new Map((window.SEED_TESTS || []).map(normalizeRecord).map(test => [test.id, test]));
-    const overrides = records.filter(test => JSON.stringify(test) !== JSON.stringify(seedById.get(test.id)));
-    localStorage.setItem(DB_KEY, JSON.stringify({ format: 'seed-overrides-v1', overrides }));
-    els.recordCount.textContent = `${records.length} local tests`;
+  function persistDatabase() {
+    localStorage.setItem(DB_KEY, JSON.stringify(database));
+    els.recordCount.textContent = `${database.length} local tests`;
   }
 
 
@@ -1169,7 +1146,6 @@
   }
 
   function explicitCollectionCount(test) {
-    if (Number.isInteger(test.collectionCount) && test.collectionCount > 0) return test.collectionCount;
     const draw = String(test.drawContainer || '').toLowerCase();
     const note = String(test.specialInstructions || '').toLowerCase();
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
@@ -1314,7 +1290,6 @@
   }
 
   function explicitSubmissionCount(test) {
-    if (Number.isInteger(test.submissionCount) && test.submissionCount > 0) return test.submissionCount;
     const text = `${test.transportContainer || ''} ${test.preferredVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
     const pattern = new RegExp(`\\b${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:frozen\\s+)?(?:aliquots?|transport tubes?|cryovials?|tubes?|containers?)\\b`);
@@ -1327,7 +1302,6 @@
   }
 
   function specificSpecimenSource(test) {
-    if (test.verifiedSpecimenSource) return test.verifiedSpecimenSource;
     const stated = String(test.specimenType || '').trim();
     const normalized = normalizeSpecimenType(stated);
     const text = `${test.testName || ''} ${test.preferredVolume || ''} ${test.minimumVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
@@ -1415,7 +1389,6 @@
   }
 
   function isOriginalContainerSubmission(test) {
-    if (test.submissionMode) return test.submissionMode === 'original';
     const draw = String(test.drawContainer || '').trim();
     const transport = finalTransportContainer(test);
     const combined = `${transport} ${test.specialInstructions || ''}`.toLowerCase();
