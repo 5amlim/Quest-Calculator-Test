@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const DB_KEY = 'labCollectionCalculator.database.v25';
-  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v24', 'labCollectionCalculator.database.v23', 'labCollectionCalculator.database.v22', 'labCollectionCalculator.database.v21', 'labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
+  const DB_KEY = 'labCollectionCalculator.database.v27';
+  const PRIOR_DB_KEYS = ['labCollectionCalculator.database.v26', 'labCollectionCalculator.database.v25', 'labCollectionCalculator.database.v24', 'labCollectionCalculator.database.v23', 'labCollectionCalculator.database.v22', 'labCollectionCalculator.database.v21', 'labCollectionCalculator.database.v20', 'labCollectionCalculator.database.v19', 'labCollectionCalculator.database.v18', 'labCollectionCalculator.database.v17', 'labCollectionCalculator.database.v16', 'labCollectionCalculator.database.v15', 'labCollectionCalculator.database.v14', 'labCollectionCalculator.database.v13', 'labCollectionCalculator.database.v12', 'labCollectionCalculator.database.v11'];
   const LEGACY_STORAGE_PREFIX = ['que', 'stLabCalculator'].join('');
   const LEGACY_DB_KEYS = [...PRIOR_DB_KEYS, ...[9, 8, 7, 6, 5, 4, 3, 2, 1].map(version => `${LEGACY_STORAGE_PREFIX}.database.v${version}`)];
   const SELECTED_KEY = 'labCollectionCalculator.selected.v1';
@@ -33,8 +33,8 @@
   const els = {
     recordCount: $('recordCount'), searchInput: $('searchInput'), addBestButton: $('addBestButton'),
     previewButton: $('previewButton'), clearSearchButton: $('clearSearchButton'), batchResults: $('batchResults'),
-    libraryFilter: $('libraryFilter'), tempFilter: $('tempFilter'), showBlocked: $('showBlocked'),
-    libraryBody: $('libraryBody'), libraryStatus: $('libraryStatus'), loadMoreButton: $('loadMoreButton'),
+    libraryFilter: $('libraryFilter'), specimenFilter: $('specimenFilter'), showBlocked: $('showBlocked'),
+    libraryBody: $('libraryBody'), libraryStatus: $('libraryStatus'), loadMoreButton: $('loadMoreButton'), loadMoreInlineButton: $('loadMoreInlineButton'),
     addTestButton: $('addTestButton'), addSelectedTestButton: $('addSelectedTestButton'), testsDetailsButton: $('testsDetailsButton'), testsDetailsPanel: $('testsDetailsPanel'),
     selectedCount: $('selectedCount'), selectedList: $('selectedList'), testsOverviewList: $('testsOverviewList'), testsOverviewSummary: $('testsOverviewSummary'),
     drawPlan: $('drawPlan'), drawPlanSummary: $('drawPlanSummary'), orderOfDraw: $('orderOfDraw'), orderOfDrawSummary: $('orderOfDrawSummary'), collectionAlerts: $('collectionAlerts'), clearOrderButton: $('clearOrderButton'),
@@ -74,9 +74,10 @@
       if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') renderBatch(true);
     });
     els.libraryFilter.addEventListener('input', () => { libraryLimit = PAGE_STEP; renderLibrary(); });
-    els.tempFilter.addEventListener('change', () => { libraryLimit = PAGE_STEP; renderLibrary(); });
+    els.specimenFilter.addEventListener('change', () => { libraryLimit = PAGE_STEP; renderLibrary(); });
     els.showBlocked.addEventListener('change', () => { libraryLimit = PAGE_STEP; renderLibrary(); });
     els.loadMoreButton.addEventListener('click', () => { libraryLimit += PAGE_STEP; renderLibrary(); });
+    els.loadMoreInlineButton?.addEventListener('click', () => { libraryLimit += PAGE_STEP; renderLibrary(); });
     els.libraryBody.addEventListener('click', handleLibraryClick);
     els.batchResults.addEventListener('click', handleBatchClick);
     els.selectedList.addEventListener('click', handleSelectedClick);
@@ -104,20 +105,31 @@
   function loadDatabase() {
     const seed = (window.SEED_TESTS || []).map(normalizeRecord);
     const stored = loadJson(DB_KEY, null);
+    if (stored && stored.format === 'seed-overrides-v1' && Array.isArray(stored.overrides)) {
+      const byId = new Map(seed.map(test => [test.id, test]));
+      stored.overrides.map(normalizeRecord).forEach(test => byId.set(test.id, test));
+      return Array.from(byId.values());
+    }
     if (Array.isArray(stored) && stored.length) return stored.map(normalizeRecord);
 
     // Published data corrections should replace older built-in records. Preserve only
     // staff-created custom tests when migrating from an earlier browser database.
-    const merged = new Map(seed.map(test => [databaseKey(test), test]));
+    const merged = new Map(seed.map(test => [test.id, test]));
+    const preservedCustomKeys = new Set();
     LEGACY_DB_KEYS.forEach(key => {
       const legacy = loadJson(key, null);
       if (!Array.isArray(legacy)) return;
       legacy.map(normalizeRecord)
         .filter(test => test.id.startsWith('custom-') || test.source === 'Custom entry')
-        .forEach(test => merged.set(databaseKey(test), test));
+        .forEach(test => {
+          const testKey = test.id;
+          if (preservedCustomKeys.has(testKey)) return;
+          preservedCustomKeys.add(testKey);
+          merged.set(testKey, test);
+        });
     });
     const migrated = Array.from(merged.values());
-    localStorage.setItem(DB_KEY, JSON.stringify(migrated));
+    persistDatabase(migrated);
     return migrated;
   }
 
@@ -170,6 +182,10 @@
       stability: String(record.stability || ''),
       spin: String(record.spin || 'Verify'),
       specialLabeling: String(record.specialLabeling || '').trim(),
+      submissionMode: ['original', 'transfer'].includes(record.submissionMode) ? record.submissionMode : '',
+      verifiedSpecimenSource: String(record.verifiedSpecimenSource || '').trim(),
+      collectionCount: Number.isInteger(record.collectionCount) && record.collectionCount > 0 ? record.collectionCount : null,
+      submissionCount: Number.isInteger(record.submissionCount) && record.submissionCount > 0 ? record.submissionCount : null,
       specialInstructions: String(record.specialInstructions || ''),
       fastingStatus: ['required', 'preferred'].includes(String(record.fastingStatus || '').toLowerCase()) ? String(record.fastingStatus).toLowerCase() : '',
       fastingInstructions: String(record.fastingInstructions || '').trim(),
@@ -380,13 +396,22 @@
     </div>`;
   }
 
+  function specimenFilterCategory(specimenType) {
+    const value = normalizeSearch(specimenType || '');
+    if (['serum', 'plasma', 'platelet poor plasma', 'rbcs', 'whole blood'].includes(value)) return 'Blood';
+    if (value.includes('urine')) return 'Urine';
+    if (value.includes('stool')) return 'Stool';
+    if (value.includes('swab')) return 'Swab';
+    return 'Other';
+  }
+
   function renderLibrary() {
     const filter = normalizeSearch(els.libraryFilter.value);
-    const temperature = els.tempFilter.value;
+    const specimenCategory = els.specimenFilter.value;
     const showBlocked = els.showBlocked.checked;
     const filtered = database.filter(test => {
       if (!showBlocked && test.status === 'blocked') return false;
-      if (temperature && test.transportTemperature !== temperature) return false;
+      if (specimenCategory && specimenFilterCategory(test.specimenType) !== specimenCategory) return false;
       if (!filter) return true;
       const haystack = normalizeSearch([
         test.testCode, test.testName, test.specimenType, test.drawContainer, test.alternativeContainer,
@@ -398,7 +423,9 @@
     const shown = filtered.slice(0, libraryLimit);
     els.libraryBody.innerHTML = shown.length ? shown.map(renderLibraryRow).join('') : `<tr><td colspan="6" class="empty-state">No tests match these filters.</td></tr>`;
     els.libraryStatus.textContent = `Showing ${shown.length} of ${filtered.length}`;
-    els.loadMoreButton.classList.toggle('hidden', shown.length >= filtered.length);
+    const allLibraryTestsShown = shown.length >= filtered.length;
+    els.loadMoreButton.classList.toggle('hidden', allLibraryTestsShown);
+    els.loadMoreInlineButton?.classList.toggle('hidden', allLibraryTestsShown);
   }
 
   function renderLibraryRow(test) {
@@ -459,7 +486,7 @@
     els.testsDetailsPanel.classList.toggle('hidden', !showingDetails);
     els.testsDetailsPanel.setAttribute('aria-hidden', showingDetails ? 'false' : 'true');
     els.testsDetailsButton.setAttribute('aria-expanded', showingDetails ? 'true' : 'false');
-    els.testsDetailsButton.textContent = showingDetails ? 'Hide details' : 'Show details';
+    els.testsDetailsButton.textContent = showingDetails ? '▴ Hide details' : '▾ Show details';
   }
 
   function addSelected(id, rerender = true) {
@@ -520,14 +547,14 @@
       <article class="selected-card">
         <div class="selected-card-top">
           <div><div class="test-name">${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</div><div class="subtext specimen-line">${specimenBadge(test.specimenType)} <span>·</span> <span class="preferred-volume-inline">Preferred ${escapeHtml(test.preferredVolume || 'verify')}</span> <span>· Minimum ${escapeHtml(test.minimumVolume || 'verify')}</span></div>${fastingBadge(test, 'selected-fasting-badge')}</div>
-          <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove remove-flex" data-action="remove" data-id="${escapeAttr(test.id)}" type="button" aria-label="Remove ${escapeAttr(test.testName)}"><span class="remove-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></span><span class="remove-text">Remove</span></button></div>
+          <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove remove-flex" data-action="remove" data-id="${escapeAttr(test.id)}" type="button" aria-label="Remove ${escapeAttr(test.testName)}"><span class="remove-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7.3 6.1 12 10.8l4.7-4.7 1.2 1.2-4.7 4.7 4.7 4.7-1.2 1.2-4.7-4.7-4.7 4.7-1.2-1.2 4.7-4.7-4.7-4.7 1.2-1.2Z"/></svg></span><span class="remove-text" aria-hidden="true">Delete</span></button></div>
         </div>
         <div class="selected-details">
           <span class="badge tube ${tubeClass(test.drawContainer)}">${escapeHtml(test.drawContainer)}</span>
           <span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span>
           <span class="badge temp-unknown">Spin: ${escapeHtml(test.spin)}</span>
         </div>
-        ${test.specialInstructions ? `<div class="selected-note">${escapeHtml(truncate(test.specialInstructions, 190))}</div>` : ''}
+        ${test.specialInstructions ? `<div class="selected-note">${escapeHtml(truncate(test.specialInstructions, 190))}</div>${test.submissionMode && test.specialInstructions.length > 190 ? `<details class="selected-note"><summary>Full collection instructions</summary><div>${escapeHtml(test.specialInstructions)}</div></details>` : ''}` : ''}
       </article>`).join('');
   }
 
@@ -540,7 +567,7 @@
       els.testsDetailsPanel.classList.add('hidden');
       els.testsDetailsPanel.setAttribute('aria-hidden', 'true');
       els.testsDetailsButton.setAttribute('aria-expanded', 'false');
-      els.testsDetailsButton.textContent = 'Show details';
+      els.testsDetailsButton.textContent = '▾ Show details';
       els.testsOverviewList.className = 'tests-overview-list empty-state';
       els.testsOverviewList.innerHTML = '<div class="empty-symbol" aria-hidden="true">＋</div><strong>No tests selected</strong><p>Select Add next to a test, or enter names or codes in the box and select Add best matches.</p>';
       return;
@@ -552,7 +579,7 @@
           <strong class="tests-overview-code">${escapeHtml(displayCode(test))}</strong>
           <span class="tests-overview-name">${escapeHtml(test.testName)}</span>
         </div>
-        <button class="mini-button remove remove-flex tests-overview-remove" type="button" data-action="remove" data-id="${escapeAttr(test.id)}" aria-label="Remove ${escapeAttr(test.testName)}"><span class="remove-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg></span><span class="remove-text">Remove</span></button>
+        <button class="mini-button remove remove-flex tests-overview-remove" type="button" data-action="remove" data-id="${escapeAttr(test.id)}" aria-label="Remove ${escapeAttr(test.testName)}"><span class="remove-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7.3 6.1 12 10.8l4.7-4.7 1.2 1.2-4.7 4.7 4.7 4.7-1.2 1.2-4.7-4.7-4.7 4.7-1.2-1.2 4.7-4.7-4.7-4.7 1.2-1.2Z"/></svg></span><span class="remove-text" aria-hidden="true">Delete</span></button>
       </div>`).join('');
   }
 
@@ -782,7 +809,11 @@
       specialInstructions: els.specialInstructions.value,
       status: els.blockedStatus.checked ? 'blocked' : 'active',
       source: existingIndex >= 0 ? database[existingIndex].source : 'Custom entry',
-      sourceRow: existingIndex >= 0 ? database[existingIndex].sourceRow : null
+      sourceRow: existingIndex >= 0 ? database[existingIndex].sourceRow : null,
+      submissionMode: existingIndex >= 0 && database[existingIndex].drawContainer === selectedDrawContainer() && database[existingIndex].transportContainer === els.transportContainer.value ? database[existingIndex].submissionMode : '',
+      verifiedSpecimenSource: existingIndex >= 0 && database[existingIndex].specimenType === els.specimenType.value && database[existingIndex].drawContainer === selectedDrawContainer() ? database[existingIndex].verifiedSpecimenSource : '',
+      collectionCount: existingIndex >= 0 && database[existingIndex].drawContainer === selectedDrawContainer() && database[existingIndex].specialInstructions === els.specialInstructions.value ? database[existingIndex].collectionCount : null,
+      submissionCount: existingIndex >= 0 && database[existingIndex].transportContainer === els.transportContainer.value && database[existingIndex].specialInstructions === els.specialInstructions.value && database[existingIndex].preferredVolume === els.preferredVolume.value ? database[existingIndex].submissionCount : null
     });
     const requiredFields = [
       { element: els.testCode, value: els.testCode.value.trim(), message: 'Enter a test code before saving.' },
@@ -837,9 +868,13 @@
     showToast('Custom test deleted.');
   }
 
-  function persistDatabase() {
-    localStorage.setItem(DB_KEY, JSON.stringify(database));
-    els.recordCount.textContent = `${database.length} local tests`;
+  function persistDatabase(records = database) {
+    // Keep only local changes in browser storage. The bundled catalog is loaded
+    // from data.js, so a large catalog does not duplicate itself in localStorage.
+    const seedById = new Map((window.SEED_TESTS || []).map(normalizeRecord).map(test => [test.id, test]));
+    const overrides = records.filter(test => JSON.stringify(test) !== JSON.stringify(seedById.get(test.id)));
+    localStorage.setItem(DB_KEY, JSON.stringify({ format: 'seed-overrides-v1', overrides }));
+    els.recordCount.textContent = `${records.length} local tests`;
   }
 
 
@@ -1134,6 +1169,7 @@
   }
 
   function explicitCollectionCount(test) {
+    if (Number.isInteger(test.collectionCount) && test.collectionCount > 0) return test.collectionCount;
     const draw = String(test.drawContainer || '').toLowerCase();
     const note = String(test.specialInstructions || '').toLowerCase();
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
@@ -1278,6 +1314,7 @@
   }
 
   function explicitSubmissionCount(test) {
+    if (Number.isInteger(test.submissionCount) && test.submissionCount > 0) return test.submissionCount;
     const text = `${test.transportContainer || ''} ${test.preferredVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
     const pattern = new RegExp(`\\b${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:frozen\\s+)?(?:aliquots?|transport tubes?|cryovials?|tubes?|containers?)\\b`);
@@ -1290,6 +1327,7 @@
   }
 
   function specificSpecimenSource(test) {
+    if (test.verifiedSpecimenSource) return test.verifiedSpecimenSource;
     const stated = String(test.specimenType || '').trim();
     const normalized = normalizeSpecimenType(stated);
     const text = `${test.testName || ''} ${test.preferredVolume || ''} ${test.minimumVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
@@ -1352,7 +1390,32 @@
     return tubeClass(container);
   }
 
+  function submissionTransportGroupingKey(test, transport) {
+    const raw = normalizeSearch(transport)
+      .replace(/^\d+\s*(?:x|×)?\s*(?:separate\s+)?/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const specimen = normalizeSpecimenType(test.specimenType).toLowerCase();
+    const specialContainer = /acid[- ]?washed|acid[- ]?rinsed|metal[- ]?free|trace[- ]?metal|amber|protect from light|light[- ]?protected|aptima|preservative|cryovial|glass|royal blue|trace element/.test(raw);
+    const genericTransport = /^(?:(?:serum|plasma)\s+)?(?:plastic\s+)?transport\s+tubes?$/.test(raw);
+
+    // Normalize only ordinary generic serum/plasma transport tubes. Specialty
+    // containers (acid-washed, metal-free, amber, cryovial, etc.) retain their
+    // exact container identity and can never merge into the standard green-top group.
+    if (!specialContainer && /^(?:serum|plasma)$/.test(specimen) && genericTransport) {
+      const standardKey = `standard-${specimen}-transport`;
+      // Tests that explicitly require multiple separate submission tubes remain
+      // their own card so that requirement is not obscured by pooling.
+      return explicitSubmissionCount(test) > 1
+        ? `${standardKey}|dedicated-${normalizeSearch(displayCode(test))}`
+        : standardKey;
+    }
+
+    return raw;
+  }
+
   function isOriginalContainerSubmission(test) {
+    if (test.submissionMode) return test.submissionMode === 'original';
     const draw = String(test.drawContainer || '').trim();
     const transport = finalTransportContainer(test);
     const combined = `${transport} ${test.specialInstructions || ''}`.toLowerCase();
@@ -1418,7 +1481,7 @@
         ? 'Swab Transport Tube'
         : (isSpecialtyMetalContainer ? `Acid-Washed / Metal-Free ${specimen} Transport Tube` : `${specimen} Transport Tube`);
       return [{
-        key: `transport|${normalizeSearch(sourcePhrase)}|${normalizeSearch(transport)}`,
+        key: `transport|${normalizeSearch(sourcePhrase)}|${submissionTransportGroupingKey(test, transport)}`,
         label,
         className: transportTubeClass(test, transport),
         count: explicitSubmissionCount(test),
@@ -1545,17 +1608,55 @@
     return `<div class="print-label-notes">${Array.from(grouped.entries()).map(([note, codes]) => `<div class="print-label-note"><span>Label</span><div>${escapeHtml(note)} <small>${escapeHtml(codes.join(', '))}</small></div></div>`).join('')}</div>`;
   }
 
+  function isTransferSubmission(test) {
+    if (isOriginalContainerSubmission(test)) return false;
+    const value = finalTransportContainer(test);
+    const lower = value.toLowerCase();
+    const source = canonicalCollectionContainer(test);
+    const transportClass = transportTubeClass(test, value);
+    if (/transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off|preservative/i.test(value)) return true;
+    if (isUrineTest(test) && !isTimedUrineTest(test) && source.className === 'tube-urine-cup') return true;
+    return Boolean(source.className && transportClass && source.className !== transportClass);
+  }
+
+  function printTransferSourceBadge(test) {
+    if (!isTransferSubmission(test)) return '';
+    const source = canonicalCollectionContainer(test);
+    if (!source.label || !source.className) return '';
+    return `<span class="print-source-tube-badge tube ${source.className}">From ${escapeHtml(source.label)}</span>`;
+  }
+
+  function printSubmissionSourceBadges(item) {
+    if (item.originalTube) return '';
+    const badges = new Map();
+    uniqueTests(item.tests).forEach(test => {
+      if (!isTransferSubmission(test)) return;
+      const source = canonicalCollectionContainer(test);
+      if (!source.label || !source.className) return;
+      badges.set(`${source.className}|${source.label}`, source);
+    });
+    if (!badges.size) return '';
+    return `<span class="print-source-badges">${Array.from(badges.values()).map(source => `<span class="print-source-tube-badge tube ${source.className}">From ${escapeHtml(source.label)}</span>`).join('')}</span>`;
+  }
+
+  function printSubmissionItemDetail(item) {
+    const badges = printSubmissionSourceBadges(item);
+    if (!item.detail && !badges) return '';
+    return `<div class="print-submit-item-detail">${item.detail ? escapeHtml(item.detail) : ''}${badges}</div>`;
+  }
+
   function printContainerBadges(test) {
     const value = String(test.transportContainer || '').trim();
     const lower = value.toLowerCase();
+    const sourceBadge = printTransferSourceBadge(test);
     if ((/red\s*\/\s*yellow|red-yellow|swirl/.test(lower)) && /gray|grey/.test(lower) && /urine|culture/.test(lower)) {
-      return `<span class="print-tube-badge tube tube-ua-swirl">Red/Yellow Swirl UA Tube</span><br><span class="print-tube-badge tube tube-urine-culture">Gray-Top Urine Culture Tube</span>`;
+      return `<span class="print-tube-badge tube tube-ua-swirl">Red/Yellow Swirl UA Tube</span><br><span class="print-tube-badge tube tube-urine-culture">Gray-Top Urine Culture Tube</span>${sourceBadge ? `<div class="print-transport-source">${sourceBadge}</div>` : ''}`;
     }
     const sourceSpecimen = specificSpecimenSource(test);
     const sourceText = /transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/i.test(value)
       ? specimenSourceDetail(test)
       : sourceSpecimen;
-    return `<span class="print-tube-badge tube ${transportTubeClass(test, value)}">${escapeHtml(value || 'Verify')}</span>${sourceText ? `<div class="print-transport-source">${escapeHtml(sourceText)}</div>` : ''}`;
+    return `<span class="print-tube-badge tube ${transportTubeClass(test, value)}">${escapeHtml(value || 'Verify')}</span>${sourceText ? `<div class="print-transport-source">${escapeHtml(sourceText)}${sourceBadge}</div>` : ''}`;
   }
 
   function printCollectionSubmissionPlan(tests) {
@@ -1585,7 +1686,7 @@
       <div class="print-collection-grid">${collectionItems.map(item => `<article class="print-collection-card">
         <div class="print-container-count"><strong>${item.count}</strong><span class="tube ${item.className}">${escapeHtml(item.label)}</span></div>
         ${item.detail ? `<div class="print-container-detail">${escapeHtml(item.detail)}</div>` : ''}
-        <div class="print-for-tests"><b>For tests:</b><ul>${testReferences(item.tests)}</ul></div>
+        <div class="print-for-tests"><b>For ${item.tests.length} ${item.tests.length === 1 ? 'test' : 'tests'}:</b><ul>${testReferences(item.tests)}</ul></div>
       </article>`).join('')}</div>
 
       <section class="print-submit-section">
@@ -1600,9 +1701,9 @@
             <div class="print-bag-card-header"><div><strong>${escapeHtml(bag.label)}</strong><span>Keep separate from other temperatures</span></div><div class="print-bag-container-total"><strong>${totalContainers}</strong><span>containers</span></div></div>
             <div class="print-submit-content">${contents.map(item => `<div class="print-submit-item${item.originalTube ? ' original-tube-submit' : ''}">
               <div class="print-submit-item-title"><strong>${item.count}</strong><span class="tube ${item.className}">${escapeHtml(item.label)}</span></div>
-              ${item.detail ? `<div class="print-submit-item-detail">${escapeHtml(item.detail)}</div>` : ''}
+              ${printSubmissionItemDetail(item)}
               ${printLabelingNotes(item)}
-              <div class="print-for-tests"><b>For tests:</b><ul>${testReferences(item.tests)}</ul></div>
+              <div class="print-for-tests"><b>For ${item.tests.length} ${item.tests.length === 1 ? 'test' : 'tests'}:</b><ul>${testReferences(item.tests)}</ul></div>
             </div>`).join('')}</div>
           </article>`;
         }).join('')}</div>

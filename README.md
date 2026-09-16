@@ -1,3 +1,19 @@
+# Version 10.27 — Quest catalog expansion
+
+Catalog expansion based on the uploaded v10.26 project. Public Quest MASTER directory snapshot: September 15–16, 2026.
+
+3,749 public entries screened: 2,403 added; 242 already present; 1,104 not added. The original 272 records are retained, giving 2,675 bundled records. The directory did not contain 30 of the original records/placeholders; those were not revalidated or removed.
+
+Scope: in-house collection and specimen preparation for send-out testing, not performance of the assays in house. The public MASTER directory is not a guarantee of all regional, account-specific, or orderable Quest codes. Screening used official preferred and acceptable specimen details, with focused checks of alternate routes and special handling. Source links and reasons are included for every decision.
+
+No new container names or badges were introduced. Existing names are reused for all additions. New/unconfirmed supplies found during the search are listed separately and were not enabled. Pathology and Pap tests were excluded from additions.
+
+Existing volume estimates and pooling rules are preserved. Explicit new-record collection and submission counts are retained separately, including Chromium Serum 5248 (one discard tube plus one specimen tube). Full source collection instructions remain accessible in Test details. Meet the stated specimen volume and test-specific handling even when the calculator shows a minimum collection-container estimate.
+
+Some excluded tests may be collectable after clarification of a kit, handling capability, account requirements, or a multi-specimen protocol; exclusion does not mean the assay is unavailable. Original blocked/placeholder records remain as supplied; use the official numeric codes in this additions list.
+
+## Earlier release notes
+
 ## Version 10.3
 - Added the estimated number of collection containers beside the test count on each Draw plan card.
 - Container counts use the existing collection-planning logic, including pooling, dedicated-tube requirements, and separate transport-temperature workflows.

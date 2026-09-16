@@ -1,3 +1,12 @@
+# v10.22 UI update
+- **Show details** is now a smaller button aligned directly under **Tests**.
+- Added a disclosure arrow that flips between **▾ Show details** and **▴ Hide details**.
+- No calculation, test-data, or printout changes.
+
+## v10.21
+- Restored **Show details** to the compact button treatment.
+- All other v10.20 behavior is unchanged.
+
 # Interface update
 
 This edition updates the interface of the supplied v10.6 calculator.
@@ -23,3 +32,7 @@ Each transport container prepared from an SST now has its own source SST in coll
 
 ## Print layout
 Printouts now start with collection counts and the draw/pack plan, followed by labeled instructions for each test. Includes volumes, stability, full handling notes, exact temperature wording, alternative containers, fasting instructions, and labels. Dedicated print.css improves readability and allows long sections to flow across pages. Calculation and content checks passed; browser print pagination has not been visually verified.
+
+## v10.13
+- Draw plan now starts collapsed to reduce visual clutter.
+- Printed transfer workflows now show a small visual badge for the source collection container (for example, SST/Gold or Sterile Urine Cup) next to the source text.

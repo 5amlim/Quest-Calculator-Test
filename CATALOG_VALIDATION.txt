@@ -1,0 +1,15 @@
+Validation — 2026-09-16
+
+PASS: JavaScript syntax for app.js and data.js.
+PASS: All 272 original source records are byte-equivalent as JSON values; original index.html and all three CSS files are unchanged.
+PASS: All 2,403 added codes are unique, absent from the original numeric codes, and refer to Active source records. Each mapped collection/transport name already exists in the original data or application.
+PASS: Individual collection and submission plans for all 272 original records compare unchanged against the original application.
+PASS: All 2,403 new records produce collection and single-temperature transport plans without exceptions.
+PASS: Explicit collection/submission counts, including chromium discard tube, multi-tube blood draws and multi-aliquot coagulation panels.
+PASS: Sparse local storage, migration preserving the newest custom record, and edited records survive reload.
+PASS: Simulated-DOM initialization, library rendering, exact-code batch search, cart rendering, full instructions, print markup and selected-order reload.
+PASS: Report data counts, generated tables, search filter, pagination setup and container report.
+
+Limitation: A real-browser visual and print-layout test could not run because the browser binary download timed out. The functional DOM checks above are not a visual browser test. The original HTML/CSS layout and badges were retained.
+
+Directory screening is automated with focused manual checks of routes and edge cases; not every entry was independently reviewed by a clinician. Current Quest requirements and account availability remain authoritative.

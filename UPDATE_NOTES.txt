@@ -1,17 +1,91 @@
-v10.11
-- The Collection and submission plan now starts on the next printed page after the test table, regardless of how many pages the test table uses.
-- Updated search guidance to: “Use test codes when available. Check the matches before printing/collecting.”
-- Screen UI and calculation/pooling logic are otherwise unchanged.
+Version 10.27
 
-v10.10
-- Print: Collection and submission plan now always starts on a new page.
-- Screen UI and calculation logic unchanged from v10.9.
+Catalog expansion based on the uploaded v10.26 project. Public Quest MASTER directory snapshot: September 15–16, 2026.
 
-v10.10
-- Moved the Matches/results card directly below the batch test-entry area so reviewed matches are visible without scrolling past the test library.
-- Print layout remains unchanged from v10.7/v10.8.
+3,749 public entries screened: 2,403 added; 242 already present; 1,104 not added. The original 272 records are retained, giving 2,675 bundled records. The directory did not contain 30 of the original records/placeholders; those were not revalidated or removed.
 
-Version 10.8
-- On-screen UI updated to match the supplied Lab Collection Calculator reference.
-- Collection calculation logic updated to match the supplied reference, including SST source-tube handling for transferred serum.
-- Print layout and print renderer preserved from v10.7.
+Scope: in-house collection and specimen preparation for send-out testing, not performance of the assays in house. The public MASTER directory is not a guarantee of all regional, account-specific, or orderable Quest codes. Screening used official preferred and acceptable specimen details, with focused checks of alternate routes and special handling. Source links and reasons are included for every decision.
+
+No new container names or badges were introduced. Existing names are reused for all additions. New/unconfirmed supplies found during the search are listed separately and were not enabled. Pathology and Pap tests were excluded from additions.
+
+Existing volume estimates and pooling rules are preserved. Explicit new-record collection and submission counts are retained separately, including Chromium Serum 5248 (one discard tube plus one specimen tube). Full source collection instructions remain accessible in Test details. Meet the stated specimen volume and test-specific handling even when the calculator shows a minimum collection-container estimate.
+
+Some excluded tests may be collectable after clarification of a kit, handling capability, account requirements, or a multi-specimen protocol; exclusion does not mean the assay is unavailable. Original blocked/placeholder records remain as supplied; use the official numeric codes in this additions list.
+
+Validation: 272 existing individual collection and submission plans compared unchanged; all 2,403 additions produce collection and temperature-bag plans. Explicit aliquot counts, browser-storage migration, and saved edits checked. Browser QA results are in CATALOG_VALIDATION.txt.
+
+Earlier notes:
+v10.26
+- Fixed stale browser-database caching so newly added built-in tests (including 38813) load immediately. Existing staff-created custom tests are preserved during migration.
+
+v10.26
+- Added the 8 tests from the 9/14/2026 requisition that were not already in the calculator: 7197, 2692, 36733, 7903, 545, 683, 19817, and 38813.
+- Added 38813 Total Glutathione in Whole Blood as a dedicated full Yellow ACD-B whole-blood tube, refrigerated, no centrifugation.
+- Added 7197 Lymphocyte Subset Panel 1 as a dedicated full Lavender EDTA whole-blood tube at room temperature; a separate EDTA tube is required if a CBC is also ordered.
+- Added 2692 Herpes Simplex Virus Culture with viral transport media, source documentation, and refrigerated transport.
+- Added serum workflows for 36733 ANCA Vasculitides, 7903 Immunoglobulin G Subclasses Panel, 545 Immunoglobulin M (IgM), and 683 ACE.
+- Added legacy code 19817 as a blocked/do-not-perform entry because Quest discontinued it effective 5/28/2024 and recommends 13966 as the replacement.
+- Existing requisition codes already present in v10.24 were left unchanged. UI, pooling, grouping, and print layout are unchanged.
+
+v10.24
+- Corrected original-tube specimen wording for 4914 PT/INR and PTT (STAT), 8659 D-Dimer, Quantitative, and 8847 PT/INR (STAT): preferred room-temperature submission is a full, unopened Light Blue Sodium Citrate whole-blood tube, so the calculator no longer labels those original tubes as plasma.
+- Corrected 467 Folate, RBC to Whole Blood in the original Lavender EDTA tube and added protect-from-light handling.
+- Audited all built-in non-spun original-tube blood records; no other serum/plasma/RBC original-tube specimen mismatches were found. Tests that truly require separated plasma or RBC aliquots remain unchanged.
+- UI, pooling/grouping rules, and print layout are otherwise unchanged from v10.23.
+
+v10.23
+- Normalized ordinary serum/plasma transport-tube synonyms so compatible submissions can share one card within the same temperature bag.
+- Specialty containers remain strictly separate, including acid-washed, acid-rinsed, metal-free, trace-metal, amber/light-protected, Aptima, preservative, cryovial, glass, and other distinct container types.
+- Tests explicitly requiring multiple separate submission tubes remain their own submission card.
+- Collection pooling and all other UI/print behavior are unchanged.
+
+v10.22
+- Made Show details smaller and aligned it directly under Tests.
+- Added a disclosure arrow: ▾ Show details / ▴ Hide details.
+- No calculation, test-data, or printout changes.
+
+v10.21
+- Restored Show details to the compact button style from v10.19.
+- No calculation, test-data, or printout changes.
+
+v10.17
+- Cart header now keeps Tests/count, Add a missing test, and Clear all on the same top row.
+- Show details is centered on its own row underneath and intentionally narrower than the controls above.
+- No calculation, pooling, test-data, or printout changes.
+
+v10.16
+- Replaced the test-library temperature filter with specimen-type filtering: Blood, Urine, Stool, Swab, and Other.
+- Blood includes serum, plasma, platelet-poor plasma, RBC, and whole-blood specimens.
+- No calculation, pooling, cart, or printout changes.
+
+v10.15
+- Print submission/collection cards now say “For # tests:” while preserving the existing count badge and layout.
+- Kept “Add a missing test” on one line in the cart header.
+- Replaced cart trash-can artwork with a cleaner compact remove control.
+
+v10.14
+- Source-container badges in print now explicitly say “From …” to distinguish them from submission containers.
+- Library count and primary Show more tests control returned outside the scroll box.
+- Added a second Show more tests control at the bottom of the scrollable list.
+
+Lab Collection Calculator v10.13
+
+- Draw plan is collapsed by default on screen.
+- Printout adds a smaller source-container badge beside transferred specimen source text, including SST/Gold sources and sterile urine cups.
+- Main submission-container badges remain primary; source-container badges are intentionally smaller.
+- Collection calculations and pooling logic are unchanged from v10.12.
+
+v10.18
+- Cart remove controls remain compact × buttons and expand to “Delete” on hover/focus.
+- Expanded remove controls overlay long test names with an opaque background instead of shifting the row layout.
+
+v10.19
+- Tightened the Tests cart header so the title/count and actions read as one compact top row.
+- Reduced the visual weight of Clear all.
+- Made Show details a smaller centered secondary control with less vertical spacing.
+- No calculation, test-data, or printout changes.
+
+v10.20
+- Restyled Show details as a lightweight disclosure control aligned beneath Tests.
+- Added a down/up chevron to make the control clearly expandable/collapsible without presenting it as another button.
+- No changes to calculations, test data, or print layout.
