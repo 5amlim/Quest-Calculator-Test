@@ -46,8 +46,9 @@
   const els = {
     recordCount: $('recordCount'), searchInput: $('searchInput'), addBestButton: $('addBestButton'),
     previewButton: $('previewButton'), clearSearchButton: $('clearSearchButton'), batchResults: $('batchResults'),
-    libraryFilter: $('libraryFilter'), specimenFilter: $('specimenFilter'), showBlocked: $('showBlocked'),
+    libraryFilter: $('libraryFilter'), specimenFilter: $('specimenFilter'),
     libraryBody: $('libraryBody'), libraryStatus: $('libraryStatus'), loadMoreButton: $('loadMoreButton'), loadMoreInlineButton: $('loadMoreInlineButton'),
+    blockedListButton: $('blockedListButton'), blockedListPanel: $('blockedListPanel'), blockedListBody: $('blockedListBody'),
     addTestButton: $('addTestButton'), addSelectedTestButton: $('addSelectedTestButton'), testsDetailsButton: $('testsDetailsButton'), testsDetailsPanel: $('testsDetailsPanel'),
     selectedCount: $('selectedCount'), selectedList: $('selectedList'), testsOverviewList: $('testsOverviewList'), testsOverviewSummary: $('testsOverviewSummary'),
     drawPlan: $('drawPlan'), drawPlanSummary: $('drawPlanSummary'), orderOfDraw: $('orderOfDraw'), orderOfDrawSummary: $('orderOfDrawSummary'), collectionAlerts: $('collectionAlerts'), clearOrderButton: $('clearOrderButton'),
@@ -68,6 +69,7 @@
   let selectedIds = loadSelectedIds();
   finalizeStorageMigration();
   let libraryLimit = PAGE_STEP;
+  let blockedListOpen = false;
   let toastTimer;
 
   init();
@@ -91,8 +93,8 @@
     });
     els.libraryFilter.addEventListener('input', () => { libraryLimit = PAGE_STEP; renderLibrary(); });
     els.specimenFilter.addEventListener('change', () => { libraryLimit = PAGE_STEP; renderLibrary(); });
-    els.showBlocked.addEventListener('change', () => { libraryLimit = PAGE_STEP; renderLibrary(); });
     els.loadMoreButton.addEventListener('click', () => { libraryLimit += PAGE_STEP; renderLibrary(); });
+    els.blockedListButton?.addEventListener('click', () => { blockedListOpen = !blockedListOpen; renderBlockedList(); });
     els.loadMoreInlineButton?.addEventListener('click', () => { libraryLimit += PAGE_STEP; renderLibrary(); });
     els.libraryBody.addEventListener('click', handleLibraryClick);
     els.batchResults.addEventListener('click', handleBatchClick);
@@ -115,6 +117,7 @@
   function renderAll() {
     els.recordCount.textContent = `${database.length} tests`;
     renderLibrary();
+    renderBlockedList();
     renderOrder();
   }
 
@@ -276,6 +279,8 @@
       drawContainer: String(record.drawContainer || 'Verify Official Instructions'),
       alternativeContainer: String(record.alternativeContainer || ''),
       additionalDrawRequirements: normalizeAdditionalDrawRequirements(record.additionalDrawRequirements),
+      collectionCount: Number(record.collectionCount) > 1 ? Math.floor(Number(record.collectionCount)) : 1,
+      submissionCount: Number(record.submissionCount) > 1 ? Math.floor(Number(record.submissionCount)) : 1,
       transportContainer: cleanTransportContainer(record.transportContainer),
       preferredVolume: String(record.preferredVolume || ''),
       minimumVolume: String(record.minimumVolume || ''),
@@ -349,17 +354,74 @@
         requirement.purpose,
         requirement.specimenType,
         `from ${requirement.container}`,
-        requirement.preferredVolume ? `Preferred ${requirement.preferredVolume}` : '',
+        requirement.preferredVolume ? `Volume ${cleanVolumeDisplayText(requirement.preferredVolume)}` : '',
         requirement.minimumVolume ? `Minimum ${requirement.minimumVolume}` : ''
       ].filter(Boolean);
       return `<div class="${cls}"><strong>Also required:</strong> ${escapeHtml(parts.join(' · '))}</div>`;
     }).join('');
   }
 
+  function cleanVolumeDisplayText(value) {
+    let text = String(value || '')
+      .replace(/[\u0000-\u001f\u007f]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/^preferred\s*:?\s*/i, '');
+    if (!text) return '';
+
+    const flags = [];
+    const addFlag = (label) => { if (label && !flags.includes(label)) flags.push(label); };
+    const numberWord = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
+    const countValue = (raw) => numberWord[String(raw || '').toLowerCase()] || Number(raw) || 0;
+
+    if (/\b(?:protect(?:ed)? from light|light[- ]protected)\b/i.test(text)) addFlag('protected from light');
+    if (/\b(?:no gel|without gel)\b/i.test(text)) addFlag('no gel');
+    if (/\b(?:preservative[- ]free|no preservative|unpreserved)\b/i.test(text)) addFlag('preservative-free');
+    const fullTube = /\bfull\b[^;]{0,35}\btube\b/i.test(text);
+
+    // Preserve meaningful counts before removing redundant container wording.
+    let tubeCount = 0;
+    let countMatch = text.match(/\b(?:collected|drawn|submitted?)\b[^;]{0,90}\b(?:in|from)\s+(two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(?:separate\s+)?[^;]{0,45}?tubes?\b/i);
+    if (!countMatch) countMatch = text.match(/\beach\s+of\s+(two|three|four|five|six|seven|eight|nine|ten|\d+)\s+[^;]{0,45}?(?:EDTA|citrate|heparin|tubes?)\b/i);
+    if (countMatch) tubeCount = countValue(countMatch[1]);
+
+    const aliquotMatch = text.match(/\bsubmit\s+(two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(?:separate\s+)?aliquots?\b/i);
+    const aliquotCount = aliquotMatch ? countValue(aliquotMatch[1]) : 0;
+    const splitMatch = text.match(/\[\s*(\d+(?:\.\d+)?)\s*mL\s*[x×]\s*(\d+)\s*\]/i);
+
+    // "Preferred volume" should describe the specimen amount/state, not repeat
+    // the tube or transport container already shown elsewhere in the interface.
+    text = text
+      .replace(/^submit\s+(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(?:separate\s+)?aliquots?\s*;\s*/i, '')
+      .replace(/\s+(?:collected|submitted|preserved)\s+(?:in|into)\b.*$/i, '')
+      .replace(/\s+from\s+(?:an?\s+)?(?:a\s+)?full\s+[^;]*?\btube\b.*$/i, '')
+      .replace(/\s+(?:in|into)\s+(?:an?\s+)?[^;]*?\b(?:tubes?|vials?|containers?|cups?)\b.*$/i, '')
+      .replace(/\s*\[\s*\d+(?:\.\d+)?\s*mL\s*[x×]\s*\d+\s*\]\s*/ig, ' ')
+      .replace(/(?:\s*[-–—,;:]\s*)?(?:protect(?:ed)? from light|light[- ]protected)\b/ig, '')
+      .replace(/(?:\s*[-–—,;:]\s*)?(?:preservative[- ]free|no preservative|unpreserved)\b/ig, '')
+      .replace(/\s*\(?\s*(?:no gel|without gel)\s*\)?/ig, '')
+      .replace(/\s+/g, ' ')
+      .replace(/\s*[-–—,;:]\s*$/g, '')
+      .trim();
+
+    text = text
+      .replace(/^whole blood\s+(?:from\s+)?(?:a\s+)?full\s+.*$/i, 'Full tube whole blood')
+      .replace(/^whole blood full\s+.*$/i, 'Full tube whole blood')
+      .replace(/\b(\d+(?:\.\d+)?)\s*hour\b/ig, '$1-hour')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (fullTube && !/\bfull tube\b/i.test(text)) addFlag('full tube');
+    if (tubeCount > 1) addFlag(`${tubeCount} tubes`);
+    if (aliquotCount > 1) addFlag(`${aliquotCount} aliquots`);
+    if (splitMatch) addFlag(`${splitMatch[1]} mL × ${splitMatch[2]}`);
+    return [text, ...flags].filter(Boolean).join(' - ');
+  }
+
   function combinedVolumeText(test, label) {
-    const primary = label === 'preferred' ? test.preferredVolume : test.minimumVolume;
+    const primary = cleanVolumeDisplayText(label === 'preferred' ? test.preferredVolume : test.minimumVolume);
     const extras = additionalDrawRequirements(test)
-      .map(requirement => label === 'preferred' ? requirement.preferredVolume : requirement.minimumVolume)
+      .map(requirement => cleanVolumeDisplayText(label === 'preferred' ? requirement.preferredVolume : requirement.minimumVolume))
       .filter(Boolean);
     return [primary, ...extras].filter(Boolean).join(' + ');
   }
@@ -451,6 +513,17 @@
       .slice(0, limit);
   }
 
+  function isExactBatchMatch(query, test) {
+    const raw = String(query || '').trim();
+    const q = normalizeSearch(raw);
+    const code = normalizeSearch(test?.testCode);
+    const name = normalizeSearch(test?.testName);
+    if (!q || !test) return false;
+    if (q === code || q === name) return true;
+    const leadingCode = raw.match(/^([A-Za-z]*\d+[A-Za-z0-9-]*)\b/);
+    return Boolean(leadingCode && code && normalizeSearch(leadingCode[1]) === code);
+  }
+
   function renderBatch(addBest) {
     const queries = parseQueries(els.searchInput.value);
     if (!queries.length) {
@@ -477,6 +550,10 @@
           row.outcome = 'low-confidence';
           return;
         }
+        if (!isExactBatchMatch(row.query, best.test)) {
+          row.outcome = 'confirm-match';
+          return;
+        }
         if (selectedIds.includes(best.test.id)) {
           row.outcome = 'already-selected';
           return;
@@ -496,11 +573,12 @@
         if (!best) row.outcome = 'no-match';
         else if (best.test.status === 'blocked') row.outcome = 'blocked';
         else if (best.score < 330) row.outcome = 'low-confidence';
+        else if (!isExactBatchMatch(row.query, best.test)) row.outcome = 'confirm-match';
       });
     }
 
     const matchedCount = rows.filter(row => row.matches.length).length;
-    const unresolved = rows.filter(row => ['no-match', 'blocked', 'low-confidence', 'not-added'].includes(row.outcome));
+    const unresolved = rows.filter(row => ['no-match', 'blocked', 'low-confidence', 'confirm-match', 'not-added'].includes(row.outcome));
     const resultSummary = renderBatchResultSummary(rows, addBest);
 
     if (addBest) {
@@ -527,7 +605,7 @@
   function renderBatchResultSummary(rows, addBest) {
     if (rows.length < 2) return '';
 
-    const unresolved = rows.filter(row => ['no-match', 'blocked', 'low-confidence', 'not-added'].includes(row.outcome));
+    const unresolved = rows.filter(row => ['no-match', 'blocked', 'low-confidence', 'confirm-match', 'not-added'].includes(row.outcome));
     if (!unresolved.length) {
       if (!addBest) return '';
       return `<div class="batch-status batch-status-success"><strong>Matches for all ${rows.length} entries are in the summary.</strong><span>Check the selected tests before collecting.</span></div>`;
@@ -544,7 +622,8 @@
 
   function batchOutcomeReason(outcome) {
     if (outcome === 'no-match') return 'No local match found';
-    if (outcome === 'low-confidence') return 'Check the match before adding';
+    if (outcome === 'low-confidence') return 'Low-confidence match — verify before adding';
+    if (outcome === 'confirm-match') return 'Possible match — confirm before adding';
     if (outcome === 'blocked') return 'This test is marked “do not perform”';
     return 'Could not be added';
   }
@@ -556,12 +635,17 @@
     const best = row.matches[0];
     const alternatives = row.matches.slice(1).map(item => `${item.test.testCode} ${item.test.testName}`).join(' · ');
     const blocked = best.test.status === 'blocked';
-    return `<div class="batch-row ${blocked ? 'unmatched' : ''}">
+    const exact = isExactBatchMatch(row.query, best.test);
+    const needsConfirmation = !blocked && !exact;
+    const rowClass = blocked ? 'unmatched' : needsConfirmation ? 'needs-confirmation' : '';
+    const warning = needsConfirmation ? '<span class="batch-match-warning">Possible match — confirm before adding.</span>' : '';
+    const buttonLabel = selectedIds.includes(best.test.id) ? 'Added' : needsConfirmation ? 'Confirm + Add' : 'Add';
+    return `<div class="batch-row ${rowClass}">
       <div class="batch-query">${escapeHtml(row.query)}</div>
       <div class="batch-match"><strong>${escapeHtml(displayCode(best.test))} · ${escapeHtml(best.test.testName)}</strong>
-        <small>${blocked ? 'Marked do not perform. ' : ''}${requiredSpecimenBadges(best.test)} · ${requiredDrawContainerBadges(best.test)}${alternatives ? `<br>Other matches: ${escapeHtml(alternatives)}` : ''}</small>
+        ${warning}<small>${blocked ? 'Marked do not perform. ' : ''}${requiredSpecimenBadges(best.test)} · ${requiredDrawContainerBadges(best.test)}${alternatives ? `<br>Other matches: ${escapeHtml(alternatives)}` : ''}</small>
       </div>
-      <button class="mini-button" data-action="add" data-id="${escapeAttr(best.test.id)}" ${blocked ? 'disabled' : ''}>${selectedIds.includes(best.test.id) ? 'Added' : 'Add'}</button>
+      <button class="mini-button ${needsConfirmation ? 'confirm-match-button' : ''}" data-action="add" data-id="${escapeAttr(best.test.id)}" data-query="${escapeAttr(row.query)}" data-needs-confirmation="${needsConfirmation ? 'true' : 'false'}" ${blocked ? 'disabled' : ''}>${buttonLabel}</button>
     </div>`;
   }
 
@@ -577,9 +661,8 @@
   function renderLibrary() {
     const filter = normalizeSearch(els.libraryFilter.value);
     const specimenCategory = els.specimenFilter.value;
-    const showBlocked = els.showBlocked.checked;
     const filtered = database.filter(test => {
-      if (!showBlocked && test.status === 'blocked') return false;
+      if (test.status === 'blocked') return false;
       if (specimenCategory && specimenFilterCategory(test.specimenType) !== specimenCategory) return false;
       if (!filter) return true;
       const haystack = normalizeSearch([
@@ -595,6 +678,31 @@
     const allLibraryTestsShown = shown.length >= filtered.length;
     els.loadMoreButton.classList.toggle('hidden', allLibraryTestsShown);
     els.loadMoreInlineButton?.classList.toggle('hidden', allLibraryTestsShown);
+  }
+
+  function blockedReason(test) {
+    const raw = String(test.specialInstructions || '').trim();
+    if (!raw) return 'This test is not supported by the current onsite collection or processing workflow.';
+    const cleaned = raw
+      .replace(/^Do not perform onsite\.\s*/i, '')
+      .split(/\s+(?:Patient preparation|Collection details|Unacceptable specimens):/i)[0]
+      .trim();
+    return cleaned || 'This test is not supported by the current onsite collection or processing workflow.';
+  }
+
+  function renderBlockedList() {
+    if (!els.blockedListButton || !els.blockedListPanel || !els.blockedListBody) return;
+    const blocked = database.filter(test => test.status === 'blocked');
+    els.blockedListButton.textContent = blockedListOpen ? `Hide do not perform list (${blocked.length})` : `Do not perform list (${blocked.length})`;
+    els.blockedListButton.setAttribute('aria-expanded', String(blockedListOpen));
+    els.blockedListPanel.classList.toggle('hidden', !blockedListOpen);
+    if (!blockedListOpen) return;
+    els.blockedListBody.innerHTML = blocked.length ? blocked.map(test => `
+      <article class="blocked-list-item">
+        <div class="blocked-list-code">${escapeHtml(displayCode(test))}</div>
+        <div class="blocked-list-copy"><strong>${escapeHtml(test.testName)}</strong><p>${escapeHtml(blockedReason(test))}</p></div>
+        <a class="blocked-list-link" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a>
+      </article>`).join('') : '<div class="empty-state">No tests are currently marked do not perform.</div>';
   }
 
   function renderLibraryRow(test) {
@@ -629,6 +737,13 @@
     const button = event.target.closest('button[data-action]');
     if (!button) return;
     if (button.dataset.action === 'add') {
+      if (button.dataset.needsConfirmation === 'true') {
+        const test = database.find(item => item.id === button.dataset.id);
+        if (!test) return;
+        const query = button.dataset.query || '';
+        const confirmed = window.confirm(`This is not an exact match.\n\nYou entered: ${query}\nPossible match: ${displayCode(test)} · ${test.testName}\n\nConfirm that this is the test you want to add.`);
+        if (!confirmed) return;
+      }
       addSelected(button.dataset.id);
       renderBatch(false);
     } else if (button.dataset.action === 'new-from-query') {
@@ -716,7 +831,7 @@
     els.selectedList.innerHTML = tests.map(test => `
       <article class="selected-card">
         <div class="selected-card-top">
-          <div><div class="test-name">${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</div><div class="subtext specimen-line">${requiredSpecimenBadges(test)} <span>·</span> <span class="preferred-volume-inline">Preferred ${escapeHtml(combinedVolumeText(test, 'preferred') || 'verify')}</span> <span>· Minimum ${escapeHtml(combinedVolumeText(test, 'minimum') || 'verify')}</span></div>${fastingBadge(test, 'selected-fasting-badge')}</div>
+          <div><div class="test-name">${escapeHtml(displayCode(test))} · ${escapeHtml(test.testName)}</div><div class="subtext specimen-line">${requiredSpecimenBadges(test)} <span>·</span> <span class="preferred-volume-inline">${escapeHtml(combinedVolumeText(test, 'preferred') || 'verify')}</span> <span>· Minimum ${escapeHtml(combinedVolumeText(test, 'minimum') || 'verify')}</span></div>${fastingBadge(test, 'selected-fasting-badge')}</div>
           <div><a class="mini-button edit" href="${escapeAttr(directoryUrl(test))}" target="_blank" rel="noreferrer">Official directory ↗</a><button class="mini-button edit" data-action="edit" data-id="${escapeAttr(test.id)}">Edit</button><button class="mini-button remove selected-card-delete" data-action="remove" data-id="${escapeAttr(test.id)}" type="button" aria-label="Delete ${escapeAttr(test.testName)}">Delete</button></div>
         </div>
         <div class="selected-details">
@@ -1323,6 +1438,8 @@
       'tube-gray': 'Gray Fluoride / Oxalate Blood Tube',
       'tube-yellow': 'Yellow ACD',
       'tube-aptima': 'Aptima Multitest Transport Tube (orange label)',
+      'tube-total-fix': 'Total-Fix® Transport Vial',
+      'tube-trace-metal-container': 'Trace Metal-Free Plastic Container',
       'tube-urine-cup': 'Sterile Urine Cup',
       'tube-ua-swirl': 'Red/Yellow Swirl UA Preservative Tube',
       'tube-urine-culture': 'Gray-Top Urine Culture Preservative Tube'
@@ -1338,22 +1455,33 @@
   }
 
   function explicitCollectionCount(test) {
+    const structured = Math.floor(Number(test.collectionCount) || 1);
+    if (structured > 1) return structured;
+
     const draw = String(test.drawContainer || '').toLowerCase();
     const note = String(test.specialInstructions || '').toLowerCase();
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
-    let match = draw.match(new RegExp(`\\b${countPattern}\\s+(?:full\\s+)?(?:[a-z][a-z /-]{0,35}\\s+)?(?:tubes?|bottles?|containers?)\\b`));
-    if (!match) match = note.match(new RegExp(`\\b(?:draw|collect|use|requires?)\\D{0,18}${countPattern}\\s+(?:full\\s+)?(?:[a-z][a-z /-]{0,35}\\s+)?(?:tubes?|bottles?|containers?)\\b`));
-    if (!match) {
-      const genericPattern = new RegExp(`(?<![\\d.])\\b${countPattern}\\s+(?:[a-z0-9.®/()_-]+\\s+){0,8}?(?:tubes?|bottles?|containers?)\\b`, 'g');
-      for (const candidate of note.matchAll(genericPattern)) {
-        const phrase = candidate[0];
-        const nearby = note.slice(Math.max(0, candidate.index - 24), candidate.index + phrase.length);
-        if (/\bm\s*l\b/.test(phrase) || /transport|aliquot|cryovial|vial|submit(?:ted|ting)?|\bnot\s+automatically\b|\b(?:does?|do)\s+not\b/.test(nearby)) continue;
-        match = candidate;
-        break;
-      }
+
+    // A count in the structured draw-container field is reliable when the number
+    // directly describes tubes/bottles/containers. Do not infer counts from specimen
+    // mass, time, RCF/RPM, tube dimensions, identifiers, test codes, or K2 additive text.
+    const drawPattern = new RegExp(`(?:^|\\s)${countPattern}\\s*(?:x|×)?\\s*(?:full\\s+|separate\\s+|standard\\s+){0,2}(?:[a-z][a-z /-]{0,24}\\s+)?(?:tubes?|bottles?|containers?)\\b`);
+    const drawMatch = draw.match(drawPattern);
+    if (drawMatch && !/\\b(?:ml|g|gram|grams|mg|mm|cm|hours?|hrs?|minutes?|mins?|days?|rcf|rpm)\\b/.test(drawMatch[0])) {
+      return Math.max(numberWordValue(drawMatch[1]), 1);
     }
-    return match ? Math.max(numberWordValue(match[1]), 1) : 1;
+
+    // Free text is intentionally strict. Only explicit instructions such as
+    // “Draw 3 tubes” or “Collect 4 separate EDTA tubes” create extra collection
+    // tubes. This prevents phrases like “10 g ... into the container”, “2 hours”,
+    // “1600 RCF”, “K2 EDTA”, and “two patient identifiers” from changing counts.
+    const actionPattern = new RegExp(`\\b(?:draw|collect|use|requires?|obtain)\\s+(?:blood\\s+(?:in|into)\\s+)?${countPattern}\\s*(?:x|×)?\\s*(?:full\\s+|separate\\s+|standard\\s+){0,2}(?:[a-z][a-z /-]{0,24}\\s+)?(?:tubes?|bottles?|containers?)\\b`);
+    const actionMatch = note.match(actionPattern);
+    if (actionMatch && !/\\b(?:ml|g|gram|grams|mg|mm|cm|hours?|hrs?|minutes?|mins?|days?|rcf|rpm|identifiers?)\\b/.test(actionMatch[0])) {
+      return Math.max(numberWordValue(actionMatch[1]), 1);
+    }
+
+    return 1;
   }
 
   function pooledCollectionGroupLabel(group) {
@@ -1385,6 +1513,47 @@
       count: total,
       tests: uniqueTests(matchingTests),
       detail
+    });
+  }
+
+  function isAdditionalPoolableBloodDraw(test) {
+    const specimen = String(test.specimenType || '').toLowerCase();
+    if (!/blood|plasma|serum|rbcs?|platelet/.test(specimen)) return false;
+    const cls = tubeClass(test.drawContainer);
+    return ['tube-blue', 'tube-green', 'tube-pink', 'tube-tan', 'tube-royal', 'tube-royal-edta',
+      'tube-royal-no-additive', 'tube-royal-heparin', 'tube-gray', 'tube-yellow'].includes(cls);
+  }
+
+  function addAdditionalPooledBloodItems(items, tests, bags) {
+    const containerGroups = new Map();
+    tests.filter(isAdditionalPoolableBloodDraw).forEach(test => {
+      const info = canonicalCollectionContainer(test);
+      if (!containerGroups.has(info.key)) containerGroups.set(info.key, { ...info, tests: [] });
+      containerGroups.get(info.key).tests.push(test);
+    });
+
+    containerGroups.forEach(containerGroup => {
+      let total = 0;
+      const details = [];
+      bags.forEach(bag => {
+        const bagTests = bag.tests.filter(test => containerGroup.tests.includes(test));
+        if (!bagTests.length) return;
+        const estimate = pooledCollectionEstimateForTests(bagTests, () => true);
+        total += estimate.totalTubes;
+        if (estimate.totalTubes) {
+          const parts = estimate.groups.map(group => `${group.estimate.totalTubes} ${pooledCollectionGroupLabel(group)}`);
+          details.push(`${bag.label.replace(/ bag$/i, '')}: ${parts.join(' + ')}`);
+        }
+      });
+      if (!total) return;
+      items.push({
+        key: containerGroup.key,
+        label: containerGroup.label,
+        className: containerGroup.className,
+        count: total,
+        tests: uniqueTests(containerGroup.tests),
+        detail: details.join(' · ')
+      });
     });
   }
 
@@ -1421,6 +1590,8 @@
       matchesTube: isRedTopDraw
     });
 
+    addAdditionalPooledBloodItems(items, tests, bags);
+
     const spotUrineTests = tests.filter(test => isUrineTest(test) && !isTimedUrineTest(test));
     if (spotUrineTests.length) {
       items.push({
@@ -1437,6 +1608,7 @@
     tests.forEach(test => {
       if (isSstDraw(test)) return;
       if (isLavenderDraw(test) || isRedTopDraw(test)) return;
+      if (isAdditionalPoolableBloodDraw(test)) return;
       if (isUrineTest(test) && !isTimedUrineTest(test)) return;
       const info = canonicalCollectionContainer(test);
       if (!grouped.has(info.key)) grouped.set(info.key, { ...info, count: 0, tests: [], detail: '' });
@@ -1483,20 +1655,23 @@
   }
 
   function explicitSubmissionCount(test) {
+    const structured = Math.floor(Number(test.submissionCount) || 1);
+    if (structured > 1) return structured;
+
     const containerText = String(test.transportContainer || '').toLowerCase();
-    const text = `${test.transportContainer || ''} ${test.preferredVolume || ''} ${test.specialInstructions || ''}`.toLowerCase();
+    const note = String(test.specialInstructions || '').toLowerCase();
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
 
-    // Prefer an explicit count in the structured transport-container field. Allow
-    // descriptors such as “polypropylene” without interpreting source draw-tube
-    // counts elsewhere in the instructions as submission counts.
-    const containerPattern = new RegExp(`\\b${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:[a-z][a-z-]*\\s+){0,4}(?:transport tubes?|cryovials?|vials?|containers?)\\b`);
+    // Counts explicitly embedded in the transport-container field are authoritative.
+    const containerPattern = new RegExp(`(?:^|\\s)${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:[a-z][a-z-]*\\s+){0,4}(?:transport tubes?|cryovials?|vials?|containers?)\\b`);
     const containerMatch = containerText.match(containerPattern);
     if (containerMatch) return Math.max(numberWordValue(containerMatch[1]), 1);
 
-    const pattern = new RegExp(`\\b${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:frozen\\s+)?(?:aliquots?|transport tubes?|cryovials?|tubes?|containers?)\\b`);
-    const match = text.match(pattern);
-    return match ? Math.max(numberWordValue(match[1]), 1) : 1;
+    // In narrative text only “submit ...” language controls submission counts.
+    // Collection counts, time points, specimen volumes, and recommendations do not.
+    const submitPattern = new RegExp(`\\bsubmit\\s+${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:frozen\\s+)?(?:[a-z][a-z-]*\\s+){0,3}(?:aliquots?|transport tubes?|cryovials?|vials?|tubes?|containers?)\\b`);
+    const submitMatch = note.match(submitPattern);
+    return submitMatch ? Math.max(numberWordValue(submitMatch[1]), 1) : 1;
   }
 
   function titleCaseSpecimen(value) {
@@ -1906,7 +2081,7 @@
       <table class="print-table">
         <colgroup><col style="width:6%"><col style="width:14%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:5%"><col style="width:8%"><col style="width:7%"><col style="width:8%"><col style="width:25%"></colgroup>
         <thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Draw container</th><th>Transport tube</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
-        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${fastingBadge(test, 'print-test-fasting-badge')}</div>${test.alternativeContainer ? `<div class="print-test-alternative">Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span></div>` : ''}${additionalRequirementSummary(test, true)}</td><td>${requiredSpecimenBadges(test, 'print-specimen-badge')}</td><td>${requiredDrawContainerBadges(test, 'print-tube-badge')}</td><td>${printContainerBadges(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">Preferred: ${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
+        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${fastingBadge(test, 'print-test-fasting-badge')}</div>${test.alternativeContainer ? `<div class="print-test-alternative">Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span></div>` : ''}${additionalRequirementSummary(test, true)}</td><td>${requiredSpecimenBadges(test, 'print-specimen-badge')}</td><td>${requiredDrawContainerBadges(test, 'print-tube-badge')}</td><td>${printContainerBadges(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</span></td><td>${escapeHtml(test.stability || 'Verify')}</td><td>${escapeHtml(test.specialInstructions || '—')}</td></tr>`).join('')}</tbody>
       </table>
       ${printCollectionSubmissionPlan(tests)}
       <div class="print-footer">
@@ -1957,6 +2132,8 @@
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
     if (/aptima/.test(value)) return 'tube-aptima';
+    if (/total[- ]?fix/.test(value)) return 'tube-total-fix';
+    if (/(?:trace[ -]?metal[- ]?free|acid[- ]?washed).*container|container.*(?:trace[ -]?metal[- ]?free|acid[- ]?washed)/.test(value)) return 'tube-trace-metal-container';
     if (/sterile\s+urine\s+cup|urine\s+collection\s+cup/.test(value)) return 'tube-urine-cup';
     if (/blood culture|culture bottle|bactec|\bsps\b/.test(value)) return 'tube-culture';
     if (value.includes('red/yellow') && (value.includes('gray') || value.includes('grey'))) return 'tube-ua-pair';

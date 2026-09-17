@@ -1,6 +1,5 @@
-Lab Collection Calculator v10.32
+Lab Collection Calculator v10.38
 
-Upload every file in this folder to the root of your GitHub repository.
-Replace files with the same names, commit to the main branch, and GitHub Pages will republish automatically.
+Open index.html locally for a quick check, then publish the full folder to GitHub Pages.
 
-The built-in catalog loads from data.js. Browser storage contains only user-created tests/overrides and selected test IDs, preserving the v10.30 quota-safe architecture.
+v10.38 adds Quest codes 19833 and 763 and makes non-exact batch search matches visibly require confirmation before adding. Exact code/name matches continue to add normally.
