@@ -1,0 +1,81 @@
+/* Receiving-lab switch, shared by the two TEST-REPOSITORY pages only.
+   Links navigate between two independent apps; their carts remain isolated. */
+@media screen {
+  .app-header .header-actions:has(.market-switch) {
+    max-width: none;
+    gap: 12px;
+    align-items: center;
+  }
+  .market-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid rgba(223,232,239,.27);
+    border-radius: 12px;
+    background: rgba(8,22,33,.38);
+    flex: 0 0 auto;
+  }
+  .market-switch .market-switch-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 91px;
+    min-height: 37px;
+    padding: 7px 16px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 850;
+    line-height: 1.2;
+    text-decoration: none;
+    letter-spacing: .01em;
+    transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+  }
+  .market-switch .market-switch-option.quest {
+    color: #9ce5be;
+  }
+  .market-switch .market-switch-option.cedars {
+    color: #ffc3ba;
+  }
+  .market-switch .market-switch-option.quest[aria-current="page"] {
+    color: #fff;
+    background: #14835c;
+    border-color: #249e74;
+    box-shadow: 0 1px 5px rgba(0,0,0,.14);
+  }
+  .market-switch .market-switch-option.cedars[aria-current="page"] {
+    color: #fff;
+    background: #842e37;
+    border-color: #ad4a53;
+    box-shadow: 0 1px 5px rgba(0,0,0,.14);
+  }
+  .market-switch .market-switch-option:not([aria-current]):hover,
+  .market-switch .market-switch-option:not([aria-current]):focus-visible {
+    color: #fff;
+    background: rgba(255,255,255,.15);
+  }
+  .market-switch .market-switch-option:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+  @media (max-width: 700px) {
+    .app-header .header-actions:has(.market-switch) {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .market-switch {
+      width: auto;
+      max-width: 100%;
+    }
+    .market-switch .market-switch-option {
+      min-width: 76px;
+      min-height: 36px;
+      padding: 7px 12px;
+    }
+  }
+}
+@media print {
+  .market-switch { display: none !important; }
+}
