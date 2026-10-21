@@ -458,21 +458,28 @@ window.CEDARS_TESTS = [
   {
     "id": "afbculture",
     "code": "AFBC",
-    "name": "Mycobacteria culture (AFB, nonblood)",
+    "name": "Mycobacteria culture (AFBC, nonblood)",
     "category": "Other",
-    "specimen": "Nonblood clinical specimen (e.g., sputum or body fluid)",
+    "specimen": "Sputum, body fluid, gastric aspirate, tissue or CSF",
     "collect": "Sterile specimen cup (leak-proof)",
     "submit": "Sterile specimen cup (individually bagged)",
     "qty": 1,
     "temp": "Room Temperature",
-    "notes": "For nonblood specimens, use a sterile, leak-proof specimen cup or an accepted 50 mL sterile specimen transport tube; package each specimen in its own sealed bag. Respiratory collection: three sputum specimens 8–24 hours apart (24 hours preferred), including one first-morning specimen; 5–10 mL each (minimum 1 mL). Body fluids: 5 mL (minimum 1 mL for culture only). Check the current Cedars monograph for specimen-specific acceptance, volume and transport details.",
+    "notes": "Cedars AFBC accepts multiple nonblood specimen sources: sputum, body fluids, gastric aspirates, tissue and CSF. Each specimen must be individually sealed and submitted in an approved sterile, leak-proof cup or 50 mL sterile specimen transport tube as directed by Cedars. Sputum: three specimens 8–24 hours apart (24 hours preferred), including one first-morning sample; 5–10 mL each (minimum 1 mL). Body fluid: 5 mL (minimum 1 mL, culture only). Gastric aspirate: 5–10 mL (minimum 1 mL, culture only); neutralize to pH 7 with sodium carbonate if transport will exceed 4 hours. Tissue: visible amount; no formalin. CSF: 5 mL (minimum 1 mL for culture only); less than 5 mL may be accepted for pediatrics. Confirm current source-specific transport and acceptance instructions in Cedars Lexicomp.",
     "slide": "3",
     "hold": false,
     "blockReason": "",
+    "sourceOptions": [
+      {"name": "Sputum", "requirements": "Three samples 8–24 hours apart (24 hours preferred), with at least one first-morning collection. Each: 5–10 mL; minimum 1 mL."},
+      {"name": "Body fluid", "requirements": "5 mL; minimum 1 mL for culture only. Confirm the specific fluid type is accepted."},
+      {"name": "Gastric aspirate", "requirements": "5–10 mL; minimum 1 mL for culture only. If transport is delayed more than 4 hours, neutralize to pH 7 with sodium carbonate per Cedars."},
+      {"name": "Tissue", "requirements": "Minimum visible tissue in an approved sterile container; formalin is not acceptable."},
+      {"name": "CSF", "requirements": "5 mL; minimum 1 mL for culture only. Less than 5 mL is acceptable for pediatric patients."}
+    ],
     "sourceNote": "Cedars Lexicomp screenshot: Mycobacteria Culture AFBC (current excerpt); sterile specimen cup added as an owner-confirmed collection option",
     "containerType": "Sterile container",
-    "aliases": "AFB|mycobacteria|acid-fast bacilli|TB culture|AFB culture|AFBC|AFB smear|sputum AFB|body fluid AFB|sterile cup|sterile specimen cup|leak proof cup",
-    "volumeDisplay": "Sputum 5–10 mL (min 1 mL); fluid 5 mL (min 1 mL, culture only)"
+    "aliases": "AFB|mycobacteria|acid-fast bacilli|TB culture|AFB culture|AFBC|AFB smear|sputum AFB|body fluid AFB|gastric aspirate AFB|tissue AFB|CSF AFB|sterile cup|sterile specimen cup|leak proof cup",
+    "volumeDisplay": "Source-dependent; see details"
   },
   {
     "id": "pap-surepath",
