@@ -616,13 +616,12 @@
       return '';
     };
     const transferDirections = (test) => {
-      if (!mustTransfer(test)) return '<span class="cedars-print-submit-step is-original">Submit original sterile cup. No transfer required.</span>';
-      const special = test.id === 'gc-ct-urine' ? ' Use the kit transfer pipette and follow its fill marks.' :
-        test.id === 'urine-culture' ? ' Fill to the indicated line.' :
-        test.category === 'Stool' ? ' Standard: transfer into three separate ParaPak vials, following the correct preservative/fill instructions.' : '';
-      return '<span class="cedars-print-submit-step"><strong>TRANSFER:</strong> Sterile ' +
-        esc(test.category.toLowerCase()) + ' cup <span aria-hidden="true">→</span> ' +
-        esc(test.submit) + '.' + esc(special) + '</span>';
+      if (!mustTransfer(test)) return '<small class="cedars-print-submit-step is-original">Submit the original sterile cup. No transfer needed.</small>';
+      const special = test.id === 'gc-ct-urine' ? ' Use the supplied pipette and follow the kit fill marks.' :
+        test.id === 'urine-culture' ? ' Fill the preservative tube to its mark.' :
+        test.category === 'Stool' ? ' Fill each required vial to its mark; use the correct preservative.' : '';
+      return '<small class="cedars-print-submit-step"><strong>Transfer from collection cup.</strong>' +
+        esc(special) + '</small>';
     };
     const collection = new Map();
     const transport = new Map();
@@ -688,48 +687,53 @@
       a.container.localeCompare(b.container) || a.bucket.localeCompare(b.bucket));
     const pendingCount = sortedContainers.filter(group =>
       group.bucket.startsWith('Transport temperature:') || group.bucket.startsWith('Room or')).length;
-    const printContainerMethodGroups = (items) => {
-      const methods = new Map();
-      items.forEach(test => {
+    // Keep the submission card scan-friendly: single container header,
+    // temperature beside the container, and the test plus method per row.
+    const printContainerTests = (items) =>
+      '<ul class="cedars-print-simple-tests">' +
+      items.slice().sort((a,b) =>
+        methodOrder(methodLabel(a).toUpperCase()) -
+        methodOrder(methodLabel(b).toUpperCase()) ||
+        a.name.localeCompare(b.name)).map(test => {
         const method = methodLabel(test).toUpperCase();
-        if (!methods.has(method)) methods.set(method,[]);
-        methods.get(method).push(test);
-      });
-      return Array.from(methods.entries()).sort(([a],[b]) =>
-        methodOrder(a) - methodOrder(b) || a.localeCompare(b))
-        .map(([method, group]) => '<div class="cedars-print-method-group">' +
-          '<div class="cedars-print-method-heading">' +
-          '<span class="cedars-print-method-badge' +
-          (method === 'PCR' ? ' is-pcr' : method === 'CULTURE' ? ' is-culture' : '') +
-          '">' + esc(method) + '</span>' +
-          '<span>' + group.length + (group.length===1?' test':' tests') + '</span></div>' +
-          '<ul class="cedars-print-test-list">' +
-          group.sort((a,b) => a.name.localeCompare(b.name)).map(test =>
-            '<li class="cedars-print-organized-test">' + testTag(test) +
-            ((test.category === 'Stool' || test.category === 'Urine') ? transferDirections(test) : '') +
-            (test.category === 'Stool' ? '<span class="cedars-print-count-note">' +
-              countFor(test) + ' kit vials (standard)</span>' : '') +
-            (test.singleVialOption ? '<small class="cedars-print-single-vial">' +
+        const methodStyle = method === 'CULTURE' ? ' is-culture' :
+          method === 'PCR' ? ' is-pcr' : '';
+        return '<li class="cedars-print-simple-test">' +
+          '<div class="cedars-print-simple-test-heading">' +
+          '<strong class="cedars-print-simple-test-name">' + esc(test.name) + '</strong>' +
+          '<span class="cedars-print-method-badge' + methodStyle + '">' +
+          esc(method) + '</span></div>' +
+          ((test.code || test.secondaryCode)
+            ? '<small class="cedars-print-test-code">' +
+              esc([test.code,test.secondaryCode].filter(Boolean).join(' / ')) + '</small>' : '') +
+          ((test.category === 'Urine' || test.category === 'Stool')
+            ? transferDirections(test) : '') +
+          (test.category === 'Stool' && countFor(test)>1
+            ? '<small class="cedars-print-count-note">' +
+              countFor(test) + ' separate kit vials (standard)</small>' : '') +
+          (test.singleVialOption
+            ? '<small class="cedars-print-single-vial">' +
               esc(test.singleVialOption) + '</small>' : '') +
-          '</li>').join('') + '</ul></div>').join('');
-    };
+          '</li>';
+      }).join('') + '</ul>';
     const transportCards = sortedContainers.map(({category,container,bucket,items}) => {
       const pending = bucket.startsWith('Transport temperature:') || bucket.startsWith('Room or');
       const temp = pending ?
-        (bucket.startsWith('Room or') ? 'Confirm transport choice' : 'Verify transport temperature') :
+        (bucket.startsWith('Room or') ? 'Confirm transport choice' : 'Verify temperature') :
         bucket;
       return '<article class="cedars-print-card cedars-print-submit-card cedars-print-by-container' +
         (pending?' is-unverified':'') + ' ' + specimenClass(category) + '">' +
         '<div class="cedars-print-card-heading cedars-print-container-heading">' +
           containerArt(container,'print') +
           '<div class="cedars-print-card-name"><strong>' + esc(container) + '</strong>' +
-          '<span class="cedars-print-test-type ' + specimenClass(category) + '">' + esc(category) + '</span>' +
+          '<div class="cedars-print-compact-meta">' +
+            '<span class="cedars-print-transport-pill ' + (pending?'pending':'known') +
+              '">' + esc(temp) + '</span>' +
+            '<span class="cedars-print-submit-count">' +
+              items.length + (items.length===1?' test':' tests') + '</span></div>' +
           '</div></div>' +
-        '<div class="cedars-print-container-meta">' +
-          '<span class="cedars-print-transport-pill ' + (pending?'pending':'known') + '">' + esc(temp) + '</span>' +
-          '<span>' + items.length + (items.length===1?' test':' tests') + '</span></div>' +
-        (pending ? '<p class="cedars-print-pending-note">Check the current Cedars monograph before assigning a bag.</p>' : '') +
-        printContainerMethodGroups(items) +
+        (pending ? '<p class="cedars-print-pending-note">Confirm transport before sending.</p>' : '') +
+        printContainerTests(items) +
         '</article>';
     }).join('');
 
@@ -764,13 +768,13 @@
       '<section class="cedars-print-section' +
         (collection.size > 4 ? ' cedars-print-start-page' : '') + '">' +
         '<div class="cedars-print-section-heading"><div><strong>2. What to submit</strong>' +
-          '<small>Grouped by submission container · method and temperature shown for each</small></div>' +
-          '<span>' + sortedContainers.length + ' container group' +
+          '<small>Use the container shown. Check temperature and tests.</small></div>' +
+          '<span>' + sortedContainers.length + ' submission container' +
           (sortedContainers.length===1?'':'s') +
           (pendingCount ? ' · ' + pendingCount + ' pending' : '') + '</span></div>' +
         '<div class="cedars-print-grid">' + transportCards + '</div>' +
         '<p class="cedars-print-section-note">These are planning groups, not pre-approved bags. ' +
-          'Do not combine specimens or assign unverified temperatures.</p></section>' +
+          'Keep specimens separate and confirm unverified temperatures before sending.</p></section>' +
       (handlingCards ? '<section class="cedars-print-section cedars-print-handling-section">' +
         '<div class="cedars-print-section-heading"><div><strong>3. Additional handling notes</strong>' +
         '<small>Test-specific instructions from the listed source</small></div></div>' +
