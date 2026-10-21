@@ -298,6 +298,10 @@
 .cedars-info-body dl { display: grid; grid-template-columns: 125px minmax(0,1fr); gap: 9px 14px; margin: 10px 0; font-size: 12px; }
 .cedars-info-body dt { color: #506570; font-weight: 850; }
 .cedars-info-body dd { margin: 0; color: #253a44; overflow-wrap: anywhere; line-height: 1.5; }
+.cedars-source-options { margin: 0 0 6px; padding-left: 17px; }
+.cedars-source-options li { margin: 0 0 6px; }
+.cedars-source-options strong { color: #213e50; }
+.cedars-info-body dd small { display: block; color: #5b6f7a; margin-top: 6px; line-height: 1.4; }
 .cedars-print-sheet { display: none; }
 
 /* Ensure mobile prints retain the desktop-like, complete table. */
