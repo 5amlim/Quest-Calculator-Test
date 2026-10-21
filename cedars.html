@@ -85,6 +85,7 @@
         <div><div class="eyebrow">2. CHECK SUMMARY</div><h2>Collection summary <span id="selectedCount">0</span></h2></div>
       </div>
       <div class="cedars-summary-notice">2023 reference only. <strong>Verify all selected tests in the current Cedars/Lexicomp directory.</strong> No automatic pooling.</div>
+      <p class="cedars-storage-status" id="cedarsStorageStatus" role="status" aria-live="polite"></p>
       <section class="summary-section tests-summary" aria-labelledby="cedarsCartTitle">
         <div class="tests-summary-header cedars-cart-header">
           <div class="tests-summary-heading-block"><div class="tests-summary-heading"><span class="tests-summary-title" id="cedarsCartTitle">Cart</span><span class="tests-summary-count" id="cedarsCartCount">0 tests</span></div></div>
@@ -123,7 +124,7 @@
   </dialog>
   <dialog id="cedarsManualDialog" class="cedars-dialog">
     <form method="dialog" id="cedarsManualForm">
-      <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. This record is for this session only.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
+      <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. This record is saved only in this browser.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
       <div class="cedars-form-grid">
         <label>Test name *<input id="manualName" required maxlength="150"></label>
         <label>Test code<input id="manualCode" maxlength="40"></label>
