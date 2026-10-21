@@ -4423,7 +4423,7 @@
     const alerts = collectAlerts(tests).filter(alert => !preparationTexts.has(alert.text));
     els.printSheet.innerHTML = `
       <div class="print-header">
-        <div><h1 class="print-title">Lab Collection Summary</h1><div class="print-subtitle">Send-out workflow</div></div>
+        <div><h1 class="print-title">Quest Collection Summary</h1><div class="print-subtitle">Send-out workflow</div></div>
         <div class="print-meta">Generated ${escapeHtml(new Date().toLocaleString())}<span class="print-selected-count">${tests.length} selected ${tests.length === 1 ? 'test' : 'tests'}</span></div>
       </div>
       ${printCollectionSubmissionPlan(tests)}
