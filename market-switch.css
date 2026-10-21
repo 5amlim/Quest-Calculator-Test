@@ -8,9 +8,9 @@
     overflow: visible;
   }
   .lab-select {
-    --lab-accent: #4c7637;
-    --lab-accent-strong: #315a27;
-    --lab-light: #edf5e8;
+    --lab-accent: #1c865f;
+    --lab-accent-strong: #136b4e;
+    --lab-light: #eaf7f0;
     position: relative;
     display: block;
     width: 172px;
@@ -117,9 +117,9 @@
     transition: border-color .15s ease, background-color .15s ease, transform .15s ease;
   }
   .lab-select-choice.quest {
-    color: #315a27;
-    background: #edf5e8;
-    border-color: #d2e2c7;
+    color: #155d43;
+    background: #e8f5ed;
+    border-color: #bee6cf;
   }
   .lab-select-choice.cedars {
     color: #772b40;
@@ -128,8 +128,8 @@
   }
   .lab-select-choice.quest:hover,
   .lab-select-choice.quest:focus-visible {
-    background: #e0edd5;
-    border-color: #4c7637;
+    background: #d4eddf;
+    border-color: #28875e;
   }
   .lab-select-choice.cedars:hover,
   .lab-select-choice.cedars:focus-visible {
