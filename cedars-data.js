@@ -1,8 +1,5 @@
-/* Cedars collection catalog (Sollis workflow restricted).
-   White-top eSwab is used for swab CULTURES, including throat, wound/aerobic,
-   anaerobic and fungal/yeast swab cultures. Screening assays and PCR swabs
-   remain separate workflows; non-swab cultures are not automatically allowed.
-   Use current Cedars/Lexicomp instructions for assay/source acceptance. */
+/* Cedars Sollis-specific menu with source-attributed container photos.
+   Verify current Cedars instructions and acceptance for each specimen type. */
 window.CEDARS_TESTS = [
   {
     "id": "culture-eswab",
@@ -57,11 +54,11 @@ window.CEDARS_TESTS = [
     "name": "Stool enteric bacteria PCR",
     "category": "Stool",
     "specimen": "Liquid or soft stool",
-    "collect": "3-vial ParaPak",
-    "submit": "All three ParaPak vials",
+    "collect": "3-vial ParaPak (C & S Medium / 10% Formalin / Clean Vial)",
+    "submit": "All three ParaPak vials (yellow C & S, pink Formalin, white Clean)",
     "qty": 3,
     "temp": "Verify",
-    "notes": "Collect using the three-vial ParaPak stool PCR kit. Fill each vial to its required line and follow current Cedars instructions; historical stability from the 2023 guide is not assumed current.",
+    "notes": "Collect and submit all 3 vials shown in the reference photo: C & S Medium (yellow cap), 10% Formalin (pink cap), and Clean Vial (white cap). Fill to each vial's mark. Follow the current assay-specific stool PCR instructions.",
     "slide": "16",
     "aliases": "stool pcr bacterial gastrointestinal",
     "hold": false,
@@ -73,11 +70,11 @@ window.CEDARS_TESTS = [
     "name": "Stool enteric parasite PCR",
     "category": "Stool",
     "specimen": "Stool, one collection",
-    "collect": "3-vial ParaPak",
-    "submit": "All three ParaPak vials",
+    "collect": "3-vial ParaPak (C & S Medium / 10% Formalin / Clean Vial)",
+    "submit": "All three ParaPak vials (yellow C & S, pink Formalin, white Clean)",
     "qty": 3,
     "temp": "Verify",
-    "notes": "Collect using the three-vial ParaPak stool PCR kit. Avoid contamination with water, urine or toilet paper. Confirm the exact PCR order, required vials and timing in current Cedars instructions.",
+    "notes": "Collect and submit all 3 vials shown in the reference photo: C & S Medium (yellow cap), 10% Formalin (pink cap), and Clean Vial (white cap). Fill to each vial's mark. Avoid contamination with water, urine or toilet paper and verify assay-specific requirements.",
     "slide": "17",
     "aliases": "LAB7369 giardia cryptosporidium entamoeba",
     "hold": false,

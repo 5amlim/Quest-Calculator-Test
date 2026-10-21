@@ -905,3 +905,53 @@
   .cedars-shell .cedars-blocked-list { grid-template-columns: 1fr; }
   .cedars-shell .cedars-blocked-item:nth-child(odd) { border-right: 0; }
 }
+
+/* Real reference photos are packed into a single local WebP image sheet.
+   Cropping is performed with IMG elements, not CSS background images, so the
+   correct photo also appears on ordinary browser printouts. */
+.cedars-container-art.cedars-container-photo {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0 !important;
+  background: #fff !important;
+  isolation: isolate;
+}
+.cedars-container-art .cedars-photo-atlas {
+  position: absolute !important;
+  display: block !important;
+  width: 400% !important;
+  height: 300% !important;
+  max-width: none !important;
+  max-height: none !important;
+  left: calc(var(--atlas-col) * -100%) !important;
+  top: calc(var(--atlas-row) * -100%) !important;
+  object-fit: fill;
+  border: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.cedars-container-art.cedars-container-unknown {
+  font-size: 9px;
+  font-weight: 800;
+  color: #7d8d95;
+  background: #f4f7f9;
+}
+@media print {
+  .cedars-print-sheet .cedars-container-art.cedars-container-photo {
+    overflow: hidden !important;
+    background: #fff !important;
+  }
+  .cedars-print-sheet .cedars-photo-atlas {
+    position: absolute !important;
+    left: calc(var(--atlas-col) * -100%) !important;
+    top: calc(var(--atlas-row) * -100%) !important;
+    width: 400% !important;
+    height: 300% !important;
+    max-width: none !important;
+    max-height: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

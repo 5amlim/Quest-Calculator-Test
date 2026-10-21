@@ -268,7 +268,7 @@
       '<div>' + containerArt(test.collect, 'detail') + '<span>Collection container</span></div>' +
       '<div>' + containerArt(test.submit, 'detail') + '<span>Submission container</span></div>' +
       '</div>' +
-      '<p class="cedars-illustration-note">Illustrations are approximate. Confirm the exact kit before collection.</p>' +
+      '<p class="cedars-illustration-note">Photographs supplied as visual references. Confirm the exact kit before collection.</p>' +
       '<div class="cedars-summary-notice"><strong>' +
       (test.hold ? 'Not performed at Sollis. Do not collect or submit under this workflow.' :
         '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
@@ -424,7 +424,7 @@
       '<div class="cedars-print-warning"><strong>Verify before collecting or sending.</strong> ' +
         'The Sollis menu uses local workflow selections and a historical 2023 Cedars guide, not current Lexicomp. ' +
         'Confirm volume, kit, patient preparation, processing, stability, temperature and courier requirements. ' +
-        'No specimens are pooled automatically. Container illustrations are examples, not kit identification.</div>' +
+        'No specimens are pooled automatically. Container photos are reference examples, not permission to substitute collection kits.</div>' +
       (precautionCards ? '<section class="cedars-print-precautions">' +
         '<div class="cedars-print-precautions-title"><strong>Check before collection</strong>' +
         '<span>Source-specific requirements that can affect specimen acceptance</span></div>' +
