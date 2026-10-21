@@ -3,87 +3,118 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cedars Collection Calculator | Test Build</title>
-  <meta name="description" content="Cedars-specific specimen collection planning prototype using a dated reference guide. Verify all requirements in the current directory.">
-  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="Cedars-specific collection and transport planning prototype. Always verify with current laboratory directory.">
+  <title>Cedars | Lab Collection Calculator</title>
+  <link rel="stylesheet" href="cedars-main-styles.css">
+  <link rel="stylesheet" href="cedars-main-experience.css">
   <link rel="stylesheet" href="cedars.css">
 </head>
-<body>
+<body class="cedars-page">
   <a class="skip-link" href="#cedarsSearch">Skip to Cedars test search</a>
   <header class="app-header no-print">
     <div class="header-title">
-      <div class="eyebrow">TEST BUILD · CEDARS</div>
       <h1>Lab Collection Calculator</h1>
-      <p>Cedars collection, processing and submission planner</p>
+      <p>Find tests and print specimen collection instructions for Cedars.</p>
     </div>
     <div class="header-actions">
-      <a class="button secondary" href="index.html">← Quest calculator</a>
+      <a class="button secondary cedars-back" href="index.html">← Quest calculator</a>
       <span class="privacy-pill">No patient information required</span>
     </div>
   </header>
-  <section class="cedars-notice no-print" role="note">
-    <strong>Reference guide from 2023, not a verified current test directory.</strong>
-    All listed requirements need confirmation in the current Cedars/Lexicomp directory before patient collection.
-    Items with conflicting instructions cannot be added. Unknown temperature is never assumed to be room temperature.
-  </section>
   <main class="app-shell cedars-shell no-print">
     <section class="workspace">
       <div class="panel library-panel">
         <div class="panel-heading library-heading">
-          <div><div class="eyebrow">1. SELECT TESTS</div><h2>Find Cedars tests</h2><p>Search by test name, code, specimen or container.</p></div>
-          <div class="library-actions"><span class="record-count" id="recordCount">0 tests</span><button class="button secondary" id="manualButton" type="button">+ Add missing test</button></div>
-        </div>
-        <section class="panel search-panel cedars-batch">
-          <h3>Add a list of tests</h3>
-          <label class="field-label" for="batchInput">One test name or code per line</label>
-          <textarea id="batchInput" rows="3" placeholder="STSTPCRB&#10;Urine culture&#10;QuantiFERON"></textarea>
-          <div class="search-actions">
-            <button class="button primary" id="batchAdd" type="button">Add exact matches</button>
-            <button class="button secondary" id="batchReview" type="button">Review matches</button>
-            <button class="button ghost" id="batchClear" type="button">Clear</button>
+          <div>
+            <div class="eyebrow">1. SELECT TESTS</div>
+            <h2>Find tests</h2>
+            <p>Search by test code or name.</p>
           </div>
-          <p class="search-hint">Exact matches add automatically. Ambiguous or restricted items require review.</p>
-          <div id="batchFeedback" class="cedars-feedback hidden" aria-live="polite"></div>
+          <div class="library-actions">
+            <span class="record-count" id="recordCount">0 tests</span>
+            <button class="button secondary" id="manualButton" type="button">+ Add a missing test</button>
+          </div>
+        </div>
+        <section class="cedars-source-strip" role="note" aria-label="Source verification status">
+          <span class="cedars-reference-pill">2023 reference</span>
+          <span>This starter catalog is not current Lexicomp data. Verify collection and transport requirements before use.</span>
         </section>
+        <section class="panel search-panel cedars-batch" id="batchEntry" aria-labelledby="batchEntryTitle">
+          <div class="batch-entry-heading">
+            <h3 id="batchEntryTitle">Add Tests</h3>
+            <p class="batch-entry-description" id="batchEntryDescription">Enter one test name or code per line. Suggested matches require confirmation.</p>
+          </div>
+          <div class="batch-entry-body">
+            <label class="sr-only" for="batchInput">Test names or codes, one per line</label>
+            <textarea id="batchInput" rows="3" placeholder="STSTPCRB&#10;Urine culture&#10;QuantiFERON" aria-describedby="batchEntryDescription"></textarea>
+            <div class="search-actions">
+              <button class="button ghost" type="button" id="batchClear">Clear</button>
+              <button class="button secondary" type="button" id="batchReview">Review matches</button>
+              <button class="button primary" type="button" id="batchAdd">Add exact matches</button>
+            </div>
+            <p class="keyboard-hint batch-keyboard-hint">⌘ / Ctrl + Enter to add</p>
+          </div>
+        </section>
+        <div id="batchFeedback" class="panel batch-panel cedars-feedback hidden" aria-live="polite"></div>
         <div class="filter-row cedars-filter">
-          <label class="library-search"><span class="field-label">Search tests</span><input id="cedarsSearch" type="search" placeholder="Name, code, specimen or kit" autocomplete="off"></label>
-          <select id="cedarsType" aria-label="Filter by specimen type"><option value="">All specimen types</option><option>Swab</option><option>Urine</option><option>Stool</option><option>Blood</option><option>Other</option></select>
-          <label class="cedars-toggle"><input id="showHolds" type="checkbox" checked> Show verify-only</label>
+          <label class="library-search"><span class="field-label">Search tests</span><input id="cedarsSearch" type="search" placeholder="Name, code, or abbreviation (e.g. QFT)" autocomplete="off"></label>
+          <div class="catalog-filter-control" id="cedarsFilterControl">
+            <button class="catalog-filter-toggle" id="cedarsFilterButton" type="button" aria-expanded="false" aria-controls="cedarsFilterPanel"><span class="catalog-filter-icon" aria-hidden="true">☷</span><span>Filters</span><span class="catalog-filter-chevron shared-chevron" aria-hidden="true"></span></button>
+            <div class="catalog-filter-panel hidden" id="cedarsFilterPanel">
+              <div class="catalog-filter-heading"><strong>Filter tests</strong><button type="button" class="catalog-filter-reset" id="cedarsFilterReset">Clear filters</button></div>
+              <label>Specimen type<select id="cedarsType" aria-label="Filter by specimen type"><option value="">All specimens</option><option>Swab</option><option>Urine</option><option>Stool</option><option>Blood</option><option>Other</option></select></label>
+              <label class="catalog-filter-check"><input id="showHolds" type="checkbox" checked><span>Include records needing verification</span></label>
+              <button class="catalog-filter-done" type="button" id="cedarsFilterDone">Done</button>
+            </div>
+          </div>
         </div>
         <div class="table-wrap">
           <table class="library-table cedars-library">
-            <thead><tr><th>Code</th><th>Test</th><th>Specimen / container</th><th>Transport</th><th></th></tr></thead>
+            <thead>
+              <tr><th>Code</th><th>Test</th><th>Specimen / draw tube</th><th>Temperature</th><th>Volume</th><th><span class="sr-only">Actions</span></th></tr>
+            </thead>
             <tbody id="cedarsLibraryBody"></tbody>
           </table>
         </div>
         <div class="pagination-row"><span id="libraryStatus" role="status"></span></div>
-        <p class="library-help">Missing tests can be added manually for this session. Check current Cedars/Lexicomp records for codes, volumes, stability, transport temperature and STAT eligibility.</p>
+        <p class="library-help">Can't find a test? Add a verified manual entry, or ask Sam to update the directory.</p>
       </div>
     </section>
     <aside class="panel order-panel" id="cedarsSummary" tabindex="-1">
-      <div class="order-top"><div><div class="eyebrow">2. CHECK SUMMARY</div><h2>Collection summary <span id="selectedCount">0</span></h2></div><button class="mini-button remove" id="clearCart" type="button">Clear all</button></div>
-      <div class="cedars-summary-notice">Prototype guidance only. <strong>Every selected test needs current-directory confirmation.</strong> No automatic pooling or specimen sharing is assumed.</div>
-      <section class="summary-section">
-        <div class="cedars-section-title">Selected tests</div>
-        <div id="cedarsCart" class="cedars-empty">No tests selected.</div>
-      </section>
-      <section class="summary-section">
-        <div class="cedars-section-title">What to collect</div>
-        <div id="cedarsDraw" class="cedars-empty">Add tests to view collection containers.</div>
-      </section>
-      <section class="summary-section">
-        <div class="cedars-section-title">What to submit</div>
-        <div id="cedarsBags" class="cedars-empty">Add tests to view transport groups.</div>
-      </section>
-      <div class="order-actions">
-        <button class="button primary wide" type="button" id="cedarsPrint">Print / Save PDF</button>
-        <button class="button secondary wide" type="button" id="cedarsCsv">Download spreadsheet</button>
+      <div class="order-top">
+        <div><div class="eyebrow">2. CHECK SUMMARY</div><h2>Collection summary <span id="selectedCount">0</span></h2></div>
       </div>
-      <p class="disclaimer">The 2023 guide is a partial historical reference. Exact specimen amounts, current tests, centrifugation, transit stability, STAT routing and courier cutoffs may not be provided. Confirm each in the current Cedars directory before acting.</p>
+      <div class="cedars-summary-notice">2023 reference only. <strong>Verify all selected tests in the current Cedars/Lexicomp directory.</strong> No automatic pooling.</div>
+      <section class="summary-section tests-summary" aria-labelledby="cedarsCartTitle">
+        <div class="tests-summary-header cedars-cart-header">
+          <div class="tests-summary-heading-block"><div class="tests-summary-heading"><span class="tests-summary-title" id="cedarsCartTitle">Cart</span><span class="tests-summary-count" id="cedarsCartCount">0 tests</span></div></div>
+          <div class="tests-summary-actions"><button class="mini-button" id="manualCartButton" type="button">+ Add a missing test</button><button class="mini-button remove" id="clearCart" type="button">Clear all</button></div>
+          <button class="mini-button edit tests-details-toggle" type="button" id="cedarsDetailsToggle" aria-expanded="false"><span class="collection-alerts-chevron" aria-hidden="true"></span><span id="cedarsDetailsToggleText">Show details</span></button>
+          <button class="button primary cart-header-print" type="button" id="cedarsPrint">Print / Save PDF</button>
+        </div>
+        <div class="cart-tests-viewport"><div id="cedarsCart" class="cedars-cart-list"><div class="cedars-empty">No tests selected.</div></div></div>
+      </section>
+      <details class="summary-section cart-collapse" id="cedarsDrawSection" open>
+        <summary class="cart-collapse-summary"><span class="cart-collapse-title">Draw plan</span><span class="cart-collapse-meta" id="cedarsDrawCount">No collection types</span><span class="cart-collapse-action" aria-hidden="true"></span></summary>
+        <div class="cart-collapse-body">
+          <p class="cedars-mini-note">Conservative container counts. Different tests are not automatically pooled.</p>
+          <div id="cedarsDraw" class="draw-plan"><div class="cedars-empty">Add tests to view collection containers.</div></div>
+        </div>
+      </details>
+      <details class="summary-section cart-collapse" id="cedarsBagsSection" open>
+        <summary class="cart-collapse-summary"><span class="cart-collapse-title">What to submit</span><span class="cart-collapse-meta" id="cedarsBagsCount">No transport groups</span><span class="cart-collapse-action" aria-hidden="true"></span></summary>
+        <div class="cart-collapse-body">
+          <div id="cedarsBags"><div class="cedars-empty">Add tests to view transport groups.</div></div>
+        </div>
+      </details>
+      <div class="order-actions"><button class="button secondary wide" id="cedarsCsv" type="button">Download spreadsheet</button></div>
+      <p class="disclaimer">Verify current assay availability, patient preparation, volumes, handling, stability, temperature and STAT courier routing before collection. Unknown temperatures remain unassigned.</p>
     </aside>
   </main>
-  <a class="mobile-summary no-print" href="#cedarsSummary">View Cedars summary <span id="mobileCount">0 tests</span><span aria-hidden="true">↓</span></a>
-  <footer class="ownership-notice no-print"><div class="ownership-copy"><strong>Copyright and ownership notice</strong><span>Copyright © 2026 Sam Hay. All rights reserved. Independent personal project; use does not transfer software ownership. Prototype only; does not replace current laboratory requirements.</span></div></footer>
+  <a class="mobile-summary no-print" href="#cedarsSummary">View summary <span id="mobileCount">0 tests</span><span aria-hidden="true">↓</span></a>
+  <footer class="ownership-notice no-print" role="contentinfo">
+    <div class="ownership-copy"><strong>Copyright and ownership notice</strong><span>Copyright © 2026 Sam Hay. All rights reserved. Independently developed and maintained as a personal project. Use does not transfer ownership.</span></div>
+  </footer>
   <section id="cedarsPrintSheet" class="cedars-print-sheet" aria-hidden="true"></section>
   <dialog id="cedarsInfoDialog" class="cedars-dialog" aria-label="Test collection details">
     <div class="cedars-dialog-head"><div><div class="eyebrow">CEDARS REFERENCE</div><h2 id="cedarsInfoTitle">Test details</h2></div><button type="button" class="cedars-close" id="cedarsInfoClose" aria-label="Close">×</button></div>
@@ -92,7 +123,7 @@
   </dialog>
   <dialog id="cedarsManualDialog" class="cedars-dialog">
     <form method="dialog" id="cedarsManualForm">
-      <div class="cedars-dialog-head"><div><div class="eyebrow">MANUAL ENTRY</div><h2>Add missing Cedars test</h2><p>For this session only. Verify every entry in Lexicomp.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
+      <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. This record is for this session only.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
       <div class="cedars-form-grid">
         <label>Test name *<input id="manualName" required maxlength="150"></label>
         <label>Test code<input id="manualCode" maxlength="40"></label>
