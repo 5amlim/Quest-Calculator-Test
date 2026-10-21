@@ -710,3 +710,11 @@
   .cedars-print-precautions .cedars-print-handling-grid { border: 0; }
   .cedars-print-precautions .cedars-print-handling-item { background: #fffcf6 !important; }
 }
+
+/* Quiet browser-save indicator beneath the Cedars verification notice. */
+.cedars-shell .cedars-storage-status {
+  margin: 6px 0 10px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.4;
+}
