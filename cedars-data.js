@@ -153,7 +153,8 @@ window.CEDARS_TESTS = [
     "sourceNote": "Sollis adult blood culture workflow; verify Cedars protocol",
     "hold": false,
     "blockReason": "",
-    "containerType": "Adult blood culture"
+    "containerType": "Adult blood culture",
+    "volumeDisplay": "7–10 mL/bottle (historical reference, verify)"
   },
   {
     "id": "blood-culture-peds",
@@ -601,7 +602,8 @@ window.CEDARS_TESTS = [
     "aliases": "spinal fluid culture gram stain CSFC LAB268",
     "hold": false,
     "blockReason": "",
-    "containerType": "Sterile container"
+    "containerType": "Sterile container",
+    "volumeDisplay": "1 mL preferred (0.5 mL minimum)"
   },
   {
     "id": "bone-marrow-culture",
