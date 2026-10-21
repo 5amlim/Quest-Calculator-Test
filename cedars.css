@@ -1913,3 +1913,157 @@
     .cedars-shell .cedars-library .test-name {font-size:13px}
   }
 }
+
+
+/* Specimen type badges: visible in test catalog, cart, draw plan,
+   submission rows and contextual search results. */
+@media screen {
+ .cedars-page .cedars-specimen-badge {
+   display:inline-flex;
+   align-items:center;
+   padding:3px 7px;
+   border:1px solid var(--type-line,#dbd5de);
+   border-radius:999px;
+   background:var(--type-bg,#f6f5fa);
+   color:var(--type-ink,#62577f);
+   font-size:10px;
+   font-weight:850;
+   letter-spacing:.015em;
+   line-height:1.2;
+   white-space:nowrap;
+   vertical-align:middle;
+   margin:2px 0 2px 6px;
+ }
+ .cedars-page .cedars-specimen-badge.type-swab {
+   --type-bg:#e9f3ff;--type-line:#bbd7ef;--type-ink:#225789;
+ }
+ .cedars-page .cedars-specimen-badge.type-urine {
+   --type-bg:#fff3d4;--type-line:#f1d390;--type-ink:#865a09;
+ }
+ .cedars-page .cedars-specimen-badge.type-stool {
+   --type-bg:#f7e9dc;--type-line:#e0c5a8;--type-ink:#704822;
+ }
+ .cedars-page .cedars-specimen-badge.type-blood {
+   --type-bg:#f9e8ee;--type-line:#e9b6c7;--type-ink:#8a354f;
+ }
+ .cedars-page .cedars-specimen-badge.type-other {
+   --type-bg:#efebf8;--type-line:#c8c2df;--type-ink:#615486;
+ }
+ .cedars-page .cedars-library .test-name {
+   display:inline;
+ }
+ .cedars-page .cedars-plan-row .cedars-specimen-badge {margin:5px 0 3px 0;}
+ .cedars-page .cedars-cart-heading .cedars-specimen-badge {margin-left:6px;}
+ .cedars-page .cedars-cart-top {position:relative;align-items:center;}
+ .cedars-page .cedars-cart-heading {min-width:0;flex:1;padding-right:45px;}
+ /* Same 30px X pill and hover-to-Delete behavior as Quest. */
+ .cedars-page .cedars-cart-remove.remove-flex {
+   position:absolute;
+   right:0;
+   top:50%;
+   transform:translateY(-50%);
+   display:flex;
+   align-items:center;
+   justify-content:center;
+   gap:0;
+   width:30px;
+   min-width:30px;
+   height:30px;
+   padding:0;
+   border:1px solid #d5dee4;
+   border-radius:999px;
+   background:#fff;
+   color:#5e6d76;
+   font-size:11px;
+   font-weight:850;
+   overflow:hidden;
+   white-space:nowrap;
+   cursor:pointer;
+   transition:width .16s ease, min-width .16s ease, background-color .16s ease,
+     color .16s ease,border-color .16s ease;
+ }
+ .cedars-page .cedars-cart-remove .remove-icon {width:16px;height:16px;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;transition:width .12s,opacity .12s;}
+ .cedars-page .cedars-cart-remove .remove-icon svg {width:16px;height:16px;fill:currentColor;}
+ .cedars-page .cedars-cart-remove .remove-text {max-width:0;opacity:0;overflow:hidden;transition:max-width .14s,opacity .12s;}
+ @media(hover:hover) and (pointer:fine) {
+  .cedars-page .cedars-cart-remove:hover,
+  .cedars-page .cedars-cart-remove:focus-visible {
+    width:72px;min-width:72px;padding:0 10px;
+    background:#fff4f3;border-color:#e2aaa5;color:#9b3d37;
+  }
+  .cedars-page .cedars-cart-remove:hover .remove-icon,
+  .cedars-page .cedars-cart-remove:focus-visible .remove-icon {width:0;opacity:0;}
+  .cedars-page .cedars-cart-remove:hover .remove-text,
+  .cedars-page .cedars-cart-remove:focus-visible .remove-text {max-width:50px;opacity:1;}
+ }
+ .cedars-page .cedars-cart-remove:focus-visible {outline:2px solid #ad6879;outline-offset:2px;}
+ .cedars-page .cedars-missing-test-note {
+   margin:10px 0 0;
+   padding:9px 11px;
+   border-radius:8px;
+   background:#fff;
+   border:1px solid #ead5dc;
+   color:#704957;
+   font-size:12px;
+   line-height:1.45;
+ }
+}
+/* Photo atlas is low-resolution. Keep the crop near native size in the modal,
+   rather than blowing a 160px image into a blurry 340px image. The diagrams
+   themselves remain sharp SVG at any magnification. */
+@media screen {
+  .cedars-photo-dialog .cedars-photo-viewport {
+    width:min(100%,224px);
+    image-rendering:auto;
+  }
+  .cedars-photo-dialog .cedars-photo-atlas {
+    image-rendering:auto;
+    filter:contrast(1.06) saturate(1.04);
+  }
+  .cedars-page .cedars-photo-trigger .cedars-container-art svg {
+    shape-rendering:geometricPrecision;
+    text-rendering:optimizeLegibility;
+  }
+  .cedars-page .cedars-plan-row .cedars-container-art {
+    min-width:85px;
+    min-height:69px;
+  }
+}
+/* Legible paper summary, with compact two-column cards and safer page breaks. */
+@media print {
+  #cedarsPrintSheet {
+    color:#182e38!important;
+    font-size:9pt;
+    line-height:1.42;
+  }
+  #cedarsPrintSheet .cedars-print-header {margin-bottom:9px;}
+  #cedarsPrintSheet .cedars-print-header h1 {font-size:20pt;line-height:1.15;}
+  #cedarsPrintSheet .cedars-print-section {margin-top:12px;break-inside:auto;}
+  #cedarsPrintSheet .cedars-print-section-heading {padding:8px 10px;break-after:avoid;}
+  #cedarsPrintSheet .cedars-print-section-heading strong {font-size:13pt;}
+  #cedarsPrintSheet .cedars-print-section-heading small,
+  #cedarsPrintSheet .cedars-print-section-heading span {font-size:8pt;}
+  #cedarsPrintSheet .cedars-print-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    align-items:start;
+  }
+  #cedarsPrintSheet .cedars-print-card {padding:9px;min-width:0;break-inside:avoid;}
+  #cedarsPrintSheet .cedars-print-card-heading {font-size:9pt;gap:7px;align-items:center;}
+  #cedarsPrintSheet .cedars-print-card-name strong {font-size:8.5pt;line-height:1.3;}
+  #cedarsPrintSheet .cedars-print-card-name small {font-size:7pt;}
+  #cedarsPrintSheet .cedars-print-test-list {font-size:8pt;line-height:1.45;}
+  #cedarsPrintSheet .cedars-print-submit-item {margin-top:7px;padding-top:7px;}
+  #cedarsPrintSheet .cedars-print-submit-line strong {font-size:8.5pt;line-height:1.35;}
+  #cedarsPrintSheet .cedars-print-pending-note {font-size:7.3pt;margin:6px 0!important;}
+  #cedarsPrintSheet .cedars-print-precautions {margin-top:9px;break-inside:auto;}
+  #cedarsPrintSheet .cedars-print-handling-item {padding:8px;font-size:8pt;}
+  #cedarsPrintSheet .cedars-print-handling-item p {line-height:1.4;}
+  #cedarsPrintSheet .cedars-print-section-note {font-size:7.5pt;line-height:1.4;}
+  #cedarsPrintSheet .cedars-print-start-page {break-before:auto;page-break-before:auto;}
+  #cedarsPrintSheet .cedars-container-art svg {
+    shape-rendering:geometricPrecision;
+    text-rendering:optimizeLegibility;
+  }
+}
