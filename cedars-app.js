@@ -215,6 +215,10 @@
   }
 
   // Use a closed set of specimen classes so dynamic data cannot become CSS.
+  const specimenBadge = (category) => '<span class="cedars-specimen-badge ' + specimenClass(category) + '">' + esc(category || 'Other') + '</span>';
+  const removeXIcon = '<span class="remove-icon" aria-hidden="true">' +
+    '<svg viewBox="0 0 24 24" focusable="false"><path d="M7.3 6.1 12 10.8l4.7-4.7 1.2 1.2-4.7 4.7 4.7 4.7-1.2 1.2-4.7-4.7-4.7 4.7-1.2-1.2 4.7-4.7-4.7-4.7-4.7 4.7-1.2-1.2 4.7-4.7-4.7-4.7 1.2-1.2Z"/></svg></span>' +
+    '<span class="remove-text" aria-hidden="true">Delete</span>';
   const specimenClass = (category) => {
     const value = String(category || '').toLowerCase();
     return ['swab','urine','stool','blood','other'].includes(value)
@@ -227,7 +231,7 @@
     const codes = testCodes(test);
     return '<div class="cedars-match-choice ' + specimenClass(test.category) + '">' +
       '<div class="cedars-match-info"><strong class="cedars-match-title">' + esc(test.name) + '</strong>' +
-      '<div class="cedars-match-meta">' +
+      '<div class="cedars-match-meta">' + specimenBadge(test.category) +
       (codes ? '<span class="cedars-match-code">' + esc(codes) + '</span>' : '') +
       '<span>' + esc(test.category) + ': ' + esc(test.specimen) + '</span>' +
       '<span>Collect: ' + esc(test.collect) + '</span>' +
@@ -283,7 +287,7 @@
         ? '<tr class="cedars-specimen-heading ' + specimenClass(test.category) + '"><td colspan="6">' + esc(test.category) + ' specimens</td></tr>'
         : '';
       return heading + '<tr class="cedars-test-row ' + specimenClass(test.category) + '"><td class="code-cell">' + esc(test.code || '—') + '</td>' +
-      '<td><div class="test-name">' + esc(test.name) + '</div>' +
+      '<td><div class="test-name">' + esc(test.name) + '</div>' + specimenBadge(test.category) +
       (test.secondaryCode ? '<div class="cedars-secondary-code">Cedars code: ' + esc(test.secondaryCode) + '</div>' : '') +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at this site') + '</span>' : '') + '</td>' +
@@ -313,10 +317,10 @@
     $('cedarsDetailsToggleText').textContent = showCartDetails ? 'Hide details' : 'Show details';
     $('cedarsCart').innerHTML = tests.length ? tests.map((test) =>
       '<article class="cedars-cart-item ' + specimenClass(test.category) + '"><div class="cedars-cart-top">' +
-      '<div class="cedars-cart-heading"><strong>' + esc(test.name) +
+      '<div class="cedars-cart-heading"><strong>' + esc(test.name) + specimenBadge(test.category) +
       '</strong>' + (test.code ? '<small>' + esc(test.code) + '</small>' : '') + '</div>' +
-      '<button type="button" class="mini-button remove" data-remove="' + esc(test.id) +
-      '" aria-label="Remove ' + esc(test.name) + '">Remove</button></div>' +
+      '<button type="button" class="mini-button remove remove-flex cedars-cart-remove" data-remove="' + esc(test.id) +
+      '" aria-label="Delete ' + esc(test.name) + '">' + removeXIcon + '</button></div>' +
       (showCartDetails ? '<div class="cedars-cart-details"><div class="cedars-cart-art-row">' +
         photoArt(test.collect, 'small') + '<div><b>Collect</b> ' + esc(test.collect) + '</div></div>' +
         '</div><div><b>Submit</b> ' + esc(test.submit) + '</div><div><b>Transport</b> ' +
@@ -340,7 +344,7 @@
       Array.from(groups, ([container, group]) =>
         '<div class="cedars-plan-row ' + specimenClass(group.category) + '"><span class="cedars-count">' + group.count + '×</span>' +
         photoArt(container, 'card') +
-        '<div><strong>' + esc(container) + '</strong><small>' +
+        '<div><strong>' + esc(container) + '</strong>' + specimenBadge(group.category) + '<small>' +
         esc(group.tests.join('; ')) + '</small></div></div>').join('') :
       '<div class="cedars-empty">Add tests to view collection containers.</div>';
 
@@ -358,7 +362,7 @@
         bagClass(bucket) + '">' + esc(bucket) + '</span><span>' + items.length + ' tests</span></div>' +
         items.map((test) => '<div class="cedars-bag-line ' + specimenClass(test.category) + '">' +
           photoArt(test.submit, 'card') +
-          '<div><strong>' + esc(test.name) +
+          '<div><strong>' + esc(test.name) + specimenBadge(test.category) +
           '</strong><small>' + esc(test.submit) + '</small></div></div>').join('') + '</div>').join('') :
       '<div class="cedars-empty">Add tests to view transport groups.</div>';
   }
