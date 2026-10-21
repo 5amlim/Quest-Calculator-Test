@@ -264,6 +264,43 @@
     panel.classList.remove('hidden');
   }
 
+  // Show decision-useful collection details instead of long source citations.
+  // Source citations remain available under Details.
+  const methodLabel = (test) => {
+    const name = (test.name || '').toLowerCase();
+    if (/pcr|molecular|nucleic acid/.test(name)) return 'PCR';
+    if (/culture/.test(name)) return 'Culture';
+    if (/guaiac|occult blood/.test(name)) return 'Guaiac test';
+    if (/urinalysis/.test(name)) return 'Urinalysis';
+    if (/antigen/.test(name)) return 'Antigen test';
+    if (/calprotectin/.test(name)) return 'Fecal calprotectin';
+    if (/leukocyte|wbc/.test(name)) return 'Fecal leukocytes';
+    if (/vaginitis|vaginosis/.test(name)) return 'DNA probe';
+    if (/screen/.test(name)) return 'Screen';
+    return 'Collection';
+  };
+  const keyDetail = (test) => {
+    const details = {
+      'gc-ct-urine':'First-stream urine; transfer pipette',
+      'gc-ct-swab':'Use the cobas swab kit',
+      'urine-culture':'Clean-catch; fill gray top to mark',
+      'urinalysis-swirl':'Transfer to UA preservative tube',
+      'csf-culture':'Deliver immediately',
+      'afbculture':'Verify specimen-specific collection and volume',
+      'cdiff':'Standard: all three ParaPak vials',
+      'fecal-guaiac':'Guaiac, not FIT; clean vial option'
+    };
+    return details[test.id] || test.specimen || '';
+  };
+  const rowSummary = (test) => {
+    const parts = [methodLabel(test), keyDetail(test)];
+    const volume = (test.volumeDisplay || '').trim();
+    if (volume && !/^(verify|not specified|n\/a|unknown)$/i.test(volume))
+      parts.push('Volume: ' + volume);
+    if (test.secondaryCode) parts.push('Code: ' + test.secondaryCode);
+    return parts.filter(Boolean).join(' · ');
+  };
+
   function makeRows() {
     const q = $('cedarsSearch').value;
     const cat = $('cedarsType').value;
@@ -287,19 +324,17 @@
       records().filter((t) => t.hold).length + ' restricted / needs verification';
     $('cedarsLibraryBody').innerHTML = rows.map(({test}, index) => {
       const heading = index === 0 || rows[index - 1].test.category !== test.category
-        ? '<tr class="cedars-specimen-heading ' + specimenClass(test.category) + '"><td colspan="6">' + esc(test.category) + ' specimens</td></tr>'
+        ? '<tr class="cedars-specimen-heading ' + specimenClass(test.category) + '"><td colspan="5">' + esc(test.category) + ' specimens</td></tr>'
         : '';
       return heading + '<tr class="cedars-test-row ' + specimenClass(test.category) + '"><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' + specimenBadge(test.category) +
-      (test.secondaryCode ? '<div class="cedars-secondary-code">Cedars code: ' + esc(test.secondaryCode) + '</div>' : '') +
-      '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
+      '<div class="subtext cedars-row-source">' + esc(rowSummary(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at this site') + '</span>' : '') + '</td>' +
       '<td><div class="cedars-container-cell">' + photoArt(test.collect, 'table') +
       '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
-      '<div class="subtext">' + esc(test.collect) + '</div></div></div></td>' +
+      '<div class="cedars-container-name ' + specimenClass(test.category) + '">' + esc(test.collect) + '</div></div></div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
       esc(test.temp || 'Verify') + '</span></td>' +
-      '<td class="cedars-volume-unknown">' + esc(test.volumeDisplay || 'Verify') + '</td>' +
       '<td class="row-actions"><button class="mini-button edit" type="button" data-info="' +
       esc(test.id) + '">Details</button>' +
       (!test.hold ? '<button class="mini-button" type="button" data-add="' + esc(test.id) + '">' +
@@ -307,7 +342,7 @@
       '</td></tr>';
     }).join('');
     if (!rows.length) $('cedarsLibraryBody').innerHTML =
-      '<tr><td colspan="6" class="cedars-empty">No matching tests. See Do Not Perform or contact Sam about new workflows.</td></tr>';
+      '<tr><td colspan="5" class="cedars-empty">No matching tests. See Do Not Perform or contact Sam about new workflows.</td></tr>';
   }
 
   function renderCart() {
@@ -383,7 +418,7 @@
     const order = ['eSwab','UTM','cobas urine','cobas swab','Affirm / ATTS',
       'Gray-top urine culture','UA swirl-top','3-vial ParaPak','Clean stool vial',
       'Adult blood culture','Pediatric blood culture','Myco/F Lytic',
-      'Sterile container','Sterile 50 mL tube','QuantiFERON 4-tube','Aptima','FIT bottle','SurePath','Other / verify'];
+      'Sterile container','Sterile 50 mL tube','Aptima','FIT bottle','SurePath','Other / verify'];
     const sorted = Array.from(counts).sort(([a],[b]) =>
       order.indexOf(a) - order.indexOf(b) || a.localeCompare(b));
     const entry = (container, count) => {
