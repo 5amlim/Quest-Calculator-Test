@@ -2375,7 +2375,7 @@
     const labels = {
       room:['🌡️ ROOM TEMPERATURE','ROOM TEMPERATURE'],
       refrigerated:['❄️ REFRIGERATED','REFRIGERATED'],
-      frozen:['🧊 FROZEN','FROZEN'],
+      frozen:['❄️❄️ FROZEN','FROZEN'],
       mixed:['⚠️ MIXED / VERIFY','MIXED / VERIFY'],
       verify:['⚠️ VERIFY TEMPERATURE','VERIFY TEMPERATURE']
     };
