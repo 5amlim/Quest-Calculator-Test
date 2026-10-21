@@ -287,7 +287,7 @@
       'urine-culture':'Clean-catch; fill gray top to mark',
       'urinalysis-swirl':'Transfer to UA preservative tube',
       'csf-culture':'Deliver immediately',
-      'afbculture':'Verify specimen-specific collection and volume',
+      'afbculture':'Refrigerate routine specimens; confirm CSF / gastric aspirate handling',
       'cdiff':'Standard: all three ParaPak vials',
       'fecal-guaiac':'Guaiac, not FIT; clean vial option'
     };
@@ -469,6 +469,7 @@
           photoArt(test.submit, 'card') +
           '<div><strong>' + esc(test.name) + specimenBadge(test.category) +
           '</strong><small>' + esc(test.submit) + '</small>' +
+          (test.id === 'afbculture' ? '<small class="cedars-single-vial-note">CSF / gastric aspirate: verify handling before refrigeration.</small>' : '') +
           (test.singleVialOption ? '<small class="cedars-single-vial-note">' + esc(test.singleVialOption) + '</small>' : '') +
           '</div></div>').join('') + '</div>').join('') :
       '<div class="cedars-empty">Add tests to view transport groups.</div>';
