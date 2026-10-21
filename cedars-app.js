@@ -21,13 +21,15 @@
   const source = (test) => test.sourceNote || (test.manual ? 'Previously added manual entry (not approved)' : 'Cedars 2023 guide, slide ' + test.slide);
   const isUnknown = (t) => !t.temp || t.temp === 'Verify' || t.temp === 'Room / Refrigerated';
   const transportBucket = (test) => {
+    if (test.temp === 'Room Temperature (deliver immediately)') return 'Room temperature · deliver immediately';
     if (test.temp === 'Room Temperature') return 'Room temperature';
     if (test.temp === 'Refrigerated') return 'Refrigerated';
     if (test.temp === 'Frozen') return 'Frozen';
     if (test.temp === 'Room / Refrigerated') return 'Room or refrigerated: select after confirming stability';
     return 'Transport temperature: verify in current directory';
   };
-  const bagClass = (bucket) => bucket === 'Refrigerated' ? 'temp-refrigerated' :
+  const bagClass = (bucket) => bucket.includes('deliver immediately') ? 'temp-urgent' :
+    bucket === 'Refrigerated' ? 'temp-refrigerated' :
     bucket === 'Frozen' ? 'temp-frozen' : bucket === 'Room temperature' ? 'temp-room' : 'temp-unknown';
   const containerArt = (container, size) => typeof window.CEDARS_CONTAINER_ART === 'function'
     ? window.CEDARS_CONTAINER_ART(container, size) : '';
@@ -159,14 +161,24 @@
     const rows = records().map((test) => ({test, score: rank(test, q)}))
       .filter(({test, score}) => score && (!cat || test.category === cat) &&
         (!selectedContainer || test.containerType === selectedContainer) && (showHolds || !test.hold))
-      .sort((a, b) => q ? b.score - a.score || a.test.name.localeCompare(b.test.name) :
-        a.test.name.localeCompare(b.test.name));
+      .sort((a, b) => {
+        const specimenOrder = {Swab: 0, Urine: 1, Stool: 2, Blood: 3, Other: 4};
+        const aOrder = specimenOrder[a.test.category] ?? 99;
+        const bOrder = specimenOrder[b.test.category] ?? 99;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+        const byTest = a.test.name.localeCompare(b.test.name);
+        if (byTest) return byTest;
+        return (a.test.collect || '').localeCompare(b.test.collect || '');
+      });
     $('recordCount').textContent = records().filter((t) => !t.hold).length + ' tests';
     $('libraryStatus').textContent = rows.length + ' matching tests' +
       (selectedContainer ? ' · container: ' + selectedContainer : '') + ' · ' +
       records().filter((t) => t.hold).length + ' restricted / needs verification';
-    $('cedarsLibraryBody').innerHTML = rows.map(({test}) =>
-      '<tr><td class="code-cell">' + esc(test.code || '—') + '</td>' +
+    $('cedarsLibraryBody').innerHTML = rows.map(({test}, index) => {
+      const heading = index === 0 || rows[index - 1].test.category !== test.category
+        ? '<tr class="cedars-specimen-heading"><td colspan="6">' + esc(test.category) + ' specimens</td></tr>'
+        : '';
+      return heading + '<tr><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at Sollis') + '</span>' : '') + '</td>' +
@@ -180,7 +192,8 @@
       esc(test.id) + '">Details</button>' +
       (!test.hold ? '<button class="mini-button" type="button" data-add="' + esc(test.id) + '">' +
       (selected.has(test.id) ? '✓ Added' : 'Add') + '</button>' : '') +
-      '</td></tr>').join('');
+      '</td></tr>';
+    }).join('');
     if (!rows.length) $('cedarsLibraryBody').innerHTML =
       '<tr><td colspan="6" class="cedars-empty">No matching tests. See Do Not Perform or contact Sam about new workflows.</td></tr>';
   }
@@ -396,8 +409,9 @@
     // Keep unknown and choice-of-temperature specimens OUT of a shipping bag
     // assignment. The visual groups are verification queues, not bag labels.
     const sortedTransport = Array.from(transport.entries()).sort(([a],[b]) => {
-      const order = (str) => str === 'Room temperature' ? 0 :
-        str === 'Refrigerated' ? 1 : str === 'Frozen' ? 2 : str.startsWith('Room or') ? 3 : 4;
+      const order = (str) => str.includes('deliver immediately') ? 0 :
+        str === 'Room temperature' ? 1 : str === 'Refrigerated' ? 2 :
+        str === 'Frozen' ? 3 : str.startsWith('Room or') ? 4 : 5;
       return order(a) - order(b);
     });
     const pendingCount = sortedTransport.filter(([bucket]) =>
