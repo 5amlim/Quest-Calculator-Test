@@ -2385,8 +2385,7 @@
     const type = printBagTemperatureType(bag);
     const icons = {room:'🌡️',refrigerated:'❄️',frozen:'❄️❄️',
       mixed:'⚠️',verify:'⚠️'};
-    return '<span class="print-temperature-emoji badge-' + type +
-      '" aria-hidden="true">' + icons[type] + '</span>';
+    return '<span class="print-temperature-emoji" aria-hidden="true">' + icons[type] + '</span>';
   }
 
   function transportBagInfo(test) {
