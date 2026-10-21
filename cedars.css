@@ -1,94 +1,359 @@
-:root { --cedars-accent: #176779; }
-.cedars-notice { max-width:1512px; margin:0 auto 16px; border:1px solid #e8c681; background:#fffaf0; border-radius:12px; color:#654913; padding:13px 17px; font-size:13px; line-height:1.5; }
-.cedars-notice strong { display:block; margin-bottom:3px; }
-.cedars-shell .library-panel { padding:22px; }
-.cedars-shell .search-panel { background:#f7fafb; box-shadow:none; border-color:#e0e8ec; padding:15px; margin:0 0 17px; }
-.cedars-shell .search-panel h3 { margin:0 0 10px; }
-.cedars-filter { grid-template-columns:minmax(200px,1fr) 160px auto; }
-.cedars-filter .cedars-toggle { display:flex; align-items:center; gap:8px; font-size:12px; color:#445a63; cursor:pointer; font-weight:700; white-space:nowrap; }
-.cedars-toggle input { width:16px; height:16px; accent-color:var(--cedars-accent); }
-.cedars-library { min-width:770px; }
-.cedars-library td { line-height:1.4; }
-.cedars-dated,.cedars-hold { display:inline-block; font-size:10px; font-weight:800; padding:4px 7px; border-radius:99px; margin-top:5px; }
-.cedars-dated { background:#edf5f7; color:#466976; }
-.cedars-hold { background:#fff2d7; color:#77530a; }
-.cedars-feedback { padding:12px; border:1px solid #d9e7ea; border-radius:9px; background:#fff; font-size:12px; display:grid; gap:9px; margin-top:12px; line-height:1.55; }
-.cedars-feedback .mini-button { margin-left:0; padding:3px 6px; }
-.cedars-shell .order-panel { position:sticky; top:15px; padding:20px; }
-.cedars-shell .order-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:15px; }
-.cedars-shell .order-top h2 { margin-bottom:0; }
-.cedars-summary-notice { padding:10px 11px; background:#fff8e6; border:1px solid #ead59c; color:#695014; border-radius:10px; font-size:12px; line-height:1.5; margin-bottom:16px; }
-.cedars-shell .summary-section { border-top:1px solid #e2e9ec; padding:16px 0 15px; }
-.cedars-section-title { font-weight:850; letter-spacing:-.02em; color:#263f49; font-size:15px; margin-bottom:10px; }
-.cedars-empty { padding:16px 0; color:#7c8a92; font-size:12px; }
-.cedars-cart-item { padding:11px 10px; border:1px solid #e0e9ed; border-radius:10px; margin:0 0 8px; background:#fff; }
-.cedars-cart-top { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
-.cedars-cart-top strong { font-size:12px; }
-.cedars-cart-top small,.cedars-source,.cedars-plan-row small,.cedars-bag-line small { display:block; margin-top:4px; color:#697e87; font-size:11px; line-height:1.5; overflow-wrap:anywhere; }
-.cedars-cart-item p { font-size:11px; color:#3c5560; margin:8px 0 3px; line-height:1.5; }
-.cedars-source { font-style:italic; }
-.cedars-mini-note { margin:0 0 12px; font-size:11px; color:#6d7d85; line-height:1.5; }
-.cedars-plan-row { display:flex; gap:10px; border:1px solid #e1e9ec; border-radius:10px; padding:10px; margin-bottom:8px; align-items:flex-start; }
-.cedars-plan-row strong { display:block; font-size:12px; font-weight:800; line-height:1.5; overflow-wrap:anywhere; }
-.cedars-count { display:flex; min-width:33px; justify-content:center; font-weight:850; padding:4px 6px; background:#e9f5f6; border-radius:7px; color:#215968; font-size:13px; }
-.cedars-bag { border:1px solid #dce7eb; border-radius:10px; overflow:hidden; margin-bottom:10px; }
-.cedars-bag-header { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px; background:#f7fafb; border-bottom:1px solid #e1eaef; }
-.cedars-bag-header>span:last-child { font-size:10px; color:#6e7d86; font-weight:700; }
-.cedars-bag-line { padding:9px 11px; border-bottom:1px solid #edf1f2; }
-.cedars-bag-line:last-child { border-bottom:0; }
-.cedars-bag-line strong { font-size:11px; line-height:1.4; }
-.cedars-bag-line small { margin-top:2px; }
-.cedars-shell .order-actions { display:grid; gap:8px; padding-top:7px; }
-.cedars-shell .disclaimer { color:#6e8089; font-size:11px; line-height:1.55; margin:12px 0 0; }
-.cedars-dialog { border:1px solid #ccdbe0; border-radius:16px; padding:23px; max-width:700px; width:calc(100% - 28px); max-height:90vh; box-shadow:0 15px 60px #14232e40; color:#182b34; }
-.cedars-dialog::backdrop { background:rgba(20,36,43,.52); }
-.cedars-dialog-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:15px; }
-.cedars-dialog-head h2 { margin-bottom:4px; }
-.cedars-dialog-head p { font-size:12px; color:#627682; margin:0; }
-.cedars-close { background:#edf2f4; border:0; border-radius:8px; width:33px; height:33px; font-size:21px; }
-.cedars-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
-.cedars-form-grid label { font-size:12px; color:#415964; font-weight:750; display:grid; gap:5px; }
-.cedars-form-grid .full-row { grid-column:1/-1; }
-.cedars-dialog-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
-.cedars-print-sheet { display:none; }
-@media (max-width:1000px) {
-  .cedars-shell .order-panel { position:static; }
-  .cedars-notice { margin:0 20px 16px; }
+/* Cedars-specific adjustments to the shared v11.92 production visual language.
+   Only the Cedars page loads this file. Quest calculator styles are unchanged. */
+
+/* Make the keyboard skip link available without leaving a stray link onscreen. */
+.cedars-page .skip-link:not(:focus-visible) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
-@media (max-width:680px) {
-  .cedars-notice { margin:0 15px 12px; padding:12px; font-size:12px; }
-  .cedars-shell .library-panel { padding:14px; }
-  .cedars-shell .panel-heading { align-items:flex-start; flex-wrap:wrap; }
-  .cedars-filter { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
-  .cedars-filter .library-search { grid-column:1/-1; }
-  .cedars-filter .cedars-toggle { align-self:center; white-space:normal; }
-  .cedars-form-grid { grid-template-columns:1fr; }
-  .cedars-dialog { padding:15px; }
+.cedars-page .skip-link:focus-visible {
+  position: fixed;
+  z-index: 9999;
+  top: 10px;
+  left: 15px;
+  padding: 10px 15px;
+  color: #fff;
+  background: #084b54;
+  border-radius: 8px;
+}
+.cedars-page .header-actions .cedars-back { white-space: nowrap; }
+.cedars-shell .library-heading { margin-bottom: 13px; }
+.cedars-shell .library-panel { min-width: 0; }
+.cedars-source-strip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #e4e9e9;
+  border-radius: 9px;
+  background: #f7fafb;
+  color: #52676e;
+  padding: 8px 11px;
+  margin-bottom: 17px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.cedars-reference-pill {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: #466a75;
+  background: #e5f0f3;
+  border: 1px solid #cbdfe4;
+  border-radius: 99px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 850;
+}
+.cedars-shell .cedars-batch {
+  margin: 0 0 15px;
+}
+.cedars-shell .cedars-batch .batch-entry-heading { margin-bottom: 9px; }
+.cedars-shell .cedars-batch .batch-entry-heading h3 { margin-bottom: 3px; }
+.cedars-shell .cedars-batch .batch-entry-description { font-size: 12px; line-height: 1.45; color: var(--muted); }
+.cedars-shell #batchInput { min-height: 90px; resize: vertical; font-size: 14px; line-height: 1.5; }
+.cedars-shell .search-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.cedars-shell .search-actions .button.primary { order: 3; }
+.cedars-shell .batch-keyboard-hint { margin: 6px 0 0; text-align: right; font-size: 10px; color: var(--muted); }
+.cedars-feedback {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  line-height: 1.55;
+  font-size: 12px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #dce5e9;
+  background: #fff;
+}
+.cedars-feedback .mini-button { margin: 0; padding: 4px 7px; vertical-align: baseline; }
+
+/* Same search + Filters pattern as the current production calculator. */
+.cedars-shell .cedars-filter {
+  grid-template-columns: minmax(0,1fr) 160px;
+  gap: 9px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+.cedars-shell .catalog-filter-control { position: relative; min-width: 0; }
+.cedars-shell .catalog-filter-toggle { width: 100%; justify-content: center; min-height: 42px; }
+.cedars-shell .catalog-filter-panel {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  right: 0;
+  left: auto;
+  width: min(340px,calc(100vw - 40px));
+  max-height: min(560px,70vh);
+  overflow-y: auto;
+  box-shadow: 0 14px 38px rgba(24,45,55,.17);
+}
+.cedars-shell .catalog-filter-panel.hidden { display: none !important; }
+.cedars-shell .catalog-filter-check {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.cedars-shell .catalog-filter-check input { width: auto; flex: 0 0 auto; }
+.cedars-shell .table-wrap { max-width: 100%; }
+.cedars-shell .cedars-library { min-width: 770px; }
+.cedars-shell .cedars-library th,
+.cedars-shell .cedars-library td { vertical-align: middle; }
+.cedars-shell .cedars-library td { font-size: 12px; line-height: 1.45; }
+.cedars-shell .cedars-library .test-name { font-size: 12px; }
+.cedars-shell .cedars-library .subtext { font-size: 10.5px; }
+.cedars-shell .cedars-library .code-cell { font-size: 11px; white-space: nowrap; }
+.cedars-shell .cedars-library .row-actions {
+  min-width: 106px;
+  white-space: nowrap;
+  text-align: right;
+}
+.cedars-shell .cedars-library .row-actions .mini-button { margin: 2px 0 2px 3px; }
+.cedars-specimen-name { font-weight: 720; }
+.cedars-volume-unknown { font-size: 11px !important; color: #7a878c; }
+.cedars-row-source { margin-top: 3px; }
+.cedars-hold {
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 7px;
+  border-radius: 99px;
+  margin-top: 6px;
+  background: #fff2d7;
+  color: #795410;
+}
+.cedars-shell .library-help { font-size: 11px; }
+
+/* Compact v11.92 cart header and expandable detail behavior. */
+.cedars-shell .order-panel { min-width: 0; }
+.cedars-shell .order-top { margin-bottom: 10px; }
+.cedars-shell .summary-section.tests-summary { margin-top: 11px; padding: 0; }
+.cedars-shell .cedars-cart-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.cedars-cart-header .tests-summary-heading-block { min-width: 0; grid-column: 1; }
+.cedars-cart-header .tests-summary-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  grid-column: 2;
+  white-space: nowrap;
+}
+.cedars-cart-header .tests-summary-actions .mini-button { margin: 0; }
+.cedars-cart-header .tests-details-toggle {
+  grid-column: 1;
+  justify-self: start;
+  margin-left: 0;
+}
+.cedars-cart-header .cart-header-print {
+  grid-column: 2;
+  justify-self: end;
+  min-height: 32px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.cedars-summary-notice {
+  padding: 9px 11px;
+  background: #fff9ed;
+  border: 1px solid #ecdeb8;
+  color: #69542a;
+  border-radius: 9px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.cedars-summary-notice strong { font-weight: 800; }
+.cedars-shell .cart-tests-viewport { max-height: 240px; overflow: auto; }
+.cedars-cart-list .cedars-empty { margin: 0; }
+.cedars-cart-item {
+  border-bottom: 1px solid #e9eef0;
+  padding: 9px 11px;
+  background: #fff;
+}
+.cedars-cart-item:last-child { border-bottom: 0; }
+.cedars-cart-top { display: flex; gap: 9px; align-items: center; justify-content: space-between; }
+.cedars-cart-heading { flex: 1 1 0; min-width: 0; }
+.cedars-cart-heading strong {
+  display: block;
+  font-size: 12px;
+  color: #1c3039;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.cedars-cart-heading small,
+.cedars-source,
+.cedars-plan-row small,
+.cedars-bag-line small {
+  display: block;
+  color: #6f8088;
+  font-size: 10.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.cedars-cart-top .mini-button.remove { margin: 0; font-size: 10px; }
+.cedars-cart-details { border-top: 1px solid #edf1f3; margin-top: 9px; padding-top: 8px; display: grid; gap: 4px; color: #506671; font-size: 11px; line-height: 1.5; }
+.cedars-cart-details b { color: #1f444d; }
+.cedars-cart-details p { margin: 4px 0 0; }
+.cedars-source { font-style: italic; margin-top: 4px; }
+.cedars-shell .cart-collapse { margin-top: 9px; }
+.cedars-shell .cart-collapse-body { padding: 12px; }
+.cedars-mini-note { margin: 0 0 11px; font-size: 10.5px; color: #6f8188; line-height: 1.5; }
+.cedars-empty { padding: 15px 10px; color: #71818a; font-size: 12px; }
+.cedars-plan-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid #e0e8ed;
+  border-radius: 9px;
+  padding: 10px 11px;
+  margin-bottom: 8px;
+  background: #fff;
+}
+.cedars-plan-row:last-child { margin-bottom: 0; }
+.cedars-plan-row strong { display: block; color: #243d46; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.cedars-count {
+  display: inline-flex;
+  min-width: 32px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 7px;
+  color: #18535f;
+  font-size: 12px;
+  font-weight: 850;
+  background: #e5f2f4;
+}
+.cedars-bag { border: 1px solid #e0e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 9px; }
+.cedars-bag:last-child { margin-bottom: 0; }
+.cedars-bag-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 11px;
+  border-bottom: 1px solid #e5ecef;
+  background: #f7fafb;
+}
+.cedars-bag-header>span:last-child { color: #75838a; font-weight: 700; font-size: 10px; white-space: nowrap; }
+.cedars-bag-line { padding: 8px 11px; border-bottom: 1px solid #eef2f4; }
+.cedars-bag-line:last-child { border-bottom: 0; }
+.cedars-bag-line strong { color: #25404a; font-size: 11px; }
+.cedars-bag-line small { margin-top: 3px; }
+.cedars-shell .order-actions { display: grid; padding-top: 12px; }
+.cedars-shell .disclaimer { margin: 11px 0 0; font-size: 10.5px; line-height: 1.55; color: #74848b; }
+
+/* Dialogs use the same compact form language. */
+.cedars-dialog {
+  max-width: 680px;
+  width: calc(100% - 28px);
+  max-height: 90vh;
+  overflow-y: auto;
+  color: #1a3039;
+  background: #fff;
+  border: 1px solid #cfdfe4;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 18px 60px rgba(20,35,45,.30);
+}
+.cedars-dialog::backdrop { background: rgba(20,35,45,.52); }
+.cedars-dialog-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.cedars-dialog-head h2 { margin: 0 0 4px; }
+.cedars-dialog-head p { margin: 0; color: #697b83; font-size: 12px; line-height: 1.4; }
+.cedars-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  color: #546a74;
+  background: #edf2f4;
+  font-size: 23px;
+  line-height: 1;
+}
+.cedars-form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; }
+.cedars-form-grid label { display: grid; gap: 6px; font-size: 12px; font-weight: 760; color: #425966; }
+.cedars-form-grid .full-row { grid-column: 1/-1; }
+.cedars-dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 18px; }
+.cedars-info-body dl { display: grid; grid-template-columns: 125px minmax(0,1fr); gap: 9px 14px; margin: 10px 0; font-size: 12px; }
+.cedars-info-body dt { color: #506570; font-weight: 850; }
+.cedars-info-body dd { margin: 0; color: #253a44; overflow-wrap: anywhere; line-height: 1.5; }
+.cedars-print-sheet { display: none; }
+
+/* Ensure mobile prints retain the desktop-like, complete table. */
+@media (max-width:1120px) {
+  .cedars-shell .order-panel { position: static; }
+}
+@media (max-width:720px) {
+  .cedars-source-strip { align-items: flex-start; }
+  .cedars-shell .cedars-filter { grid-template-columns: minmax(0,1fr) auto; }
+  .cedars-shell .catalog-filter-toggle { padding: 10px 14px; min-width: 100px; }
+  .cedars-shell .cedars-batch { padding: 14px; }
+  .cedars-shell .search-actions .button { padding: 9px 10px; }
+  .cedars-shell .cedars-library { min-width: 750px; }
+}
+@media (max-width:500px) {
+  .cedars-page .header-actions { width: 100%; justify-content: space-between; }
+  .cedars-page .privacy-pill { white-space: normal; text-align: center; }
+  .cedars-source-strip { flex-wrap: wrap; gap: 6px; font-size: 10.5px; }
+  .cedars-cart-header .tests-summary-actions .mini-button { font-size: 10px; }
+  .cedars-cart-header .cart-header-print { font-size: 10px; padding: 8px; }
+  .cedars-form-grid { grid-template-columns: 1fr; }
+  .cedars-dialog { padding: 15px; }
+  .cedars-info-body dl { grid-template-columns: 1fr; gap: 2px; }
+  .cedars-info-body dd { margin-bottom: 9px; }
 }
 @media print {
-  @page { margin:12mm; size:auto; }
-  html,body { background:#fff!important; }
-  body > :not(#cedarsPrintSheet) { display:none!important; }
-  .cedars-print-sheet { display:block!important; color:#16232b; font:10pt/1.4 Arial,Helvetica,sans-serif; }
-  .cedars-print-sheet h1 { font-size:20pt; margin:0 0 10px; }
-  .cedars-print-sheet h2 { font-size:12pt; margin:18px 0 8px; }
-  .cedars-print-sheet p { margin:8px 0; }
-  .cedars-print-warning { border:1px solid #99742a; padding:10px; background:#fff8df!important; }
-  .cedars-print-sheet table { table-layout:fixed; width:100%; border-collapse:collapse; font-size:8pt; }
-  .cedars-print-sheet th { background:#eff3f5!important; position:static; font-size:8pt; letter-spacing:0; }
-  .cedars-print-sheet th,.cedars-print-sheet td { border:1px solid #b8c4ca; padding:6px; vertical-align:top; white-space:normal; overflow-wrap:anywhere; }
-  .cedars-print-sheet th:first-child { width:9%; }
-  .cedars-print-sheet th:nth-child(2) { width:16%; }
-  .cedars-print-sheet th:nth-child(3) { width:15%; }
-  .cedars-print-sheet th:nth-child(4) { width:17%; }
-  .cedars-print-sheet th:nth-child(5) { width:16%; }
-  .cedars-print-sheet th:nth-child(6) { width:27%; }
-  .cedars-print-sheet tr { break-inside:avoid; }
-  .cedars-print-source { font-size:7pt; color:#54636b; margin-top:3px; }
-  .cedars-print-footer { font-size:8pt; color:#54636b; margin-top:16px!important; }
+  @page { margin: 12mm; size: auto; }
+  html,body { background: #fff !important; }
+  body > :not(#cedarsPrintSheet) { display: none !important; }
+  #cedarsPrintSheet.cedars-print-sheet {
+    display: block !important;
+    color: #16232b;
+    font: 10pt/1.4 Arial,Helvetica,sans-serif;
+  }
+  .cedars-print-sheet h1 { font-size: 20pt; margin: 0 0 10px; }
+  .cedars-print-sheet h2 { font-size: 12pt; margin: 18px 0 8px; }
+  .cedars-print-sheet p { margin: 8px 0; }
+  .cedars-print-warning { border: 1px solid #99742a; padding: 10px; background: #fff8df !important; }
+  .cedars-print-sheet table { table-layout: fixed; width: 100%; border-collapse: collapse; font-size: 8pt; }
+  .cedars-print-sheet th {
+    position: static;
+    color: #475b64;
+    background: #eff3f5 !important;
+    font-size: 8pt;
+    letter-spacing: 0;
+  }
+  .cedars-print-sheet th,.cedars-print-sheet td {
+    border: 1px solid #b8c4ca;
+    padding: 6px;
+    vertical-align: top;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .cedars-print-sheet th:first-child { width: 9%; }
+  .cedars-print-sheet th:nth-child(2) { width: 16%; }
+  .cedars-print-sheet th:nth-child(3) { width: 15%; }
+  .cedars-print-sheet th:nth-child(4) { width: 17%; }
+  .cedars-print-sheet th:nth-child(5) { width: 16%; }
+  .cedars-print-sheet th:nth-child(6) { width: 27%; }
+  .cedars-print-sheet tr { break-inside: avoid; page-break-inside: avoid; }
+  .cedars-print-source { font-size: 7pt; color: #54636b; margin-top: 3px; }
+  .cedars-print-footer { font-size: 8pt; color: #54636b; margin-top: 16px !important; }
 }
-
-.cedars-info-body dl { display:grid; grid-template-columns:130px minmax(0,1fr); gap:9px 14px; margin:10px 0; font-size:13px; }
-.cedars-info-body dt { font-weight:800; color:#536973; }
-.cedars-info-body dd { margin:0; color:#253a43; overflow-wrap:anywhere; line-height:1.5; }
-@media (max-width:520px) { .cedars-info-body dl { grid-template-columns:1fr; gap:3px; } .cedars-info-body dd { margin-bottom:9px; } }
