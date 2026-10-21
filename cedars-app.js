@@ -472,10 +472,6 @@
         '<p>Cedars send-outs · Collection and transport plan</p></div>' +
         '<div class="cedars-print-meta"><span>' + esc(new Date().toLocaleString()) + '</span>' +
         '<strong>' + tests.length + (tests.length===1 ? ' test' : ' tests') + '</strong></div></header>' +
-      '<div class="cedars-print-warning"><strong>Verify before collecting or sending.</strong> ' +
-        'The Sollis menu uses local workflow selections and a historical 2023 Cedars guide, not current Lexicomp. ' +
-        'Confirm volume, kit, patient preparation, processing, stability, temperature and courier requirements. ' +
-        'No specimens are pooled automatically. Container illustrations show shape and color for reference, not permission to substitute collection kits.</div>' +
       (precautionCards ? '<section class="cedars-print-precautions">' +
         '<div class="cedars-print-precautions-title"><strong>Check before collection</strong>' +
         '<span>Source-specific requirements that can affect specimen acceptance</span></div>' +
