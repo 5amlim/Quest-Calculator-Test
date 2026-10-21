@@ -92,11 +92,15 @@
   position: absolute;
   z-index: 40;
   top: calc(100% + 6px);
-  right: 0;
-  left: auto;
-  width: min(340px,calc(100vw - 40px));
-  max-height: min(560px,70vh);
+  /* Anchor to the LEFT edge of Filters; right alignment clipped the panel
+     off-screen because the v11.92 filter button is only 175px wide. */
+  left: 0;
+  right: auto;
+  width: min(340px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: min(500px, 68vh);
   overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: 0 14px 38px rgba(24,45,55,.17);
 }
 .cedars-shell .catalog-filter-panel.hidden { display: none !important; }
