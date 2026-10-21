@@ -22,13 +22,15 @@
   const isUnknown = (t) => !t.temp || t.temp === 'Verify' || t.temp === 'Room / Refrigerated';
   const transportBucket = (test) => {
     if (test.temp === 'Room Temperature (deliver immediately)') return 'Room temperature · deliver immediately';
+    if (test.temp === 'Room Temperature (refrigerate if delayed)') return 'Room temperature · refrigerate if delayed';
     if (test.temp === 'Room Temperature') return 'Room temperature';
     if (test.temp === 'Refrigerated') return 'Refrigerated';
     if (test.temp === 'Frozen') return 'Frozen';
     if (test.temp === 'Room / Refrigerated') return 'Room or refrigerated: select after confirming stability';
     return 'Transport temperature: verify in current directory';
   };
-  const bagClass = (bucket) => bucket.includes('deliver immediately') ? 'temp-urgent' :
+  const bagClass = (bucket) => bucket.includes('refrigerate if delayed') ? 'temp-delay' :
+    bucket.includes('deliver immediately') ? 'temp-urgent' :
     bucket === 'Refrigerated' ? 'temp-refrigerated' :
     bucket === 'Frozen' ? 'temp-frozen' : bucket === 'Room temperature' ? 'temp-room' : 'temp-unknown';
   const containerArt = (container, size) => typeof window.CEDARS_CONTAINER_ART === 'function'
@@ -187,8 +189,9 @@
     const n = norm(test.name);
     const c = compact(test.code);
     const aliases = norm(test.aliases || '');
-    const text = norm([test.name, test.code, test.specimen, test.collect, test.submit, test.aliases].join(' '));
+    const text = norm([test.name, test.code, test.secondaryCode, test.specimen, test.collect, test.submit, test.aliases, test.containerType].join(' '));
     if (compact(q) === c && c) return 100;
+    if (test.secondaryCode && compact(q) === compact(test.secondaryCode)) return 100;
     if (q === n) return 99;
     if (n.startsWith(q)) return 90;
     if (n.includes(q)) return 75;
@@ -206,6 +209,7 @@
     if (!q) return [];
     return records().filter((test) =>
       (test.code && compact(test.code) === q) ||
+      (test.secondaryCode && compact(test.secondaryCode) === q) ||
       compact(test.name) === q ||
       (test.aliases || '').split('|').some((alias) => alias.trim() && compact(alias) === q));
   }
@@ -242,6 +246,7 @@
         : '';
       return heading + '<tr class="cedars-test-row ' + specimenClass(test.category) + '"><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
+      (test.secondaryCode ? '<div class="cedars-secondary-code">Cedars code: ' + esc(test.secondaryCode) + '</div>' : '') +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at Sollis') + '</span>' : '') + '</td>' +
       '<td><div class="cedars-container-cell">' + photoArt(test.collect, 'table') +
@@ -391,7 +396,7 @@
         '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
       '</strong></div>' +
       '<dl>' +
-      '<dt>Test code</dt><dd>' + esc(test.code || 'Not supplied') + '</dd>' +
+      '<dt>Test code</dt><dd>' + esc([test.code, test.secondaryCode].filter(Boolean).join(' / ') || 'Not supplied') + '</dd>' +
       '<dt>Specimen</dt><dd>' + esc(test.specimen) + '</dd>' +
       '<dt>Volume</dt><dd>' + esc(test.volumeDisplay || 'Verify current requirements') + '</dd>' +
       '<dt>What to collect</dt><dd>' + esc(test.collect) + '</dd>' +
@@ -439,7 +444,7 @@
     const tests = chosen();
     if (!tests.length) return;
     const heads = ['Test code', 'Test', 'Specimen', 'What to collect', 'What to submit', 'Container count (conservative)', 'Transport', 'Special notes', 'Source', 'Verification'];
-    const rows = tests.map((t) => [t.code, t.name, t.specimen, t.collect, t.submit, t.qty, t.temp,
+    const rows = tests.map((t) => [[t.code,t.secondaryCode].filter(Boolean).join(' / '), t.name, t.specimen, t.collect, t.submit, t.qty, t.temp,
       t.notes, source(t), 'Verify in current Cedars/Lexicomp directory']);
     const csv = '\uFEFF' + [heads].concat(rows).map((row) => row.map(csvSafe).join(',')).join('\r\n');
     const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'}));
@@ -486,6 +491,7 @@
     // assignment. The visual groups are verification queues, not bag labels.
     const sortedTransport = Array.from(transport.entries()).sort(([a],[b]) => {
       const order = (str) => str.includes('deliver immediately') ? 0 :
+        str.includes('refrigerate if delayed') ? 1 :
         str === 'Room temperature' ? 1 : str === 'Refrigerated' ? 2 :
         str === 'Frozen' ? 3 : str.startsWith('Room or') ? 4 : 5;
       return order(a) - order(b);
