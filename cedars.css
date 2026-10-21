@@ -424,3 +424,264 @@
   .cedars-print-detail-section th:nth-child(6) { width: 14%; }
   .cedars-print-detail-section th:nth-child(7) { width: 22%; }
 }
+
+
+/* Cedars print v2: follow Quest's collection -> submission -> precautions order.
+   Dated or missing Cedars data must remain clearly unverified. */
+@media print {
+  #cedarsPrintSheet.cedars-print-sheet {
+    font-size: 9pt;
+    line-height: 1.38;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+  .cedars-print-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 9px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #195862;
+  }
+  .cedars-print-header h1 {
+    margin: 0 0 3px;
+    color: #183b45;
+    font-size: 20pt;
+    letter-spacing: -.035em;
+    line-height: 1.15;
+  }
+  .cedars-print-header p {
+    margin: 0;
+    color: #53666f;
+    font-size: 9pt;
+  }
+  .cedars-print-meta {
+    display: grid;
+    justify-items: end;
+    flex: 0 0 auto;
+    gap: 5px;
+    color: #63737a;
+    font-size: 8pt;
+  }
+  .cedars-print-meta strong {
+    border-radius: 100px;
+    padding: 4px 9px;
+    border: 1px solid #a1c4cb;
+    background: #e7f3f4 !important;
+    color: #23545e;
+    font-size: 9pt;
+  }
+  .cedars-print-warning {
+    padding: 10px 11px;
+    background: #fff8e9 !important;
+    border: 1px solid #e7d4aa;
+    border-radius: 7px;
+    color: #614a21;
+    font-size: 8.5pt;
+    line-height: 1.45;
+    break-inside: avoid;
+  }
+  .cedars-print-warning strong { color: #594018; }
+  .cedars-print-section { margin-top: 16px; }
+  .cedars-print-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #e9f3f5 !important;
+    color: #154d58;
+    border: 1px solid #bad6dd;
+    border-radius: 7px 7px 0 0;
+    padding: 9px 11px;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .cedars-print-section-heading>div { min-width: 0; display: grid; gap: 2px; }
+  .cedars-print-section-heading strong { font-size: 12pt; letter-spacing: -.01em; }
+  .cedars-print-section-heading small {
+    font-size: 7.5pt;
+    color: #53717c;
+    font-weight: 550;
+  }
+  .cedars-print-section-heading>span {
+    flex: 0 0 auto;
+    font-size: 8pt;
+    font-weight: 750;
+    color: #345c65;
+    text-align: right;
+  }
+  .cedars-print-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    padding: 10px;
+    border: 1px solid #cedfe3;
+    border-top: 0;
+    border-radius: 0 0 7px 7px;
+  }
+  .cedars-print-card {
+    min-width: 0;
+    margin: 0;
+    border: 1px solid #d5e2e6;
+    border-radius: 7px;
+    padding: 10px;
+    background: #fff;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .cedars-print-card-heading {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    min-width: 0;
+    color: #22424e;
+    font-size: 10pt;
+  }
+  .cedars-print-card-name { min-width: 0; display: grid; gap: 2px; }
+  .cedars-print-card-name strong { font-size: 10pt; overflow-wrap: anywhere; }
+  .cedars-print-card-name small { color: #6a7c83; font-size: 7pt; }
+  .cedars-print-total {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-width: 29px;
+    height: 29px;
+    padding: 3px 6px;
+    background: #e5f2f4 !important;
+    color: #1a5d68;
+    border-radius: 6px;
+    font-size: 13pt;
+    font-weight: 900;
+  }
+  .cedars-print-for-tests {
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid #e8eff1;
+    font-size: 7.5pt;
+    color: #647980;
+    font-weight: 650;
+  }
+  .cedars-print-test-list {
+    margin: 5px 0 0;
+    padding-left: 16px;
+    font-size: 8pt;
+    line-height: 1.45;
+    color: #263d47;
+  }
+  .cedars-print-test-list li { margin: 3px 0; break-inside: avoid; }
+  .cedars-print-test-list strong { font-weight: 750; }
+  .cedars-print-test-code {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 7.3pt;
+    color: #637983;
+    font-weight: 700;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+  }
+  .cedars-print-count-note {
+    display: inline-block;
+    margin-left: 5px;
+    color: #3d6872;
+    font-size: 7.3pt;
+    font-weight: 700;
+  }
+  .cedars-print-transport-pill {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.25;
+    min-width: 0;
+    padding: 6px 9px;
+    border-radius: 5px;
+    font-size: 9pt;
+    font-weight: 850;
+    background: #e7f1f5 !important;
+    color: #215771;
+  }
+  .cedars-print-transport-pill.pending {
+    background: #fff0d4 !important;
+    color: #795015;
+    border: 1px solid #e7c98d;
+  }
+  .cedars-print-group-count {
+    margin-left: auto;
+    color: #677c85;
+    font-size: 7pt;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .cedars-print-pending-note {
+    margin: 7px 0 0 !important;
+    font-size: 7.5pt;
+    line-height: 1.45;
+    color: #6a7072;
+  }
+  .cedars-print-submit-card.is-unverified {
+    border-color: #e7d3aa;
+    background: #fffdf9 !important;
+  }
+  .cedars-print-submit-item {
+    margin-top: 9px;
+    padding-top: 9px;
+    border-top: 1px solid #e8edf0;
+    break-inside: avoid;
+  }
+  .cedars-print-submit-item>strong {
+    font-size: 9pt;
+    line-height: 1.45;
+    color: #22424d;
+  }
+  .cedars-print-section-note {
+    color: #61747c;
+    margin: 7px 2px 0 !important;
+    font-size: 7.5pt;
+    line-height: 1.4;
+  }
+  .cedars-print-start-page {
+    break-before: page;
+    page-break-before: always;
+  }
+  .cedars-print-handling-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid #cadfe3;
+    border-top: 0;
+  }
+  .cedars-print-handling-item {
+    min-width: 0;
+    padding: 10px;
+    border-bottom: 1px solid #e0e9ec;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .cedars-print-handling-item:nth-child(odd) { border-right: 1px solid #e0e9ec; }
+  .cedars-print-handling-head {
+    color: #224753;
+    font-size: 8.7pt;
+    line-height: 1.4;
+  }
+  .cedars-print-handling-item p {
+    margin: 4px 0 0 !important;
+    color: #334b56;
+    font-size: 8pt;
+    line-height: 1.48;
+    overflow-wrap: anywhere;
+  }
+  .cedars-print-handling-item small {
+    display: block;
+    margin-top: 5px;
+    color: #697e87;
+    font-size: 7pt;
+    font-style: italic;
+  }
+  .cedars-print-footer {
+    margin-top: 14px;
+    border-top: 1px solid #ccdce1;
+    padding-top: 7px;
+    color: #718087;
+    font-size: 7.5pt;
+    line-height: 1.4;
+  }
+}
