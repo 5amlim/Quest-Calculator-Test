@@ -12,33 +12,63 @@
   const txt=(x,y,t,fill='#3f5866',sz=7)=>
     '<text x="'+x+'" y="'+y+'" fill="'+fill+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+sz+'" font-weight="700">'+E(t)+'</text>';
   const path=(d,fill,stroke='#849ba5')=>'<path d="'+d+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.4"/>';
-  function tube(x,y,w,h,cap,label,media='#edf5f7',labelColor='#ffffff') {
-    return rect(x,y+12,w,h-12,media,Math.min(5,w/4))+
-      rect(x-1,y,w+2,14,cap,4,'#70858f')+
-      rect(x+3,y+25,w-6,Math.min(32,h-29),labelColor,1,'#d3dde1')+
-      line(x+5,y+16,x+5,y+h-6,'#ffffff',1.7)+
-      txt(x+w/2,y+42,label,'#425965',Math.min(w<24?6:7,7));
+  // Rounded bottoms: swab media, gray-top urine cultures and stool vials.
+  function roundBottomTube(x,y,w,h,cap,label,liquid='#eef3f5',labelFill='#ffffff') {
+    const tip=y+h, cx=x+w/2;
+    return path('M '+x+' '+(y+12)+' H '+(x+w)+' V '+(tip-13)+
+      ' Q '+(x+w)+' '+tip+' '+cx+' '+tip+
+      ' Q '+x+' '+tip+' '+x+' '+(tip-13)+' Z','#f4f9fa')+
+      path('M '+(x+2)+' '+(tip-26)+' H '+(x+w-2)+' V '+(tip-14)+
+      ' Q '+(x+w-2)+' '+(tip-2)+' '+cx+' '+(tip-2)+
+      ' Q '+(x+2)+' '+(tip-2)+' '+(x+2)+' '+(tip-14)+' Z',liquid,'none')+
+      rect(x-1,y,w+2,14,cap,4,'#728993')+
+      rect(x+3,y+24,w-6,Math.min(29,h-31),labelFill,1,'#d6e0e4')+
+      line(x+4,y+17,x+4,tip-14,'#fff',1.5)+
+      txt(cx,y+41,label,'#476271',w<24?5.7:7);
   }
-  function bottle(x,y,cap,band,label,wide=33) {
-    const cx=x+wide/2, neck=Math.max(9,wide*.27);
-    return path('M '+(cx-neck)+' '+(y+17)+' V '+(y+29)+
-      ' C '+(x-1)+' '+(y+40)+' '+x+' '+(y+47)+' '+x+' '+(y+54)+
+  // Sharply pointed collection/transfer tube used for UA and cobas urine.
+  function pointedBottomTube(x,y,w,h,cap,label,liquid='#f4e5b4') {
+    const tip=y+h,cx=x+w/2;
+    return path('M '+x+' '+(y+12)+' H '+(x+w)+' V '+(tip-20)+
+      ' L '+cx+' '+tip+' L '+x+' '+(tip-20)+' Z','#f4f9fa')+
+      path('M '+(x+2)+' '+(tip-32)+' H '+(x+w-2)+' V '+(tip-21)+
+      ' L '+cx+' '+(tip-4)+' L '+(x+2)+' '+(tip-21)+' Z',liquid,'none')+
+      rect(x-1,y,w+2,14,cap,4,'#728993')+
+      rect(x+3,y+24,w-6,Math.min(29,h-31),'#fff',1,'#d6e0e4')+
+      line(x+4,y+17,x+4,tip-20,'#fff',1.5)+
+      txt(cx,y+41,label,'#476271',w<24?5.7:7);
+  }
+  function tube(x,y,w,h,cap,label,liquid='#edf5f7',labelFill='#ffffff') {
+    return roundBottomTube(x,y,w,h,cap,label,liquid,labelFill);
+  }
+  function bottle(x,y,cap,band,label,wide=33,fluid='#813a31') {
+    // Narrow BACTEC neck with wider shoulders, matching the bottle photos.
+    const cx=x+wide/2, neck=6.2;
+    return path('M '+(cx-neck)+' '+(y+17)+' V '+(y+30)+
+      ' C '+(x+3)+' '+(y+38)+' '+x+' '+(y+44)+' '+x+' '+(y+56)+
       ' V '+(y+74)+' Q '+x+' '+(y+82)+' '+(x+8)+' '+(y+82)+
       ' H '+(x+wide-8)+' Q '+(x+wide)+' '+(y+82)+' '+(x+wide)+' '+(y+74)+
-      ' V '+(y+54)+' C '+(x+wide)+' '+(y+47)+' '+(x+wide+1)+' '+(y+40)+
-      ' '+(cx+neck)+' '+(y+29)+' V '+(y+17)+' Z','#f2f6f7')+
-      rect(cx-neck-1,y,neck*2+2,18,cap,3,'#718590')+
-      rect(x+3,y+53,wide-6,20,band,1,'#9cabb3')+
-      txt(cx,y+65,label,band==='#c03444'?'#ffffff':'#29475c',6);
+      ' V '+(y+56)+' C '+(x+wide)+' '+(y+44)+' '+(x+wide-3)+' '+(y+38)+
+      ' '+(cx+neck)+' '+(y+30)+' V '+(y+17)+' Z','#f0f5f5')+
+      path('M '+(x+3)+' '+(y+64)+' H '+(x+wide-3)+' V '+(y+74)+
+      ' Q '+(x+wide-3)+' '+(y+79)+' '+(x+wide-8)+' '+(y+79)+
+      ' H '+(x+8)+' Q '+(x+3)+' '+(y+79)+' '+(x+3)+' '+(y+74)+' Z',fluid,'none')+
+      rect(cx-neck-2,y,neck*2+4,18,cap,3,'#72868e')+
+      rect(x+3,y+52,wide-6,20,band,1,'#a4b0b4')+
+      txt(cx,y+65,label,band==='#c03444'?'#fff':'#29475c',6)+
+      line(x+5,y+44,x+5,y+77,'#fff',1.2);
   }
   function cup() {
-    return path('M 29 30 H 99 L 94 82 Q 93 88 85 88 H 43 Q 35 88 34 82 Z','#eef5f8')+
+    return path('M 29 30 H 99 L 94 82 Q 93 88 85 88 H 43 Q 35 88 34 82 Z','#f0f7fa')+
+      path('M 36 65 H 92 L 90 82 Q 89 85 84 85 H 44 Q 39 85 38 82 Z','#e8eacb','none')+
       rect(26,21,76,13,'#e8e9e7',4,'#98a7ad')+
-      rect(38,49,53,23,'#ffffff',2,'#dae5e8')+
-      txt(64,63,'STERILE', '#415d69',9)+line(41,34,43,78,'#ffffff',2);
+      rect(38,48,53,24,'#fff',2,'#dae5e8')+
+      txt(64,62,'STERILE','#415d69',9)+line(41,34,43,78,'#fff',2);
   }
   function swab(cap='#f7f7f4',fluid='#eef4f8',word='eSwab') {
-    return tube(51,6,23,83,cap,word,fluid)+line(86,21,86,80,'#829ca3',2.4)+
+    const grooves=Array.from({length:5},(_,i)=>line(54+i*4,8,54+i*4,17,'#c4c9c9',.6)).join('');
+    return roundBottomTube(51,6,23,83,cap,word,fluid)+grooves+
+      line(86,21,86,80,'#829ca3',2.4)+
       '<ellipse cx="86" cy="17" rx="4.1" ry="7" fill="#fff" stroke="#96a5ab" stroke-width="1.4"/>';
   }
   function qft() {
