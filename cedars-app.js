@@ -518,14 +518,15 @@
     const countFor = (test) => Math.max(1, Number(test.qty) || 1);
     const testTag = (test) =>
       '<strong>' + esc(test.name) + '</strong>' +
-      (test.code ? '<span class="cedars-print-test-code">' + esc(test.code) + '</span>' : '');
+      '<span class="cedars-print-test-type">' + esc(test.category || 'Other') + '</span>' +
+      ((test.code || test.secondaryCode) ? '<span class="cedars-print-test-code">' + esc([test.code, test.secondaryCode].filter(Boolean).join(' / ')) + '</span>' : '');
     const collectionCards = Array.from(collection, ([container, group]) => {
       const quantity = group.reduce((sum, test) => sum + countFor(test), 0);
       return '<article class="cedars-print-card cedars-print-collection-card">' +
         '<div class="cedars-print-card-heading"><span class="cedars-print-total">' + quantity +
         '</span>' + containerArt(container, 'print') +
         '<div class="cedars-print-card-name"><strong>' + esc(container) +
-        '</strong><small>Separate collections; no pooling</small></div></div>' +
+        '</strong><small>Keep specimens separate</small></div></div>' +
         '<div class="cedars-print-for-tests">For ' + group.length +
         (group.length === 1 ? ' test' : ' tests') + '</div>' +
         '<ul class="cedars-print-test-list">' +
@@ -590,8 +591,8 @@
 
     const totalContainers = tests.reduce((sum,test) => sum + countFor(test), 0);
     $('cedarsPrintSheet').innerHTML =
-      '<header class="cedars-print-header"><div><h1>Lab Collection Summary</h1>' +
-        '<p>Cedars send-outs · Collection and transport plan</p></div>' +
+      '<header class="cedars-print-header"><div><h1>Cedars Collection Summary</h1>' +
+        '<p>What to collect · What to submit · Transport instructions</p></div>' +
         '<div class="cedars-print-meta"><span>' + esc(new Date().toLocaleString()) + '</span>' +
         '<strong>' + tests.length + (tests.length===1 ? ' test' : ' tests') + '</strong></div></header>' +
       (precautionCards ? '<section class="cedars-print-precautions">' +
@@ -615,8 +616,8 @@
         '<div class="cedars-print-section-heading"><div><strong>3. Additional handling notes</strong>' +
         '<small>Test-specific instructions from the listed source</small></div></div>' +
         '<div class="cedars-print-handling-grid">' + handlingCards + '</div></section>' : '') +
-      '<footer class="cedars-print-footer">For planning only. Check the current Cedars/Lexicomp directory and local SOP. ' +
-        'Unknown volumes and temperatures are intentionally not filled in. No patient identifiers required.</footer>';
+      '<footer class="cedars-print-footer">Verify current Cedars/Lexicomp instructions before collecting. ' +
+        'Do not pool specimens or substitute collection containers. No patient identifiers are required.</footer>';
     window.print();
   }
   // Manual entry cannot bypass the published approved menu.
