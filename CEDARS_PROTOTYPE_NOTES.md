@@ -47,3 +47,13 @@ These records are visible for investigation but cannot be added to a collection 
 - Quest page only gained a Cedars navigation link.
 
 This is a prototype, not clinical validation or a live-browser cross-device test.
+
+
+## October 21 visual synchronization
+- Replaced the Cedars prototype's older visual shell with the current production calculator (Lab-Calculator v11.92) HTML component patterns and a self-contained copy of its stylesheets: `cedars-main-styles.css` and `cedars-main-experience.css`.
+- Cedars uses its own `cedars.css` overrides and `cedars-app.js`; no Quest production files or clinical calculations were changed.
+- Reworked the batch search area, collapsed Filters menu, six-column test table, compact Cart, Show details control, collapsible Draw plan and What to submit sections, and print-card presentation.
+- Removed the visible skip-link artifact while retaining keyboard-focus accessibility.
+- Printouts now include two-column What to collect and What to submit cards followed by test-specific instructions, with verification warnings.
+- Still deliberately **not implemented**: Quest-specific pooling, SST/UriSponge toggles, STAT eligibility, standard blood-tube quantities, and any unverified Cedars-specific processing logic.
+- Static and simulated DOM functional tests passed for search, selection, batch addition, held-test blocking, filter opening/closing, cart detail toggling, and print assembly. Not a full live cross-browser validation.
