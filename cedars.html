@@ -32,12 +32,12 @@
           </div>
           <div class="library-actions">
             <span class="record-count" id="recordCount">0 tests</span>
-            <button class="button secondary" id="manualButton" type="button">+ Add a missing test</button>
+            <button class="button secondary cedars-do-not-perform-toggle" id="cedarsBlockedButton" type="button" aria-expanded="false" aria-controls="cedarsBlockedPanel">Do Not Perform list</button>
           </div>
         </div>
         <section class="cedars-source-strip" role="note" aria-label="Source verification status">
-          <span class="cedars-reference-pill">2023 reference</span>
-          <span class="cedars-source-message">This starter catalog is not current Lexicomp data. Verify collection and transport requirements before use. Container pictures are illustrations, not exact kit photos.</span>
+          <span class="cedars-reference-pill">Sollis Cedars menu</span>
+          <span class="cedars-source-message">Only approved Sollis Cedars workflows are selectable. Other tests are listed under Do Not Perform. Verify current Lexicomp/Cedars requirements. Container images are illustrations.</span>
           <a class="cedars-reference-link" href="https://ppcny-my.sharepoint.com/:p:/g/personal/sam_hay_sollishealth_com/IQAMbz_xbgCOSIPY9EWOvwPUAfsBirHK38IHyJ9pUVIJmt0" target="_blank" rel="noopener noreferrer" aria-label="Open Cedars specimen collection PowerPoint in SharePoint (opens in a new tab)">View collection PowerPoint ↗</a>
         </section>
         <section class="panel search-panel cedars-batch" id="batchEntry" aria-labelledby="batchEntryTitle">
@@ -47,7 +47,7 @@
           </div>
           <div class="batch-entry-body">
             <label class="sr-only" for="batchInput">Test names or codes, one per line</label>
-            <textarea id="batchInput" rows="3" placeholder="STSTPCRB&#10;Urine culture&#10;QuantiFERON" aria-describedby="batchEntryDescription"></textarea>
+            <textarea id="batchInput" rows="3" placeholder="Urine culture&#10;Culture (eSwab)&#10;Vaginitis / vaginosis" aria-describedby="batchEntryDescription"></textarea>
             <div class="search-actions">
               <button class="button ghost" type="button" id="batchClear">Clear</button>
               <button class="button secondary" type="button" id="batchReview">Review matches</button>
@@ -64,11 +64,15 @@
             <div class="catalog-filter-panel hidden" id="cedarsFilterPanel">
               <div class="catalog-filter-heading"><strong>Filter tests</strong><button type="button" class="catalog-filter-reset" id="cedarsFilterReset">Clear filters</button></div>
               <label>Specimen type<select id="cedarsType" aria-label="Filter by specimen type"><option value="">All specimens</option><option>Swab</option><option>Urine</option><option>Stool</option><option>Blood</option><option>Other</option></select></label>
-              <label class="catalog-filter-check"><input id="showHolds" type="checkbox" checked><span>Include records needing verification</span></label>
+              <label class="catalog-filter-check"><input id="showHolds" type="checkbox"><span>Include Not performed at Sollis</span></label>
               <button class="catalog-filter-done" type="button" id="cedarsFilterDone">Done</button>
             </div>
           </div>
         </div>
+        <section id="cedarsBlockedPanel" class="cedars-blocked-panel hidden" aria-label="Tests not performed at Sollis">
+          <div class="cedars-blocked-heading"><strong>Not performed at Sollis</strong><span>These tests cannot be added to the collection cart.</span></div>
+          <div id="cedarsBlockedList" class="cedars-blocked-list"></div>
+        </section>
         <div class="table-wrap">
           <table class="library-table cedars-library">
             <thead>
@@ -78,19 +82,19 @@
           </table>
         </div>
         <div class="pagination-row"><span id="libraryStatus" role="status"></span></div>
-        <p class="library-help">Can't find a test? Add a verified manual entry, or ask Sam to update the directory.</p>
+        <p class="library-help">Only listed Sollis workflows can be added. For a missing test, contact Sam to review the workflow before adding it.</p>
       </div>
     </section>
     <aside class="panel order-panel" id="cedarsSummary" tabindex="-1">
       <div class="order-top">
         <div><div class="eyebrow">2. CHECK SUMMARY</div><h2>Collection summary <span id="selectedCount">0</span></h2></div>
       </div>
-      <div class="cedars-summary-notice">2023 reference only. <strong>Verify all selected tests in the current Cedars/Lexicomp directory.</strong> No automatic pooling.</div>
+      <div class="cedars-summary-notice">Sollis Cedars workflow. <strong>Verify specimen collection and transport requirements against current Cedars/Lexicomp instructions.</strong> No automatic pooling.</div>
       <p class="cedars-storage-status" id="cedarsStorageStatus" role="status" aria-live="polite"></p>
       <section class="summary-section tests-summary" aria-labelledby="cedarsCartTitle">
         <div class="tests-summary-header cedars-cart-header">
           <div class="tests-summary-heading-block"><div class="tests-summary-heading"><span class="tests-summary-title" id="cedarsCartTitle">Cart</span><span class="tests-summary-count" id="cedarsCartCount">0 tests</span></div></div>
-          <div class="tests-summary-actions"><button class="mini-button" id="manualCartButton" type="button">+ Add a missing test</button><button class="mini-button remove" id="clearCart" type="button">Clear all</button></div>
+          <div class="tests-summary-actions"><button class="mini-button remove" id="clearCart" type="button">Clear all</button></div>
           <button class="mini-button edit tests-details-toggle" type="button" id="cedarsDetailsToggle" aria-expanded="false"><span class="collection-alerts-chevron" aria-hidden="true"></span><span id="cedarsDetailsToggleText">Show details</span></button>
           <button class="button primary cart-header-print" type="button" id="cedarsPrint">Print / Save PDF</button>
         </div>
@@ -123,9 +127,9 @@
     <div id="cedarsInfoBody" class="cedars-info-body"></div>
     <div class="cedars-dialog-actions"><button type="button" class="button secondary" id="cedarsInfoDone">Close</button></div>
   </dialog>
-  <dialog id="cedarsManualDialog" class="cedars-dialog">
+  <dialog id="cedarsManualDialog" aria-label="Manual entry disabled" class="cedars-dialog">
     <form method="dialog" id="cedarsManualForm">
-      <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. This record is saved only in this browser.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
+      <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. Manual entries are disabled for the approved Sollis Cedars menu.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
       <div class="cedars-form-grid">
         <label>Test name *<input id="manualName" required maxlength="150"></label>
         <label>Test code<input id="manualCode" maxlength="40"></label>
