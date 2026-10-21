@@ -104,3 +104,11 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - The source notice includes the user's SharePoint PowerPoint reference link, intended for staff with appropriate SharePoint permissions.
 - The pediatric culture set count, accepted kit/bottle types, specimen volume and temperature still require current Cedars/Lexicomp and age-appropriate SOP confirmation before clinical use.
 - UI/unit checks passed: only the 10 approved workflows appear in default search, 22 historical records are blocked, formerly saved prohibited tests are purged, allowed tests can be added/printed, and PowerPoint reference is preserved.
+
+
+## eSwab swab-culture scope expansion (October 21, 2026)
+- Lab workflow owner clarified that **all swab cultures at Sollis use the white-top eSwab**. The selectable Cedars catalog now includes a general swab culture as well as throat, wound/aerobic, anaerobic, and fungal/yeast **swab-based** cultures, each with white-top eSwab as the collection and submission container.
+- This does not expand approved use to fungal blood cultures, other blood cultures, non-swab tissue/fluid cultures, or molecular PCR swabs. Cobas GC/CT and Affirm/ATTS retain their dedicated kits.
+- MRSA/VRE **screening** entries remain in Do Not Perform because the assay method and approval are not established by a statement about culture swabs; confirm separately before allowing them.
+- The default performed menu now lists 14 tests and the Do Not Perform list has 18 historical entries. Existing saved carts and source-PowerPoint reference remain intact.
+- Simulated UI QA confirmed collection cartoons, search/selection, preserved transport restrictions, blocked PCR entries, cart persistence and print inclusion for the newly allowed swab cultures.
