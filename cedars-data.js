@@ -1,6 +1,5 @@
-/* Cedars Lab Guide: owner-confirmed Sollis workflows plus named Cedars monographs.
-   Screenshot excerpts support specific media and handling; verify current test
-   availability and site-specific requirements before collection. */
+/* Cedars Lab Guide: Sollis-reported workflows with cited Cedars reference sources.
+   For current clinical use, confirm assay/site acceptance and transport stability. */
 window.CEDARS_TESTS = [
   {
     "id": "culture-eswab",
@@ -326,7 +325,7 @@ window.CEDARS_TESTS = [
     "aliases": "AFB urine|urine mycobacteria|urine tuberculosis culture|urine TB culture",
     "hold": false,
     "blockReason": "",
-    "containerType": "Sterile container",
+    "containerType": "Sterile 50 mL tube",
     "sourceNote": "Cedars Mycobacteria Culture AFBC monograph screenshot lists urine AFB culture; historical guide specifies first-morning urine"
   },
   {
@@ -489,7 +488,7 @@ window.CEDARS_TESTS = [
     "hold": false,
     "blockReason": "",
     "sourceNote": "Cedars Lexicomp screenshot: Mycobacteria Culture AFBC (current excerpt)",
-    "containerType": "Sterile container",
+    "containerType": "Sterile 50 mL tube",
     "aliases": "AFB|mycobacteria|acid-fast bacilli|TB culture|AFB culture|AFBC|AFB smear|sputum AFB|body fluid AFB",
     "volumeDisplay": "Sputum 5–10 mL (min 1 mL); fluid 5 mL (min 1 mL, culture only)"
   },
