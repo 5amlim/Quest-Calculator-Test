@@ -85,30 +85,30 @@
   }
   function art(key) {
     switch(key) {
-      case 'adult': return bottle(25,7,'#ad77bc','#a586c3','ANA',34)+bottle(70,7,'#278fce','#9fd0ed','AERO',34);
-      case 'peds': return bottle(48,7,'#eb9fb5','#e49fac','PEDS',35);
-      case 'fungal': return bottle(46,4,'#d8dedc','#c03444','MYCO',39);
+      case 'adult': return bottle(25,7,'#9e71b6','#ac92ca','ANA',34,'#823a33')+bottle(70,7,'#308fcb','#badbed','AERO',34,'#823a33');
+      case 'peds': return bottle(48,7,'#dea9bb','#e5a0b3','PEDS',35,'#823a33');
+      case 'fungal': return bottle(46,4,'#dedfdc','#c03444','MYCO',39,'#a87843');
       case 'eswab': return swab('#f5f5f1','#eff6f7','eSwab');
       case 'utm': return swab('#c83137','#f5d8d5','UTM');
-      case 'cobasUrine': return kit('cobas urine','#e8cf28')+line(112,46,118,84,'#93a7ae',2);
+      case 'cobasUrine': return rect(7,25,71,38,'#f8fbfc',5,'#b7cbd2')+rect(7,25,71,9,'#d6e8ed',3,'#aec4c9')+txt(42,49,'cobas urine','#405b66',9)+pointedBottomTube(88,13,20,71,'#e8cf28','PCR','#f3e6af')+line(112,46,118,84,'#93a7ae',2);
       case 'cobasSwab': return rect(7,25,68,36,'#f8fbfc',3,'#a7bec8')+
         rect(7,25,68,9,'#eef1f2',2,'#a4bac2')+txt(39,47,'cobas','#405d65',9)+
-        tube(80,13,20,71,'#e3d030','PCR')+
+        roundBottomTube(80,13,20,71,'#e3d030','PCR','#e9f2f4')+
         line(113,19,113,83,'#b3babe',2)+'<ellipse cx="113" cy="17" rx="3" ry="6" fill="#fff" stroke="#a9b9c1"/>';
       case 'affirm': return rect(10,24,75,38,'#e4f1f7',4,'#a8c5ce')+
         rect(13,30,69,23,'#f7fbfc',3,'#adc6d3')+
         txt(46,44,'AFFIRM','#49758a',9)+tube(91,13,18,73,'#f6f7f5','ATTS');
-      case 'urine': return tube(49,6,30,83,'#a1a9a7','URINE','#f4f6f8');
-      case 'ua': return tube(49,6,30,83,'#e5c654','UA','#f2f5f6')+
+      case 'urine': return roundBottomTube(49,6,30,83,'#a1a9a7','URINE','#f4e8b1');
+      case 'ua': return pointedBottomTube(49,6,30,83,'#e5c654','UA','#f4e6af')+
         path('M 48 12 Q 54 4 62 12 T 80 12','none','#d33138');
-      case 'parapak': return tube(10,20,28,68,'#efd12a','C&S','#f3f5f5')+
-        tube(50,20,28,68,'#ca93aa','10%','#f6eded')+
-        tube(90,20,28,68,'#eef1ee','CLEAN','#f4f5f6');
-      case 'cleanStool': return tube(47,7,34,82,'#eef1ee','CLEAN','#f4f5f6');
-      case 'formalin': return tube(47,7,34,82,'#c987a1','10%','#f8f0f4');
+      case 'parapak': return roundBottomTube(10,20,28,68,'#efd12a','C&S','#976d47')+
+        roundBottomTube(50,20,28,68,'#ca93aa','10%','#b2855a')+
+        roundBottomTube(90,20,28,68,'#eef1ee','CLEAN','#906b49');
+      case 'cleanStool': return roundBottomTube(47,7,34,82,'#eef1ee','CLEAN','#956b48');
+      case 'formalin': return roundBottomTube(47,7,34,82,'#c987a1','10%','#b38558');
       case 'sterile': return cup();
       case 'qft': return qft();
-      case 'aptima': return tube(48,6,30,83,'#eac0c6','APTIMA','#f5f6f6');
+      case 'aptima': return roundBottomTube(48,6,30,83,'#eac0c6','APTIMA','#f0f5f6');
       case 'fit': return tube(48,7,32,81,'#83b8ad','FIT');
       case 'surepath': return tube(46,8,36,80,'#cb87a9','PAP');
       default: return rect(35,25,58,58,'#f0f4f5',8,'#afc2c9')+
