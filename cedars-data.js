@@ -1,5 +1,4 @@
-/* Cedars Lab Guide: source-specific records and internal collection workflows.
-   Current Cedars test acceptance and assay-specific specimen instructions take priority. */
+/* Cedars Lab Guide. Verify acceptance and conditions against current Cedars monographs. */
 window.CEDARS_TESTS = [
   {
     "id": "culture-eswab",
@@ -437,24 +436,6 @@ window.CEDARS_TESTS = [
     "blockReason": "",
     "sourceNote": "Cedars quick microbiology guide: fungal blood culture, including Histoplasma",
     "containerType": "Myco/F Lytic"
-  },
-  {
-    "id": "quantiferon",
-    "code": "",
-    "name": "QuantiFERON-TB Gold Plus",
-    "category": "Blood",
-    "specimen": "Blood",
-    "collect": "QuantiFERON TB Gold Plus 4-tube set",
-    "submit": "All 4 QuantiFERON collection tubes",
-    "qty": 4,
-    "temp": "Room Temperature",
-    "notes": "Fill each of four tubes to the marked line; prime a butterfly line with a discard tube if used. Gently invert/shake as specified by current Cedars/manufacturer instructions, and confirm incubation timing.",
-    "slide": "3, 23",
-    "aliases": "qft tb tuberculosis quantiferon",
-    "hold": false,
-    "blockReason": "",
-    "sourceNote": "Cedars quick microbiology guide: QuantiFERON TB Gold Plus",
-    "containerType": "QuantiFERON 4-tube"
   },
   {
     "id": "fluid-culture",
