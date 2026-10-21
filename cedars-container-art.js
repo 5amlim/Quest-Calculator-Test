@@ -43,7 +43,7 @@
       ' cedars-container-unknown" role="img" aria-label="Container photo not yet available">VERIFY</span>';
     return '<span class="cedars-container-art cedars-container-art-'+chosen+
       ' cedars-container-photo" role="img" aria-label="'+escapeAttribute('Photo reference: '+visual.label)+'"'+
-      ' style="--atlas-col:'+visual.col+';--atlas-row:'+visual.row+'"'+
+      ' style="--atlas-left:'+(visual.col * -100)+'%;--atlas-top:'+(visual.row * -100)+'%"'+
       ' title="'+escapeAttribute(visual.label+' — check current Cedars collection instructions')+'">'+
       '<img class="cedars-photo-atlas" alt="" aria-hidden="true" src="'+PATH+'" decoding="async" loading="eager">'+
       '</span>';
