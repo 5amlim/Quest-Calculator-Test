@@ -2358,3 +2358,56 @@
     .cedars-page .cedars-directory-panel #cedarsSearch {font-size: 14px;}
   }
 }
+
+
+/* 2026-10: distinguish collection vessel from transfer/submit container
+   on the Cedars paper collection summary. */
+@media print {
+  #cedarsPrintSheet .cedars-print-collector-pill {
+    display:inline-block;
+    margin:4px 0 1px;
+    padding:2px 8px;
+    border-radius:999px;
+    background:#f8e8d9 !important;
+    color:#7b4e13 !important;
+    border:1px solid #e9cfaf;
+    font-size:7pt;
+    line-height:1.5;
+    font-weight:850;
+  }
+  #cedarsPrintSheet .cedars-print-collection-card:has(.cedars-print-collector-pill) {
+    border-left:3px solid #d7b26b;
+  }
+  #cedarsPrintSheet .cedars-print-source-cup {
+    display:block;
+    margin:4px 0 0;
+    font-size:7.3pt;
+    line-height:1.45;
+    color:#48606b !important;
+    font-weight:550;
+  }
+  #cedarsPrintSheet .cedars-print-submit-step {
+    display:block;
+    margin:5px 0 3px;
+    padding:6px 8px;
+    color:#234d5e !important;
+    background:#eaf4f6 !important;
+    border-left:3px solid #16828b;
+    border-radius:3px;
+    font-size:7.8pt;
+    font-weight:650;
+    line-height:1.45;
+    break-inside:avoid;
+  }
+  #cedarsPrintSheet .cedars-print-submit-step.is-original {
+    color:#526b43 !important;
+    background:#f0f6ea !important;
+    border-left-color:#6b9b48;
+  }
+  #cedarsPrintSheet .cedars-print-submit-step strong {
+    font-weight:900;
+  }
+  #cedarsPrintSheet .cedars-print-submit-item {
+    break-inside:avoid;
+  }
+}
