@@ -68,3 +68,10 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - Added a conditional page break for large collections; small orders can remain on the same page. No confirmed volume, temperature, centrifugation, pooling, or STAT cutoff was inferred from the guide.
 - Functional test passed with urine culture, enteric bacteria PCR and QuantiFERON: all sections appeared in order, important collection instructions printed, and conflicting C. difficile guidance remained blocked.
 - Live browser screenshot review and physical/mobile printer checks were not performed.
+
+
+### Follow-up print safety adjustment
+- Printout displays an early **Check before collection** section for records with fill-line, immediate mixing, rejection, collection timing, or other collection-critical instructions. The full source text is retained.
+- These notes are not duplicated in the final additional handling section. Staff see handling alerts before the collection and submission cards.
+- Unknown transport temperatures are never treated as confirmed shipping bags.
+- Verified in a simulated UI workflow using urine culture, stool bacterial PCR, QuantiFERON, and an intentionally blocked C. difficile record. Browser and printer-specific page-break behavior still needs end-user review.
