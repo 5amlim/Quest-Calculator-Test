@@ -13,26 +13,31 @@
     '<text x="'+x+'" y="'+y+'" fill="'+fill+'" text-anchor="middle" font-family="Arial,sans-serif" font-size="'+sz+'" font-weight="700">'+E(t)+'</text>';
   const path=(d,fill,stroke='#849ba5')=>'<path d="'+d+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.4"/>';
   // Rounded bottoms: swab media, gray-top urine cultures and stool vials.
+  // Truly rounded tube base: broad U shaped arc, not a conical point.
   function roundBottomTube(x,y,w,h,cap,label,liquid='#eef3f5',labelFill='#ffffff') {
-    const tip=y+h, cx=x+w/2;
-    return path('M '+x+' '+(y+12)+' H '+(x+w)+' V '+(tip-13)+
-      ' Q '+(x+w)+' '+tip+' '+cx+' '+tip+
-      ' Q '+x+' '+tip+' '+x+' '+(tip-13)+' Z','#f4f9fa')+
-      path('M '+(x+2)+' '+(tip-26)+' H '+(x+w-2)+' V '+(tip-14)+
-      ' Q '+(x+w-2)+' '+(tip-2)+' '+cx+' '+(tip-2)+
-      ' Q '+(x+2)+' '+(tip-2)+' '+(x+2)+' '+(tip-14)+' Z',liquid,'none')+
+    const tip=y+h, cx=x+w/2, low=tip-13;
+    const outline='M '+x+' '+(y+12)+' H '+(x+w)+' V '+low+
+      ' C '+(x+w)+' '+(low+8)+' '+(x+w-6)+' '+tip+' '+cx+' '+tip+
+      ' C '+(x+6)+' '+tip+' '+x+' '+(low+8)+' '+x+' '+low+' Z';
+    const media='M '+(x+2)+' '+(tip-26)+' H '+(x+w-2)+' V '+(low-1)+
+      ' C '+(x+w-2)+' '+(low+7)+' '+(x+w-7)+' '+(tip-2)+' '+cx+' '+(tip-2)+
+      ' C '+(x+7)+' '+(tip-2)+' '+(x+2)+' '+(low+7)+' '+(x+2)+' '+(low-1)+' Z';
+    return path(outline,'#f4f9fa')+path(media,liquid,'none')+
       rect(x-1,y,w+2,14,cap,4,'#728993')+
       rect(x+3,y+24,w-6,Math.min(29,h-31),labelFill,1,'#d6e0e4')+
       line(x+4,y+17,x+4,tip-14,'#fff',1.5)+
       txt(cx,y+41,label,'#476271',w<24?5.7:7);
   }
-  // Sharply pointed collection/transfer tube used for UA and cobas urine.
+  // Conical transfer tube with a subtly rounded end, not a sharp triangle tip.
   function pointedBottomTube(x,y,w,h,cap,label,liquid='#f4e5b4') {
     const tip=y+h,cx=x+w/2;
-    return path('M '+x+' '+(y+12)+' H '+(x+w)+' V '+(tip-20)+
-      ' L '+cx+' '+tip+' L '+x+' '+(tip-20)+' Z','#f4f9fa')+
-      path('M '+(x+2)+' '+(tip-32)+' H '+(x+w-2)+' V '+(tip-21)+
-      ' L '+cx+' '+(tip-4)+' L '+(x+2)+' '+(tip-21)+' Z',liquid,'none')+
+    const cone='M '+x+' '+(y+12)+' H '+(x+w)+' V '+(tip-20)+
+      ' L '+(cx+3)+' '+(tip-3)+' Q '+cx+' '+(tip+1)+' '+(cx-3)+' '+(tip-3)+
+      ' L '+x+' '+(tip-20)+' Z';
+    const media='M '+(x+2)+' '+(tip-31)+' H '+(x+w-2)+' V '+(tip-21)+
+      ' L '+(cx+3)+' '+(tip-7)+' Q '+cx+' '+(tip-3)+' '+(cx-3)+' '+(tip-7)+
+      ' L '+(x+2)+' '+(tip-21)+' Z';
+    return path(cone,'#f4f9fa')+path(media,liquid,'none')+
       rect(x-1,y,w+2,14,cap,4,'#728993')+
       rect(x+3,y+24,w-6,Math.min(29,h-31),'#fff',1,'#d6e0e4')+
       line(x+4,y+17,x+4,tip-20,'#fff',1.5)+
@@ -77,11 +82,30 @@
       tube(69,17,20,71,'#e8c546','TB2')+
       tube(99,17,20,71,'#a77bb3','MIT');
   }
-  function kit(base='cobas',accent='#e4d65e') {
-    return rect(7,25,71,38,'#f8fbfc',5,'#b7cbd2')+
-      rect(7,25,71,9,'#d6e8ed',3,'#aec4c9')+
-      rect(13,40,58,14,'#ffffff',2,'#dce5e7')+
-      txt(42,50,base,'#405b66',10)+tube(88,13,20,71,accent,'PCR','#eef3f7');
+  function cobasKit(accessory) {
+    // Same yellow-cap PCR transport kit for urine and swab.
+    const packet=rect(5,25,70,39,'#fbfcfd',4,'#b7c7cf')+
+      rect(5,25,70,9,'#edf3f5',3,'#aebfc8')+
+      rect(11,40,58,15,'#fff',2,'#d9e3e8')+
+      txt(39,49,'cobas','#405a66',10)+
+      line(9,35,69,35,'#cad6da',.8);
+    const tube=roundBottomTube(78,14,19,73,'#e9d130','PCR','#eaf3f7');
+    if (accessory==='urine') {
+      // Transfer pipette: a distinct squeezable bulb, long hollow stem and
+      // narrowed tapered tip (not another swab).
+      const pipette=
+        '<ellipse cx="113" cy="18" rx="5.2" ry="9" fill="#f4f7f7" stroke="#9bafb8" stroke-width="1.3"/>'+
+        path('M 109.6 26 L 109.6 59 L 111 77 L 113 88 L 115 77 L 116.4 59 L 116.4 26 Z',
+          '#f8fbfb','#9bafb8')+
+        line(113,29,113,79,'#cedcdf',.8);
+      return packet+tube+pipette;
+    }
+    // Two cotton-tipped swabs with fine straight shafts.
+    const swabs=line(108,26,108,85,'#9aabb2',1.8)+
+      line(119,27,119,84,'#9aabb2',1.8)+
+      '<ellipse cx="108" cy="19" rx="3.8" ry="8" fill="#fbfcfc" stroke="#a9b8bf" stroke-width="1"/>'+
+      '<ellipse cx="119" cy="20" rx="3.2" ry="7" fill="#fbfcfc" stroke="#a9b8bf" stroke-width="1"/>';
+    return packet+tube+swabs;
   }
   function art(key) {
     switch(key) {
@@ -90,11 +114,8 @@
       case 'fungal': return bottle(46,4,'#dedfdc','#c03444','MYCO',39,'#a87843');
       case 'eswab': return swab('#f5f5f1','#eff6f7','eSwab');
       case 'utm': return swab('#c83137','#f5d8d5','UTM');
-      case 'cobasUrine': return rect(7,25,71,38,'#f8fbfc',5,'#b7cbd2')+rect(7,25,71,9,'#d6e8ed',3,'#aec4c9')+txt(42,49,'cobas urine','#405b66',9)+pointedBottomTube(88,13,20,71,'#e8cf28','PCR','#f3e6af')+line(112,46,118,84,'#93a7ae',2);
-      case 'cobasSwab': return rect(7,25,68,36,'#f8fbfc',3,'#a7bec8')+
-        rect(7,25,68,9,'#eef1f2',2,'#a4bac2')+txt(39,47,'cobas','#405d65',9)+
-        roundBottomTube(80,13,20,71,'#e3d030','PCR','#e9f2f4')+
-        line(113,19,113,83,'#b3babe',2)+'<ellipse cx="113" cy="17" rx="3" ry="6" fill="#fff" stroke="#a9b9c1"/>';
+      case 'cobasUrine': return cobasKit('urine');
+      case 'cobasSwab': return cobasKit('swab');
       case 'affirm': return rect(10,24,75,38,'#e4f1f7',4,'#a8c5ce')+
         rect(13,30,69,23,'#f7fbfc',3,'#adc6d3')+
         txt(46,44,'AFFIRM','#49758a',9)+tube(91,13,18,73,'#f6f7f5','ATTS');
