@@ -1328,3 +1328,67 @@
     color:#71303d !important;
   }
 }
+
+
+
+/* Specimen-type coding is separate from the receiving-lab identity.
+   Swab = blue, Urine = golden amber, Stool = brown, Blood = berry,
+   Other = muted purple. Neutral layouts and transport warnings are preserved. */
+@media screen {
+  .cedars-page {
+    --spec-swab-bg:#edf4fc; --spec-swab-ink:#285684; --spec-swab-line:#a9cbe9;
+    --spec-urine-bg:#fff4da; --spec-urine-ink:#855c0a; --spec-urine-line:#eed59a;
+    --spec-stool-bg:#f7ece0; --spec-stool-ink:#77502e; --spec-stool-line:#dcc1a4;
+    --spec-blood-bg:#f8e9ee; --spec-blood-ink:#873a55; --spec-blood-line:#dfb2c1;
+    --spec-other-bg:#efedf7; --spec-other-ink:#5e5681; --spec-other-line:#c5bedf;
+  }
+  .cedars-page .type-swab { --type-bg:var(--spec-swab-bg); --type-ink:var(--spec-swab-ink); --type-line:var(--spec-swab-line); }
+  .cedars-page .type-urine { --type-bg:var(--spec-urine-bg); --type-ink:var(--spec-urine-ink); --type-line:var(--spec-urine-line); }
+  .cedars-page .type-stool { --type-bg:var(--spec-stool-bg); --type-ink:var(--spec-stool-ink); --type-line:var(--spec-stool-line); }
+  .cedars-page .type-blood { --type-bg:var(--spec-blood-bg); --type-ink:var(--spec-blood-ink); --type-line:var(--spec-blood-line); }
+  .cedars-page .type-other { --type-bg:var(--spec-other-bg); --type-ink:var(--spec-other-ink); --type-line:var(--spec-other-line); }
+  /* Group labels remain readable in narrow layouts and on high-DPI displays. */
+  .cedars-page tr.cedars-specimen-heading[class*="type-"] > td {
+    color:var(--type-ink) !important;
+    background:var(--type-bg) !important;
+    border-top:1px solid var(--type-line) !important;
+    border-bottom:1px solid var(--type-line) !important;
+    border-left:4px solid var(--type-line);
+    font-weight:850;
+  }
+  .cedars-page tr.cedars-test-row[class*="type-"] > td:first-child {
+    box-shadow:inset 3px 0 0 var(--type-line);
+  }
+  .cedars-page .cedars-cart-item[class*="type-"] {
+    box-shadow:inset 3px 0 0 var(--type-line);
+  }
+  .cedars-page .cedars-cart-item[class*="type-"] .cedars-cart-heading strong {
+    color:var(--type-ink);
+  }
+  .cedars-page .cedars-plan-row[class*="type-"] {
+    border-color:var(--type-line);
+    box-shadow:inset 3px 0 0 var(--type-line);
+    background:linear-gradient(90deg,var(--type-bg),#fff 44%);
+  }
+  .cedars-page .cedars-plan-row[class*="type-"] .cedars-count {
+    color:var(--type-ink);
+    background:var(--type-bg);
+    border-color:var(--type-line);
+  }
+  .cedars-page .cedars-bag-line[class*="type-"] {
+    box-shadow:inset 3px 0 0 var(--type-line);
+    padding-left:6px;
+  }
+  /* Quest's primary print color, intentionally independent of Cedars red. */
+  .cedars-page #cedarsPrint.button.primary.cart-header-print:not(:disabled) {
+    background:#087e83 !important;
+    border-color:#087e83 !important;
+    color:#fff !important;
+  }
+  .cedars-page #cedarsPrint.button.primary.cart-header-print:hover:not(:disabled),
+  .cedars-page #cedarsPrint.button.primary.cart-header-print:focus-visible:not(:disabled) {
+    background:#056267 !important;
+    border-color:#056267 !important;
+    color:#fff !important;
+  }
+}
