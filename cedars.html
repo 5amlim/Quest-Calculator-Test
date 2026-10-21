@@ -85,6 +85,11 @@
   <a class="mobile-summary no-print" href="#cedarsSummary">View Cedars summary <span id="mobileCount">0 tests</span><span aria-hidden="true">↓</span></a>
   <footer class="ownership-notice no-print"><div class="ownership-copy"><strong>Copyright and ownership notice</strong><span>Copyright © 2026 Sam Hay. All rights reserved. Independent personal project; use does not transfer software ownership. Prototype only; does not replace current laboratory requirements.</span></div></footer>
   <section id="cedarsPrintSheet" class="cedars-print-sheet" aria-hidden="true"></section>
+  <dialog id="cedarsInfoDialog" class="cedars-dialog" aria-label="Test collection details">
+    <div class="cedars-dialog-head"><div><div class="eyebrow">CEDARS REFERENCE</div><h2 id="cedarsInfoTitle">Test details</h2></div><button type="button" class="cedars-close" id="cedarsInfoClose" aria-label="Close">×</button></div>
+    <div id="cedarsInfoBody" class="cedars-info-body"></div>
+    <div class="cedars-dialog-actions"><button type="button" class="button secondary" id="cedarsInfoDone">Close</button></div>
+  </dialog>
   <dialog id="cedarsManualDialog" class="cedars-dialog">
     <form method="dialog" id="cedarsManualForm">
       <div class="cedars-dialog-head"><div><div class="eyebrow">MANUAL ENTRY</div><h2>Add missing Cedars test</h2><p>For this session only. Verify every entry in Lexicomp.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
