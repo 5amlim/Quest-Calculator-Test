@@ -807,3 +807,33 @@
   .cedars-print-submit-line strong { flex: 1 1 0; min-width: 0; font-size: 8.7pt; line-height: 1.4; overflow-wrap: anywhere; }
   .cedars-print-submit-line .cedars-container-art { width: 49px; height: 46px; }
 }
+
+/* Source document link stays visible without enlarging the reference banner. */
+.cedars-source-strip .cedars-source-message { flex: 1 1 280px; min-width: 0; }
+.cedars-source-strip .cedars-reference-link {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 7px 10px;
+  border: 1px solid #bdd6dc;
+  border-radius: 8px;
+  background: #fff;
+  color: #0b5967;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cedars-source-strip .cedars-reference-link:hover,
+.cedars-source-strip .cedars-reference-link:focus-visible {
+  background: #eaf4f6;
+  border-color: #84b6c2;
+  text-decoration: underline;
+}
+@media (max-width: 720px) {
+  .cedars-source-strip { flex-wrap: wrap; }
+  .cedars-source-strip .cedars-source-message { flex-basis: calc(100% - 90px); }
+  .cedars-source-strip .cedars-reference-link { margin-left: auto; }
+}
