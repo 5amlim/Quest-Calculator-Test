@@ -3539,8 +3539,8 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
 }
 
 
-/* Print temperature pictograms are in a dedicated badge AFTER the bag name.
-   Keep the word label intact; the icon is supplemental. */
+/* Plain temperature emojis for the Quest printout.
+   The temperature label remains visible; no icon background, border or pill. */
 @media print {
   .print-bag-title {
     display:flex;
@@ -3550,39 +3550,26 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     row-gap:3px;
   }
   .print-temperature-emoji {
-    display:inline-flex !important;
-    align-items:center;
-    justify-content:center;
-    vertical-align:middle;
+    display:inline-block !important;
     flex:0 0 auto;
-    min-width:23px;
-    min-height:22px;
-    padding:2px 5px;
-    border:1.5px solid #aebac3;
-    border-radius:7px;
-    background:#414b56 !important;
-    color:#28485a !important;
+    vertical-align:middle;
+    min-width:0 !important;
+    min-height:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+    background:transparent !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    color:inherit !important;
     font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
     font-size:12.5px !important;
-    font-weight:850;
-    line-height:1.25;
+    font-weight:normal;
+    line-height:1.2;
     letter-spacing:0;
     white-space:nowrap;
     -webkit-print-color-adjust:exact;
     print-color-adjust:exact;
-  }
-  .print-temperature-emoji.badge-room {
-    background:#414b56 !important; border-color:#414b56; color:#fff !important;
-  }
-  .print-temperature-emoji.badge-refrigerated {
-    background:#414b56 !important; border-color:#414b56; color:#fff !important;
-  }
-  .print-temperature-emoji.badge-frozen {
-    background:#414b56 !important; border-color:#414b56; color:#fff !important;
-    min-width:36px;
-  }
-  .print-temperature-emoji.badge-mixed,.print-temperature-emoji.badge-verify {
-    background:#414b56 !important; border-color:#414b56; color:#fff !important;
   }
   .print-bag-pill {
     display:inline-flex !important;
@@ -3591,26 +3578,14 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     gap:5px;
     padding:3px 5px 3px 8px !important;
   }
-  .print-bag-pill .print-temperature-emoji {
-    min-width:19px;
-    min-height:18px;
-    padding:1px 4px;
-    font-size:10px !important;
-    border-radius:5px;
-  }
-  .print-bag-pill .print-temperature-emoji.badge-frozen {min-width:30px;}
   .print-bag-short-label {
     display:inline-flex;
     flex-wrap:wrap;
     align-items:center;
     gap:4px;
   }
+  .print-bag-pill .print-temperature-emoji,
   .print-bag-short-label .print-temperature-emoji {
-    min-width:19px;
-    min-height:18px;
-    padding:1px 4px;
-    border-radius:5px;
     font-size:10px !important;
   }
-  .print-bag-short-label .print-temperature-emoji.badge-frozen {min-width:30px;}
 }
