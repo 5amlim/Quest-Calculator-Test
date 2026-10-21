@@ -464,7 +464,7 @@ window.CEDARS_TESTS = [
     "collect": "Sterile specimen cup (leak-proof)",
     "submit": "Sterile specimen cup (individually bagged)",
     "qty": 1,
-    "temp": "Room Temperature",
+    "temp": "Verify",
     "notes": "Cedars AFBC accepts multiple nonblood specimen sources: sputum, body fluids, gastric aspirates, tissue and CSF. Each specimen must be individually sealed and submitted in an approved sterile, leak-proof cup or 50 mL sterile specimen transport tube as directed by Cedars. Sputum: three specimens 8–24 hours apart (24 hours preferred), including one first-morning sample; 5–10 mL each (minimum 1 mL). Body fluid: 5 mL (minimum 1 mL, culture only). Gastric aspirate: 5–10 mL (minimum 1 mL, culture only); neutralize to pH 7 with sodium carbonate if transport will exceed 4 hours. Tissue: visible amount; no formalin. CSF: 5 mL (minimum 1 mL for culture only); less than 5 mL may be accepted for pediatrics. Confirm current source-specific transport and acceptance instructions in Cedars Lexicomp.",
     "slide": "3",
     "hold": false,
