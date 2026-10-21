@@ -1,5 +1,6 @@
-/* Cedars Sollis-specific menu with source-attributed container photos.
-   Verify current Cedars instructions and acceptance for each specimen type. */
+/* Cedars test menu: user-reported workflows with referenced guide provenance.
+   This is NOT a substitute for current Cedars/Lexicomp instructions. 
+   Selected conflicting/historical workflows carry explicit verification notes. */
 window.CEDARS_TESTS = [
   {
     "id": "culture-eswab",
@@ -15,7 +16,8 @@ window.CEDARS_TESTS = [
     "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
     "aliases": "culture eswab e swab aerobic throat wound anaerobic fungal yeast swab",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "eSwab"
   },
   {
     "id": "urine-culture",
@@ -32,7 +34,8 @@ window.CEDARS_TESTS = [
     "aliases": "ucx gray top culture urine",
     "sourceNote": "Sollis gray-top workflow; confirm with Cedars",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "Gray-top urine culture"
   },
   {
     "id": "urinalysis-swirl",
@@ -46,7 +49,8 @@ window.CEDARS_TESTS = [
     "temp": "Verify",
     "notes": "Use red/yellow swirl-top urinalysis tube. Confirm minimum volume, fill, transport conditions and whether this specific UA is accepted by Cedars.",
     "sourceNote": "Sollis collection workflow; verify Cedars UA acceptance",
-    "aliases": "UA complete urinalysis red yellow swirl urine"
+    "aliases": "UA complete urinalysis red yellow swirl urine",
+    "containerType": "UA swirl-top"
   },
   {
     "id": "enteric-bacteria",
@@ -62,7 +66,8 @@ window.CEDARS_TESTS = [
     "slide": "16",
     "aliases": "stool pcr bacterial gastrointestinal",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "3-vial ParaPak"
   },
   {
     "id": "enteric-parasite",
@@ -78,7 +83,8 @@ window.CEDARS_TESTS = [
     "slide": "17",
     "aliases": "LAB7369 giardia cryptosporidium entamoeba",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "3-vial ParaPak"
   },
   {
     "id": "gc-ct-swab",
@@ -94,7 +100,8 @@ window.CEDARS_TESTS = [
     "slide": "3, 7",
     "aliases": "ct ng chlamydia gonorrhoeae gc",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "cobas swab"
   },
   {
     "id": "gc-ct-urine",
@@ -110,7 +117,8 @@ window.CEDARS_TESTS = [
     "slide": "3, 7",
     "aliases": "ct ng gc gonorrhoeae",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "cobas urine"
   },
   {
     "id": "affirm",
@@ -126,7 +134,8 @@ window.CEDARS_TESTS = [
     "slide": "3, 5",
     "aliases": "affirm atts vaginitis vaginosis bacterial vaginosis bv",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "Affirm / ATTS"
   },
   {
     "id": "blood-culture",
@@ -143,7 +152,8 @@ window.CEDARS_TESTS = [
     "aliases": "bactec culture blood",
     "sourceNote": "Sollis adult blood culture workflow; verify Cedars protocol",
     "hold": false,
-    "blockReason": ""
+    "blockReason": "",
+    "containerType": "Adult blood culture"
   },
   {
     "id": "blood-culture-peds",
@@ -157,7 +167,8 @@ window.CEDARS_TESTS = [
     "temp": "Verify",
     "notes": "Pediatric blood culture workflow. Verify whether the pediatric order requires one or two bottles and volume based on patient size. The set count shown is a provisional 2-pack, not validated pediatric collection guidance.",
     "sourceNote": "Sollis pediatric blood culture option; verify exact set and volumes",
-    "aliases": "peds pediatric blood cultures"
+    "aliases": "peds pediatric blood cultures",
+    "containerType": "Pediatric blood culture"
   },
   {
     "id": "throat-culture",
@@ -173,7 +184,8 @@ window.CEDARS_TESTS = [
     "slide": "3",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "containerType": "eSwab"
   },
   {
     "id": "wound-culture",
@@ -190,7 +202,8 @@ window.CEDARS_TESTS = [
     "aliases": "aerobic culture wound abscess swab",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "containerType": "eSwab"
   },
   {
     "id": "anaerobic-culture",
@@ -206,7 +219,8 @@ window.CEDARS_TESTS = [
     "slide": "2-3",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "containerType": "eSwab"
   },
   {
     "id": "mrsa-screen",
@@ -214,14 +228,16 @@ window.CEDARS_TESTS = [
     "name": "MRSA screen",
     "category": "Swab",
     "specimen": "Screening swab",
-    "collect": "eSwab",
-    "submit": "eSwab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Verify permitted anatomical site.",
+    "notes": "Use white-top eSwab for culture-based screening as shown in the Cedars swab collection guide. Confirm the ordered screening method and site; molecular screening assays may use different kits.",
     "slide": "2",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars Microbiology Swab Collection Guide: eSwab for culture screens",
+    "containerType": "eSwab"
   },
   {
     "id": "vre-screen",
@@ -229,14 +245,16 @@ window.CEDARS_TESTS = [
     "name": "VRE screen",
     "category": "Swab",
     "specimen": "Screening swab",
-    "collect": "eSwab",
-    "submit": "eSwab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Verify permitted anatomical site.",
+    "notes": "Use white-top eSwab for culture-based screening as shown in the Cedars swab collection guide. Confirm the ordered screening method and site; molecular screening assays may use different kits.",
     "slide": "2",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars Microbiology Swab Collection Guide: eSwab for culture screens",
+    "containerType": "eSwab"
   },
   {
     "id": "fungal-culture",
@@ -253,7 +271,8 @@ window.CEDARS_TESTS = [
     "aliases": "fungal culture yeast swab nonblood",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "containerType": "eSwab"
   },
   {
     "id": "respiratory-panel",
@@ -261,15 +280,17 @@ window.CEDARS_TESTS = [
     "name": "Respiratory viral panel",
     "category": "Swab",
     "specimen": "Respiratory swab",
-    "collect": "UTM",
-    "submit": "UTM",
+    "collect": "UTM viral transport tube (red top)",
+    "submit": "UTM viral transport tube (red top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "The 2023 guide says to use UTM for respiratory virus panels. Confirm panel-specific swab and current acceptable media.",
+    "notes": "Collect respiratory swab in red-top UTM for the indicated panel. Confirm approved collection site, swab type and current assay transport stability.",
     "slide": "2",
     "aliases": "respiratory pcr virus panel",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars swab collection guide: UTM for respiratory virus panels",
+    "containerType": "UTM"
   },
   {
     "id": "hsv-vzv",
@@ -277,15 +298,17 @@ window.CEDARS_TESTS = [
     "name": "HSV / VZV PCR swab",
     "category": "Swab",
     "specimen": "Lesion swab",
-    "collect": "UTM",
-    "submit": "UTM",
+    "collect": "UTM viral transport tube (red top)",
+    "submit": "UTM viral transport tube (red top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Guide lists UTM for HSV/VZV. Verify site, collection device, and whether current assay accepts UTM.",
+    "notes": "Collect lesion swab in red-top UTM per the referenced Cedars swab guide. Confirm specimen/site and current assay acceptance.",
     "slide": "2",
     "aliases": "herpes zoster varicella",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars swab collection guide: UTM for HSV/VZV",
+    "containerType": "UTM"
   },
   {
     "id": "urine-afb",
@@ -301,7 +324,8 @@ window.CEDARS_TESTS = [
     "slide": "11",
     "aliases": "tb urine acid fast",
     "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "Not performed at Sollis",
+    "containerType": "Sterile container"
   },
   {
     "id": "urine-legionella",
@@ -316,23 +340,26 @@ window.CEDARS_TESTS = [
     "notes": "Verify precise assay and specimen volume in current directory.",
     "slide": "11",
     "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "Not performed at Sollis",
+    "containerType": "Sterile container"
   },
   {
     "id": "stool-ova",
     "code": "",
-    "name": "Stool ova and parasites (traditional collection)",
+    "name": "Stool ova and parasites (O&P)",
     "category": "Stool",
     "specimen": "Stool",
-    "collect": "10% formalin and Z-PVA vials",
-    "submit": "Preservative vials; verify current assay",
-    "qty": 0,
+    "collect": "3-vial ParaPak stool collection set",
+    "submit": "3-vial ParaPak (C & S yellow / 10% formalin pink / clean white)",
+    "qty": 3,
     "temp": "Verify",
-    "hold": true,
-    "notes": "2023 guide lists 10% formalin and Z-PVA for O&P, but also says to submit three vials, and a separate slide describes replacement of the former O&P test. Verify the current test and exact kit before collecting.",
+    "hold": false,
+    "notes": "Use the three-vial ParaPak stool collection set shown in the supplied guide. The historical guide also mentions Z-PVA for traditional O&P, so confirm the exact assay, preservation and accepted vials before collection.",
     "slide": "13",
     "aliases": "o&p stool ova parasites",
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "",
+    "sourceNote": "Cedars stool collection guide and historical O&P instructions: verify preservation",
+    "containerType": "3-vial ParaPak"
   },
   {
     "id": "fecal-fit",
@@ -348,23 +375,26 @@ window.CEDARS_TESTS = [
     "slide": "14",
     "aliases": "fecal immunochemical test",
     "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "Not performed at Sollis",
+    "containerType": "FIT bottle"
   },
   {
     "id": "fecal-guaiac",
     "code": "OCLT",
-    "name": "Fecal occult blood (guaiac)",
+    "name": "Fecal occult blood (guaiac, stool sample)",
     "category": "Stool",
     "specimen": "Stool",
-    "collect": "Sterile plastic container",
-    "submit": "Sterile plastic container",
+    "collect": "ParaPak clean vial (white cap)",
+    "submit": "ParaPak clean vial (white cap)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Historical guide advises avoiding red meat, ASA/NSAIDs and citrus fruit. Do not alter medications without clinician direction; verify current preparation.",
+    "notes": "Collect stool in a clean unpreserved vial per the reference poster. Confirm requested occult blood methodology, volume and dietary restrictions before collection; do not substitute for FIT kit.",
     "slide": "14",
     "aliases": "stool blood hemoccult",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars stool collection poster: clean vial for occult blood",
+    "containerType": "Clean stool vial"
   },
   {
     "id": "blood-afb",
@@ -372,14 +402,16 @@ window.CEDARS_TESTS = [
     "name": "AFB / mycobacterial blood culture",
     "category": "Blood",
     "specimen": "Blood",
-    "collect": "Myco/F Lytic BACTEC bottle (red label)",
-    "submit": "Myco/F Lytic bottle",
+    "collect": "BD BACTEC Myco/F Lytic bottle (red label)",
+    "submit": "BD BACTEC Myco/F Lytic bottle (red label)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Verify volume and ordering in current Cedars directory.",
+    "notes": "Use the Myco/F Lytic bottle for AFB blood culture; check required blood volume and transport in the current directory.",
     "slide": "3",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars quick microbiology guide: AFB blood culture",
+    "containerType": "Myco/F Lytic"
   },
   {
     "id": "blood-fungal",
@@ -387,14 +419,16 @@ window.CEDARS_TESTS = [
     "name": "Fungal blood culture",
     "category": "Blood",
     "specimen": "Blood",
-    "collect": "Myco/F Lytic BACTEC bottle (red label)",
-    "submit": "Myco/F Lytic bottle",
+    "collect": "BD BACTEC Myco/F Lytic bottle (red label)",
+    "submit": "BD BACTEC Myco/F Lytic bottle (red label)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Guide lists this bottle for fungal blood culture, including Histoplasma. Confirm current instructions.",
+    "notes": "Use the Myco/F Lytic bottle for fungal blood culture as specified in the quick guide. Confirm current acceptance, specimen volume and order.",
     "slide": "3",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars quick microbiology guide: fungal blood culture, including Histoplasma",
+    "containerType": "Myco/F Lytic"
   },
   {
     "id": "quantiferon",
@@ -402,31 +436,35 @@ window.CEDARS_TESTS = [
     "name": "QuantiFERON-TB Gold Plus",
     "category": "Blood",
     "specimen": "Blood",
-    "collect": "4-tube QFT Plus collection kit",
-    "submit": "Four QFT collection tubes",
+    "collect": "QuantiFERON TB Gold Plus 4-tube set",
+    "submit": "All 4 QuantiFERON collection tubes",
     "qty": 4,
     "temp": "Verify",
-    "notes": "Fill each tube to its black mark. For a butterfly draw, prime tubing with discard tube. Immediately gently shake each tube 10 times over about 5 seconds. Confirm incubation and transport timing with current Cedars instructions.",
+    "notes": "Fill each of four tubes to the marked line; prime a butterfly line with a discard tube if used. Gently invert/shake as specified by current Cedars/manufacturer instructions, and confirm incubation timing.",
     "slide": "3, 23",
     "aliases": "qft tb tuberculosis quantiferon",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars quick microbiology guide: QuantiFERON TB Gold Plus",
+    "containerType": "QuantiFERON 4-tube"
   },
   {
     "id": "fluid-culture",
     "code": "",
-    "name": "Body fluid culture / Gram stain",
+    "name": "Body fluid culture with Gram stain",
     "category": "Other",
     "specimen": "Body fluid",
-    "collect": "Sterile container, no preservative",
-    "submit": "Sterile container, no preservative",
+    "collect": "Sterile specimen cup",
+    "submit": "Sterile specimen cup",
     "qty": 1,
-    "temp": "Verify",
-    "notes": "Guide lists sterile unpreserved fluid for aerobic, anaerobic, fungal and AFB culture and Gram stain. Verify source-specific orders.",
+    "temp": "Refrigerated",
+    "notes": "Collect body fluid aseptically in an unpreserved sterile cup; refrigerate for this specified Sollis body-fluid workflow. Verify fluid type, volume and prompt transport with Cedars. CSF must follow its separate immediate-delivery instructions.",
     "slide": "21",
-    "aliases": "pleural synovial fluid culture",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "aliases": "body fluid culture gram stain sterile cup pleural joint synovial fluid",
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Sollis workflow instruction: refrigerated sterile cup for body fluid culture + Gram stain",
+    "containerType": "Sterile container"
   },
   {
     "id": "afbculture",
@@ -434,14 +472,16 @@ window.CEDARS_TESTS = [
     "name": "AFB culture with smear (nonblood)",
     "category": "Other",
     "specimen": "Source-specific clinical material",
-    "collect": "Sterile container",
-    "submit": "Sterile container",
+    "collect": "Sterile specimen cup",
+    "submit": "Sterile specimen cup",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Verify source and sample volume before collection.",
+    "notes": "AFB culture with smear uses a sterile unpreserved container. Confirm specimen type, volume, and transport instructions.",
     "slide": "3",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Cedars quick microbiology guide: AFB smear and culture in sterile container",
+    "containerType": "Sterile container"
   },
   {
     "id": "pap-surepath",
@@ -456,23 +496,26 @@ window.CEDARS_TESTS = [
     "notes": "Guide lists SurePath vial supply #609283, Rovers brush #609282, brush/spatula #600566. Follow current collection instructions.",
     "slide": "8-10",
     "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "Not performed at Sollis",
+    "containerType": "SurePath"
   },
   {
     "id": "myco-ureaplasma",
     "code": "",
-    "name": "Mycoplasma / Ureaplasma",
+    "name": "Mycoplasma / Ureaplasma PCR (Aptima)",
     "category": "Swab",
     "specimen": "Site and assay dependent",
-    "collect": "VERIFY IN LEXICOMP",
-    "submit": "VERIFY IN LEXICOMP",
+    "collect": "Aptima swab transport tube (verify kit)",
+    "submit": "Aptima swab transport tube (verify kit)",
     "qty": 0,
     "temp": "Verify",
-    "hold": true,
-    "notes": "2023 guide conflicts: slide 2 says UTM while slide 3 says sterile container for culture and Aptima for PCR. Do not rely on this summary.",
+    "hold": false,
+    "notes": "The historical quick guide lists Aptima for PCR, but current test-specific acceptance must be checked before collection. Separate from Ureaplasma urealyticum culture MYCC, which uses UTM.",
     "slide": "2-3",
     "aliases": "mycoplasma ureaplasma pcr culture",
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "",
+    "sourceNote": "Cedars quick microbiology guide: Mycoplasma/Ureaplasma PCR mentions Aptima",
+    "containerType": "Aptima"
   },
   {
     "id": "cdiff",
@@ -485,25 +528,161 @@ window.CEDARS_TESTS = [
     "qty": 0,
     "temp": "Verify",
     "hold": true,
-    "notes": "2023 guide gives inconsistent container instructions (3-vial ParaPak on slide 3 and clean vial on slide 13). Confirm current assay and collection container.",
+    "notes": "Historical Cedars quick guide lists 3-vial ParaPak but the stool collection poster lists clean vial for C. difficile. Keep on hold until the current assay's collection instructions are confirmed.",
     "slide": "3, 13",
     "aliases": "clostridioides difficile toxin pcr",
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "Collection instructions conflict: verify current assay/container",
+    "containerType": "Other / verify"
   },
   {
     "id": "mpox",
     "code": "",
-    "name": "Mpox lesion testing",
+    "name": "Mpox swab testing (verify method)",
     "category": "Swab",
     "specimen": "Lesion swab",
-    "collect": "VERIFY IN LEXICOMP",
-    "submit": "VERIFY IN LEXICOMP",
+    "collect": "eSwab (white top) — historical reference only",
+    "submit": "eSwab (white top) — historical reference only",
     "qty": 0,
     "temp": "Verify",
-    "hold": true,
-    "notes": "Guide dated 2023 mentions eSwab, but this requires current assay-specific confirmation before collection.",
+    "hold": false,
+    "notes": "The 2023 guide lists eSwab for mpox, but specimen collection recommendations can change. Verify the CURRENT authorized assay and swab/media requirements with Cedars before collecting. Do not assume the 2023 medium remains acceptable.",
     "slide": "2",
     "aliases": "monkeypox",
-    "blockReason": "Not performed at Sollis"
+    "blockReason": "",
+    "sourceNote": "Cedars 2023 swab collection guide mentions eSwab for mpox",
+    "containerType": "eSwab"
+  },
+  {
+    "id": "enteric-virus",
+    "code": "",
+    "qty": 3,
+    "temp": "Verify",
+    "name": "Stool enteric virus PCR",
+    "category": "Stool",
+    "specimen": "Stool",
+    "collect": "3-vial ParaPak stool collection set",
+    "submit": "All three ParaPak vials (yellow C & S / pink formalin / white clean)",
+    "sourceNote": "Sollis workflow: enteric viral PCR uses three-vial ParaPak",
+    "notes": "Collect all three stool vials: yellow-cap C & S Medium, pink-cap 10% Formalin, and white-cap Clean Vial. Confirm the exact enteric virus assay and stability in current Cedars instructions.",
+    "aliases": "stool gi enteric viral panel PCR stool virus",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "3-vial ParaPak"
+  },
+  {
+    "id": "ureaplasma-mycc",
+    "code": "MYCC",
+    "qty": 1,
+    "temp": "Verify",
+    "name": "Ureaplasma urealyticum culture",
+    "category": "Swab",
+    "specimen": "Urethral, vaginal or endometrial swab",
+    "collect": "UTM viral transport tube (red top)",
+    "submit": "UTM viral transport tube (red top)",
+    "sourceNote": "Cedars Lexicomp screenshot: Ureaplasma urealyticum Culture, Genital MYCC",
+    "notes": "Place urethral, vaginal or endometrial swab into UTM immediately after collection. This is the Ureaplasma CULTURE MYCC monograph, not a universal protocol for all Mycoplasma tests.",
+    "aliases": "ureaplasma genital culture mycc mycoplasma t-strain",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "UTM"
+  },
+  {
+    "id": "csf-culture",
+    "code": "LAB268",
+    "qty": 1,
+    "temp": "Verify",
+    "name": "Cerebrospinal fluid culture, routine",
+    "category": "Other",
+    "specimen": "Cerebrospinal fluid (CSF)",
+    "collect": "Sterile specimen cup (CSF)",
+    "submit": "Sterile specimen cup (CSF)",
+    "sourceNote": "Cedars Lexicomp screenshot: CSF Culture, Routine CSFC / LAB268",
+    "notes": "Submit CSF 1 mL preferred (0.5 mL minimum) in sterile unpreserved container. Deliver to lab immediately. When possible collect from CSF tube #2 or #3 to reduce contamination. Do NOT apply refrigerated body-fluid transport instructions to CSF without explicit current laboratory approval.",
+    "aliases": "spinal fluid culture gram stain CSFC LAB268",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "Sterile container"
+  },
+  {
+    "id": "bone-marrow-culture",
+    "code": "",
+    "qty": 1,
+    "temp": "Verify",
+    "name": "Bone marrow culture",
+    "category": "Blood",
+    "specimen": "Bone marrow",
+    "collect": "Myco/F Lytic BACTEC bottle or SPS tube (verify)",
+    "submit": "Myco/F Lytic BACTEC bottle or SPS tube (verify)",
+    "sourceNote": "Cedars quick microbiology guide: bone marrow culture",
+    "notes": "Guide lists Myco/F Lytic BACTEC bottle or SPS tube for bone marrow culture. Do not use plain or SST tubes. Confirm correct choice, fill volume and transport against the current test monograph.",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "Myco/F Lytic"
+  },
+  {
+    "id": "genital-culture",
+    "code": "",
+    "qty": 1,
+    "temp": "Verify",
+    "name": "Genital bacterial / yeast swab culture",
+    "category": "Swab",
+    "specimen": "Genital swab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
+    "sourceNote": "Cedars swab collection guide: eSwab for genital culture and yeast/fungus",
+    "notes": "White-top eSwab for indicated genital bacterial or yeast swab cultures. Verify the test, collection site and assay-specific acceptance before collection.",
+    "aliases": "vaginal genital culture genital screen swab yeast",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "eSwab"
+  },
+  {
+    "id": "abscess-culture",
+    "code": "",
+    "qty": 1,
+    "temp": "Verify",
+    "name": "Abscess swab culture",
+    "category": "Swab",
+    "specimen": "Abscess swab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
+    "sourceNote": "Cedars swab collection guide: eSwab for abscess culture",
+    "notes": "White-top eSwab for swab-based abscess culture. Deep aspirates or tissue require a different approved workflow; verify source and collection method.",
+    "aliases": "abscess wound bacterial culture",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "eSwab"
+  },
+  {
+    "id": "stool-calprotectin",
+    "code": "",
+    "qty": 1,
+    "temp": "Verify",
+    "name": "Fecal calprotectin",
+    "category": "Stool",
+    "specimen": "Stool",
+    "collect": "ParaPak clean vial (white cap)",
+    "submit": "ParaPak clean vial (white cap)",
+    "sourceNote": "Cedars stool collection poster: Clean Vial for calprotectin",
+    "notes": "Collect stool in the clean white-cap unpreserved vial, as shown in the provided guide. Confirm current sample volume, stability and accepted assay.",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "Clean stool vial"
+  },
+  {
+    "id": "stool-wbc",
+    "code": "",
+    "qty": 1,
+    "temp": "Verify",
+    "name": "Stool WBC / fecal leukocytes",
+    "category": "Stool",
+    "specimen": "Stool",
+    "collect": "ParaPak clean vial (white cap)",
+    "submit": "ParaPak clean vial (white cap)",
+    "sourceNote": "Cedars stool collection poster: Clean Vial for stool WBC/fecal leukocytes",
+    "notes": "Collect stool in clean white-cap vial per the poster. Confirm current test availability and transport instructions.",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "Clean stool vial"
   }
 ];
