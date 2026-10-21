@@ -3560,7 +3560,7 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     padding:2px 5px;
     border:1.5px solid #aebac3;
     border-radius:7px;
-    background:#fff !important;
+    background:#414b56 !important;
     color:#28485a !important;
     font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
     font-size:12.5px !important;
@@ -3572,17 +3572,17 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     print-color-adjust:exact;
   }
   .print-temperature-emoji.badge-room {
-    background:#fff1b6 !important; border-color:#d4a333; color:#6a4907 !important;
+    background:#414b56 !important; border-color:#414b56; color:#fff !important;
   }
   .print-temperature-emoji.badge-refrigerated {
-    background:#def1ff !important; border-color:#5aa7d3; color:#205e85 !important;
+    background:#414b56 !important; border-color:#414b56; color:#fff !important;
   }
   .print-temperature-emoji.badge-frozen {
-    background:#e7e0ff !important; border-color:#8071cc; color:#3e3079 !important;
+    background:#414b56 !important; border-color:#414b56; color:#fff !important;
     min-width:36px;
   }
   .print-temperature-emoji.badge-mixed,.print-temperature-emoji.badge-verify {
-    background:#fff0de !important; border-color:#c6a373; color:#75501d !important;
+    background:#414b56 !important; border-color:#414b56; color:#fff !important;
   }
   .print-bag-pill {
     display:inline-flex !important;
