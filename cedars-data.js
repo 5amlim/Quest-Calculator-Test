@@ -95,7 +95,12 @@ window.CEDARS_TESTS = [
     "qty": 1,
     "temp": "Room Temperature",
     "notes": "The Cedars Amplified CT/GC Panel (CTNG) monograph lists endocervical, vaginal, pharyngeal and anorectal (rectal) swabs, collected using the cobas PCR Media Sample Kit. Do not pre-wet the collection swab. Follow the site-specific collection instructions and verify current specimen acceptance, transport and kit requirements with Cedars.",
-    "swabSites": ["Endocervical", "Vaginal", "Pharyngeal (throat)", "Anorectal (rectal)"],
+    "swabSites": [
+      "Endocervical",
+      "Vaginal",
+      "Pharyngeal (throat)",
+      "Anorectal (rectal)"
+    ],
     "slide": "3, 7",
     "aliases": "ct ng chlamydia gonorrhoeae gc|endocervical|vaginal|pharyngeal|throat|anorectal|rectal",
     "hold": false,
@@ -471,11 +476,26 @@ window.CEDARS_TESTS = [
     "hold": false,
     "blockReason": "",
     "sourceOptions": [
-      {"name": "Sputum", "requirements": "Three samples 8–24 hours apart (24 hours preferred), with at least one first-morning collection. Each: 5–10 mL; minimum 1 mL."},
-      {"name": "Body fluid", "requirements": "5 mL; minimum 1 mL for culture only. Confirm the specific fluid type is accepted."},
-      {"name": "Gastric aspirate", "requirements": "5–10 mL; minimum 1 mL for culture only. If transport is delayed more than 4 hours, neutralize to pH 7 with sodium carbonate per Cedars."},
-      {"name": "Tissue", "requirements": "Minimum visible tissue in an approved sterile container; formalin is not acceptable."},
-      {"name": "CSF", "requirements": "5 mL; minimum 1 mL for culture only. Less than 5 mL is acceptable for pediatric patients."}
+      {
+        "name": "Sputum",
+        "requirements": "Three samples 8–24 hours apart (24 hours preferred), with at least one first-morning collection. Each: 5–10 mL; minimum 1 mL."
+      },
+      {
+        "name": "Body fluid",
+        "requirements": "5 mL; minimum 1 mL for culture only. Confirm the specific fluid type is accepted."
+      },
+      {
+        "name": "Gastric aspirate",
+        "requirements": "5–10 mL; minimum 1 mL for culture only. If transport is delayed more than 4 hours, neutralize to pH 7 with sodium carbonate per Cedars."
+      },
+      {
+        "name": "Tissue",
+        "requirements": "Minimum visible tissue in an approved sterile container; formalin is not acceptable."
+      },
+      {
+        "name": "CSF",
+        "requirements": "5 mL; minimum 1 mL for culture only. Less than 5 mL is acceptable for pediatric patients."
+      }
     ],
     "sourceNote": "Cedars Lexicomp screenshot: Mycobacteria Culture AFBC (current excerpt); sterile specimen cup added as an owner-confirmed collection option",
     "containerType": "Sterile container",
@@ -686,5 +706,87 @@ window.CEDARS_TESTS = [
     "hold": false,
     "blockReason": "",
     "containerType": "UTM"
+  },
+  {
+    "id": "procalcitonin",
+    "code": "",
+    "name": "Procalcitonin, serum or plasma (PCT)",
+    "category": "Blood",
+    "specimen": "Serum or plasma (lithium heparin or K2EDTA)",
+    "collect": "Gold-top SST (5 mL, preferred)",
+    "submit": "Gold-top SST (5 mL, serum)",
+    "qty": 1,
+    "temp": "Room Temperature",
+    "containerType": "Gold SST",
+    "testMethod": "Immunoassay",
+    "submissionOptions": [
+      {
+        "name": "Preferred: Gold-top SST",
+        "requirements": "5 mL; serum. On gel at room temperature, stability 8 hours."
+      },
+      {
+        "name": "Alternative: Light green PST",
+        "requirements": "3 mL lithium-heparin plasma separator tube."
+      },
+      {
+        "name": "Alternative: K2EDTA",
+        "requirements": "K2EDTA tube; confirm required volume."
+      }
+    ],
+    "notes": "Cedars accepts 5 mL gold SST (preferred), 3 mL light green lithium-heparin PST or K2EDTA. At room temperature, specimens on clot/RBCs/gel are stable 8 hours; separated serum/plasma is stable 24 hours. Removed serum/plasma is stable 48 hours refrigerated or 15 days frozen. Confirm current handling and transport in Cedars Lexicomp.",
+    "sourceNote": "Cedars Lexicomp screenshot: Procalcitonin, Serum or Plasma (CMIA)",
+    "aliases": "procalcitonin|PCT|sepsis",
+    "hold": false,
+    "blockReason": "",
+    "volumeDisplay": "SST 5 mL preferred; PST 3 mL; K2EDTA volume verify"
+  },
+  {
+    "id": "esr",
+    "code": "ESRD",
+    "name": "Erythrocyte sedimentation rate (ESR)",
+    "category": "Blood",
+    "specimen": "EDTA whole blood",
+    "collect": "Lavender-top EDTA (4 mL)",
+    "submit": "Lavender-top EDTA (4 mL, whole blood)",
+    "qty": 1,
+    "temp": "Room Temperature",
+    "containerType": "Lavender EDTA",
+    "testMethod": "Hematology",
+    "notes": "Cedars specifies one lavender-top 4 mL K2EDTA or K3EDTA tube. Submit whole blood without spinning. Stability: up to 24 hours at room temperature or refrigerated. Avoid clots; confirm current processing instructions.",
+    "sourceNote": "Cedars Lexicomp screenshot: Erythrocyte Sedimentation Rate ESRD",
+    "aliases": "ESR|ESRD|sed rate|sedimentation rate",
+    "hold": false,
+    "blockReason": "",
+    "volumeDisplay": "4 mL whole blood"
+  },
+  {
+    "id": "vancomycin-level",
+    "code": "VANC",
+    "secondaryCode": "LAB40",
+    "name": "Vancomycin level",
+    "category": "Blood",
+    "specimen": "Heparinized plasma or serum",
+    "collect": "Green-top heparin (5 mL)",
+    "submit": "Green-top heparin (5 mL)",
+    "qty": 1,
+    "temp": "Verify",
+    "containerType": "Green heparin",
+    "testMethod": "Drug level",
+    "submissionOptions": [
+      {
+        "name": "Default: Green-top heparin",
+        "requirements": "One 5 mL heparinized tube."
+      },
+      {
+        "name": "Alternative: Red-top serum",
+        "requirements": "Allow serum to clot for 20–30 minutes; centrifuge per validated protocol. Cedars screenshot cites a minimum 2000 rpm for 10–15 minutes."
+      }
+    ],
+    "notes": "Cedars accepts a green-top 5 mL heparinized tube or red-top serum tube. Reference states the test is ordered as random; document dose and collection timing. When clinically requested, reference timing is peak 0.5–2 hours after infusion, trough immediately before next dose (within 30 minutes). For red-top serum, clot 20–30 minutes and centrifuge per local validated centrifuge protocol. Verify current stability and transport; screenshot does not provide them.",
+    "sourceNote": "Cedars Lexicomp screenshot: Vancomycin VANC, CS-Link LAB40",
+    "aliases": "vancomycin|vanc|vanco|vancomycin trough|vancomycin peak|LAB40",
+    "hold": false,
+    "blockReason": "",
+    "volumeDisplay": "Green-top 5 mL; red-top serum alternative, volume verify"
   }
 ];
