@@ -1,4 +1,4 @@
-/* Cedars Lab Guide: Sollis-reported workflows with cited Cedars reference sources.
+/* Cedars Lab Guide: Site-specific workflows with cited Cedars reference sources.
    For current clinical use, confirm assay/site acceptance and transport stability. */
 window.CEDARS_TESTS = [
   {
@@ -12,7 +12,7 @@ window.CEDARS_TESTS = [
     "qty": 1,
     "temp": "Room Temperature",
     "notes": "For swab-based bacterial, throat, wound, anaerobic or fungal/yeast cultures ordered by the provider. Use the white-top eSwab. Confirm the specific culture order, collection site and specimen acceptance in current Cedars instructions.",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "sourceNote": "Local swab culture workflow; verify test/site acceptance against Cedars",
     "aliases": "culture eswab e swab aerobic throat wound anaerobic fungal yeast swab",
     "hold": false,
     "blockReason": "",
@@ -28,10 +28,10 @@ window.CEDARS_TESTS = [
     "submit": "Gray-top urine culture preservative tube",
     "qty": 1,
     "temp": "Room Temperature",
-    "notes": "Use the gray-top urine culture preservative tube for the Sollis workflow. Confirm fill requirements, transfer procedure, and stability with Cedars. The historical guide lists a different urine culture container.",
+    "notes": "Use the gray-top urine culture preservative tube for the Local workflow. Confirm fill requirements, transfer procedure, and stability with Cedars. The historical guide lists a different urine culture container.",
     "slide": "3, 11",
     "aliases": "ucx gray top culture urine",
-    "sourceNote": "Sollis gray-top workflow; confirm with Cedars",
+    "sourceNote": "Local gray-top workflow; confirm with Cedars",
     "hold": false,
     "blockReason": "",
     "containerType": "Gray-top urine culture"
@@ -47,7 +47,7 @@ window.CEDARS_TESTS = [
     "qty": 1,
     "temp": "Room Temperature",
     "notes": "Use red/yellow swirl-top urinalysis tube. Confirm minimum volume, fill, transport conditions and whether this specific UA is accepted by Cedars.",
-    "sourceNote": "Sollis collection workflow; verify Cedars UA acceptance",
+    "sourceNote": "Local collection workflow; verify Cedars UA acceptance",
     "aliases": "UA complete urinalysis red yellow swirl urine",
     "containerType": "UA swirl-top"
   },
@@ -129,7 +129,7 @@ window.CEDARS_TESTS = [
     "submit": "Affirm Ambient Temperature Transport System (ATTS)",
     "qty": 1,
     "temp": "Room Temperature",
-    "notes": "Sollis uses the Affirm / ATTS kit for vaginitis/vaginosis. Confirm current order, swab collection instructions and transport conditions with Cedars.",
+    "notes": "The collection workflow uses the Affirm / ATTS kit for vaginitis/vaginosis. Confirm current order, swab collection instructions and transport conditions with Cedars.",
     "slide": "3, 5",
     "aliases": "affirm atts vaginitis vaginosis bacterial vaginosis bv",
     "hold": false,
@@ -149,7 +149,7 @@ window.CEDARS_TESTS = [
     "notes": "Adult blood culture two-bottle set. Confirm draw volume per bottle and current skin prep, collection and transport procedures; do not substitute pediatric instructions.",
     "slide": "3, 18",
     "aliases": "bactec culture blood",
-    "sourceNote": "Sollis adult blood culture workflow; verify Cedars protocol",
+    "sourceNote": "Local adult blood culture workflow; verify Cedars protocol",
     "hold": false,
     "blockReason": "",
     "containerType": "Adult blood culture",
@@ -166,7 +166,7 @@ window.CEDARS_TESTS = [
     "qty": 2,
     "temp": "Room Temperature",
     "notes": "Pediatric blood culture workflow. Verify whether the pediatric order requires one or two bottles and volume based on patient size. The set count shown is a provisional 2-pack, not validated pediatric collection guidance.",
-    "sourceNote": "Sollis pediatric blood culture option; verify exact set and volumes",
+    "sourceNote": "Local pediatric blood culture option; verify exact set and volumes",
     "aliases": "peds pediatric blood cultures",
     "containerType": "Pediatric blood culture"
   },
@@ -184,7 +184,7 @@ window.CEDARS_TESTS = [
     "slide": "3",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "sourceNote": "Local swab culture workflow; verify test/site acceptance against Cedars",
     "containerType": "eSwab"
   },
   {
@@ -202,7 +202,7 @@ window.CEDARS_TESTS = [
     "aliases": "aerobic culture wound abscess swab",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "sourceNote": "Local swab culture workflow; verify test/site acceptance against Cedars",
     "containerType": "eSwab"
   },
   {
@@ -215,11 +215,11 @@ window.CEDARS_TESTS = [
     "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Room Temperature",
-    "notes": "Use white-top eSwab for swab-based anaerobic culture under the Sollis workflow. Confirm site-specific anaerobic specimen acceptance and rapid transport conditions with Cedars.",
+    "notes": "Use white-top eSwab for swab-based anaerobic culture under the Local workflow. Confirm site-specific anaerobic specimen acceptance and rapid transport conditions with Cedars.",
     "slide": "2-3",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "sourceNote": "Local swab culture workflow; verify test/site acceptance against Cedars",
     "containerType": "eSwab"
   },
   {
@@ -271,7 +271,7 @@ window.CEDARS_TESTS = [
     "aliases": "fungal culture yeast swab nonblood",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "sourceNote": "Local swab culture workflow; verify test/site acceptance against Cedars",
     "containerType": "eSwab"
   },
   {
@@ -380,7 +380,7 @@ window.CEDARS_TESTS = [
     "slide": "14",
     "aliases": "fecal immunochemical test",
     "hold": true,
-    "blockReason": "Not performed at Sollis",
+    "blockReason": "Not performed at this site",
     "containerType": "FIT bottle"
   },
   {
@@ -465,12 +465,12 @@ window.CEDARS_TESTS = [
     "submit": "Sterile specimen cup",
     "qty": 1,
     "temp": "Refrigerated",
-    "notes": "Collect body fluid aseptically in an unpreserved sterile cup; refrigerate for this specified Sollis body-fluid workflow. Verify fluid type, volume and prompt transport with Cedars. CSF must follow its separate immediate-delivery instructions.",
+    "notes": "Collect body fluid aseptically in an unpreserved sterile cup; refrigerate for this specified Local body-fluid workflow. Verify fluid type, volume and prompt transport with Cedars. CSF must follow its separate immediate-delivery instructions.",
     "slide": "21",
     "aliases": "body fluid culture gram stain sterile cup pleural joint synovial fluid",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Sollis workflow instruction: refrigerated sterile cup for body fluid culture + Gram stain",
+    "sourceNote": "Local workflow instruction: refrigerated sterile cup for body fluid culture + Gram stain",
     "containerType": "Sterile container"
   },
   {
@@ -505,7 +505,7 @@ window.CEDARS_TESTS = [
     "notes": "Guide lists SurePath vial supply #609283, Rovers brush #609282, brush/spatula #600566. Follow current collection instructions.",
     "slide": "8-10",
     "hold": true,
-    "blockReason": "Not performed at Sollis",
+    "blockReason": "Not performed at this site",
     "containerType": "SurePath"
   },
   {
@@ -537,12 +537,12 @@ window.CEDARS_TESTS = [
     "qty": 3,
     "temp": "Room Temperature",
     "hold": false,
-    "notes": "Sollis-confirmed collection: three-vial ParaPak kit, including yellow C & S Medium, pink 10% Formalin and white Clean Vial. Submit all three vials at room temperature. Confirm the ordered C. difficile assay and current Cedars acceptance before collection.",
+    "notes": "Site-confirmed collection: three-vial ParaPak kit, including yellow C & S Medium, pink 10% Formalin and white Clean Vial. Submit all three vials at room temperature. Confirm the ordered C. difficile assay and current Cedars acceptance before collection.",
     "slide": "3, 13",
     "aliases": "C diff|C difficile|Clostridioides difficile|CDIFF|stool Cdiff",
     "blockReason": "",
     "containerType": "3-vial ParaPak",
-    "sourceNote": "Sollis-confirmed workflow (October 21, 2026): C. difficile uses 3-vial ParaPak, room temperature"
+    "sourceNote": "Site-confirmed workflow (October 21, 2026): C. difficile uses 3-vial ParaPak, room temperature"
   },
   {
     "id": "mpox",
@@ -572,7 +572,7 @@ window.CEDARS_TESTS = [
     "specimen": "Stool",
     "collect": "3-vial ParaPak stool collection set",
     "submit": "All three ParaPak vials (yellow C & S / pink formalin / white clean)",
-    "sourceNote": "Sollis workflow: enteric viral PCR uses three-vial ParaPak",
+    "sourceNote": "Local workflow: enteric viral PCR uses three-vial ParaPak",
     "notes": "Collect all three stool vials: yellow-cap C & S Medium, pink-cap 10% Formalin, and white-cap Clean Vial. Confirm the exact enteric virus assay and stability in current Cedars instructions.",
     "aliases": "stool gi enteric viral panel PCR stool virus",
     "hold": false,
@@ -707,7 +707,7 @@ window.CEDARS_TESTS = [
     "qty": 1,
     "temp": "Room Temperature",
     "sourceNote": "Cedars Lexicomp monograph screenshot: Atypical Pneumonia PCR Panel MYCCHL, CS-Link LAB2604",
-    "notes": "Nasopharyngeal swab in viral transport medium (VTM) or universal transport medium (UTM), per the supplied Cedars monograph screenshot. Sollis workflow uses red-top UTM. Method: PCR/microarray hybridization. Verify current stability, volume and handling requirements before collection; room temperature follows the Sollis workflow default.",
+    "notes": "Nasopharyngeal swab in viral transport medium (VTM) or universal transport medium (UTM), per the supplied Cedars monograph screenshot. Local workflow uses red-top UTM. Method: PCR/microarray hybridization. Verify current stability, volume and handling requirements before collection; room temperature follows the Local workflow default.",
     "aliases": "MYCCHL|Atypical Pneumonia|Mycoplasma pneumoniae PCR|Chlamydia pneumoniae PCR|Nasopharyngeal swab|NP swab",
     "hold": false,
     "blockReason": "",
