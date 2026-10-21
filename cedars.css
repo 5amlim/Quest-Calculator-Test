@@ -925,8 +925,8 @@
   height: 300% !important;
   max-width: none !important;
   max-height: none !important;
-  left: calc(var(--atlas-col) * -100%) !important;
-  top: calc(var(--atlas-row) * -100%) !important;
+  left: var(--atlas-left) !important;
+  top: var(--atlas-top) !important;
   object-fit: fill;
   border: 0 !important;
   margin: 0 !important;
@@ -945,8 +945,8 @@
   }
   .cedars-print-sheet .cedars-photo-atlas {
     position: absolute !important;
-    left: calc(var(--atlas-col) * -100%) !important;
-    top: calc(var(--atlas-row) * -100%) !important;
+    left: var(--atlas-left) !important;
+    top: var(--atlas-top) !important;
     width: 400% !important;
     height: 300% !important;
     max-width: none !important;
