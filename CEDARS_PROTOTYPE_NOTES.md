@@ -122,3 +122,16 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - Stool PCR records now spell out the three vial types and caps shown: C & S Medium (yellow), 10% Formalin (pink), and Clean Vial (white).
 - Uploaded photos are illustrative reference assets, **not** verified substitutes for the current manufacturer/Cedars kit. Other lab-specific specimen rules, approved scope, and Quest production files are unchanged.
 - Simulated UI checks passed: performed-test list (14 rows), correct photo labels and sprite offsets, cart, collection/submission cards, 18 images in the sample printout, blocked fungal blood culture, and retained SharePoint PowerPoint reference.
+
+
+## October 21: Expanded Cedars menu, drawn icon filtering, and external references
+- Added the user's newly confirmed **body fluid culture with Gram stain** (sterile specimen cup, refrigerated), **enteric virus stool PCR** (all three ParaPak vials), and screenshot-supported options, including **Ureaplasma urealyticum culture MYCC** (urethral/vaginal/endometrial swab in UTM immediately) and **CSF routine culture LAB268** (sterile cup, 1 mL preferred / 0.5 mL minimum, immediate delivery).
+- Preserved CSF as a separate urgent workflow, rather than applying the refrigerated body fluid instructions to it.
+- Expanded the screen-supported swab culture, MRSA/VRE culture-screen, blood culture, Myco/F Lytic, stool sample, UTM, and QuantiFERON entries. Some historical assay/media information still requires current-monograph confirmation.
+- Kept C. difficile blocked and explicitly labeled **Collection instructions conflict**: the provided references disagree about clean vial versus three-vial ParaPak. Do not assign a container from these sources alone.
+- Added data-level `containerType` and visual filter choices with buttons showing the matching inline SVG drawings. User-selected container type filters the active directory, supports reset, and does not change saved-cart behavior.
+- Replaced the previously deployed photo tiles with original inline SVG **drawings** designed to match the shape and cap colors shown in the owner's photos: adult/peds/fungal BACTEC, white eSwab, red UTM, yellow cobas urine/swab kits, Affirm/ATTS, gray urine culture, red/yellow UA swirl cap, three-vial ParaPak, clean stool vial, sterile cup and other supported containers. Actual photos are still stored as reference assets but no longer rendered.
+- Moved the PowerPoint link out of the reference warning and into a separate **Collection references** section alongside a Lexicomp login link. **No credentials or passwords** were included in page code or stored in the repository.
+- The collection and printout continue to use the same drawings with warnings that they are visual references only.
+- Simulated JavaScript/DOM checks passed: 35 selectable records and 5 holds, 16 illustrated container choices, CSF/body-fluid sterile filter, enteric virus ParaPak filter, named test codes, printout inclusion, old cart cleanup, and absence of embedded Lexicomp credentials.
+- Not independently tested in a live browser or real printer. Current Cedars/Lexicomp monographs must still be checked before operational use.
