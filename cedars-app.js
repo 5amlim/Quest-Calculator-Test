@@ -217,8 +217,10 @@
 
   // Use a closed set of specimen classes so dynamic data cannot become CSS.
   const specimenBadge = (category) => '<span class="cedars-specimen-badge ' + specimenClass(category) + '">' + esc(category || 'Other') + '</span>';
+  // Single-stroke X: unlike the previous compound path, this draws one X.
   const removeXIcon = '<span class="remove-icon" aria-hidden="true">' +
-    '<svg viewBox="0 0 24 24" focusable="false"><path d="M7.3 6.1 12 10.8l4.7-4.7 1.2 1.2-4.7 4.7 4.7 4.7-1.2 1.2-4.7-4.7-4.7 4.7-1.2-1.2 4.7-4.7-4.7-4.7-4.7 4.7-1.2-1.2 4.7-4.7-4.7-4.7 1.2-1.2Z"/></svg></span>' +
+    '<svg viewBox="0 0 24 24" focusable="false" fill="none" stroke="currentColor"' +
+    ' stroke-width="2.2" stroke-linecap="round"><path d="M6 6 L18 18 M18 6 L6 18"/></svg></span>' +
     '<span class="remove-text" aria-hidden="true">Delete</span>';
   const specimenClass = (category) => {
     const value = String(category || '').toLowerCase();
@@ -455,39 +457,6 @@
       '<dt>Source</dt><dd>' + esc(source(test)) + '</dd></dl>';
     $('cedarsInfoDialog').showModal();
   }
-  function batchLines() {
-    return $('batchInput').value.split(/[\n\r]+/).map(clean).filter(Boolean).slice(0, 150);
-  }
-  function batchAdd(reviewOnly) {
-    const lines = batchLines();
-    if (!lines.length) { $('batchFeedback').classList.add('hidden'); return; }
-    let added = 0;
-    const feedback = lines.map((line) => {
-      const exact = exactMatches(line).filter((t) => !t.hold);
-      if (!reviewOnly && exact.length === 1) {
-        selected.add(exact[0].id);
-        added += 1;
-        return '<div class="cedars-match-result"><strong>' + esc(line) + '</strong>' +
-          '<span class="cedars-match-success">Added ' + esc(exact[0].name) + '</span></div>';
-      }
-      const suggestions = records().map((t) => ({t,score:rank(t,line)}))
-        .filter(({score}) => score > 0).sort((a,b)=>b.score-a.score)
-        .slice(0,4);
-      if (!suggestions.length) return '<div class="cedars-match-result"><strong>' + esc(line) +
-        '</strong><p>No match found. Confirm the test in the current Cedars directory or contact Sam.</p></div>';
-      return '<div class="cedars-match-result"><div class="cedars-match-query">Search: <strong>' +
-        esc(line) + '</strong> <span>Choose the correct test and container</span></div>' +
-        '<div class="cedars-match-list">' + suggestions.map(({t})=>matchChoice(t)).join('') + '</div></div>';
-    });
-    $('batchFeedback').innerHTML = '<div class="cedars-match-heading"><strong>' +
-      (reviewOnly ? 'Review suggested matches' : 'Batch search results') + '</strong>' +
-      '<span>' + lines.length + ' search entr' + (lines.length===1?'y':'ies') +
-      (added ? ' · ' + added + ' added' : '') + '</span></div>' + feedback.join('');
-    $('batchFeedback').classList.remove('hidden');
-    if (added) saveState();
-    render();
-  }
-
   function csvSafe(value) {
     const s = clean(value);
     const guarded = /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
@@ -676,7 +645,6 @@
     if (addButton) add(addButton.dataset.add);
     else if (detailButton) detail(detailButton.dataset.info);
   };
-  $('batchFeedback').addEventListener('click', handleMatchAction);
   $('cedarsSearchSuggestions').addEventListener('click', handleMatchAction);
   $('cedarsCart').addEventListener('click', (event) => {
     const button = event.target.closest('[data-remove]');
@@ -724,16 +692,6 @@
     if (event.key === 'Escape') setFilterOpen(false);
   });
   $('showHolds').addEventListener('change', makeRows);
-  $('batchAdd').addEventListener('click', () => batchAdd(false));
-  $('batchReview').addEventListener('click', () => batchAdd(true));
-  $('batchClear').addEventListener('click', () => {
-    $('batchInput').value = '';
-    $('batchFeedback').classList.add('hidden');
-    $('batchFeedback').textContent = '';
-  });
-  $('batchInput').addEventListener('keydown', (event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') batchAdd(false);
-  });
   $('clearCart').addEventListener('click', () => { selected.clear(); saveState(); render(); });
   $('cedarsCsv').addEventListener('click', saveCsv);
   $('cedarsPrint').addEventListener('click', printPlan);
