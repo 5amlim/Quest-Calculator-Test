@@ -304,6 +304,12 @@
     return parts.filter(Boolean).join(' · ');
   };
 
+  // Collection is the original sterile cup for urine/stool. Menu results show
+  // what is actually submitted (e.g. cobas tube or separate ParaPak vials).
+  const collectionContainer = (test) =>
+    test.category === 'Urine' ? 'Sterile specimen cup (urine)' :
+    test.category === 'Stool' ? 'Sterile specimen cup (stool)' : test.collect;
+
   function makeRows() {
     const q = $('cedarsSearch').value;
     const cat = $('cedarsType').value;
@@ -333,9 +339,9 @@
       '<td><div class="test-name">' + esc(test.name) + '</div>' + specimenBadge(test.category) +
       '<div class="subtext cedars-row-source">' + esc(rowSummary(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at this site') + '</span>' : '') + '</td>' +
-      '<td><div class="cedars-container-cell">' + photoArt(test.collect, 'table') +
+      '<td><div class="cedars-container-cell">' + photoArt(test.submit, 'table') +
       '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
-      '<div class="cedars-container-name ' + specimenClass(test.category) + '">' + esc(test.collect) + '</div></div></div></td>' +
+      '<div class="cedars-container-name ' + specimenClass(test.category) + '">' + esc(test.submit) + '</div></div></div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
       esc(test.temp || 'Verify') + '</span></td>' +
       '<td class="row-actions"><button class="mini-button edit" type="button" data-info="' +
@@ -361,6 +367,15 @@
     return 'Clean-catch / routine urine';
   };
   const originalCollectionGroup = (test) => {
+    // Stool may require multiple separate transport vials, but its initial
+    // collection is one sterile cup PER test (never implicitly pool stool).
+    if (test.category === 'Stool') return {
+      key:'stool-cup|' + test.id,
+      container:collectionContainer(test),
+      category:'Stool',
+      subtitle:'',
+      shared:true
+    };
     const type = urineCupCategory(test);
     if (type) return {
       key:'urine-cup|' + type,
@@ -399,7 +414,7 @@
       '<button type="button" class="mini-button remove remove-flex cedars-cart-remove" data-remove="' + esc(test.id) +
       '" aria-label="Delete ' + esc(test.name) + '">' + removeXIcon + '</button></div>' +
       (showCartDetails ? '<div class="cedars-cart-details"><div class="cedars-cart-art-row">' +
-        photoArt(test.collect, 'small') + '<div><b>Collect</b> ' + esc(test.collect) + '</div></div>' +
+        photoArt(collectionContainer(test), 'small') + '<div><b>Collect</b> ' + esc(collectionContainer(test)) + '</div></div>' +
         '</div><div><b>Submit</b> ' + esc(test.submit) + '</div><div><b>Transport</b> ' +
         esc(test.temp) + '</div><p>' + esc(test.notes || 'Verify current requirements.') +
         '</p><span class="cedars-source">' + esc(source(test)) + '</span></div>' : '') +
@@ -517,7 +532,7 @@
     $('cedarsInfoTitle').textContent = test.name;
     $('cedarsInfoBody').innerHTML =
       '<div class="cedars-info-illustrations">' +
-      '<div>' + photoArt(test.collect, 'detail') + '<span>Collection container</span></div>' +
+      '<div>' + photoArt(collectionContainer(test), 'detail') + '<span>Collection container</span></div>' +
       '<div>' + photoArt(test.submit, 'detail') + '<span>Submission container</span></div>' +
       '</div>' +
       '<p class="cedars-illustration-note">Color-matched illustration based on supplied kit photos. Verify the actual manufacturer container before collecting.</p>' +
@@ -536,7 +551,7 @@
           ).join('') + '</ul><small>Specify the actual specimen source on the order and verify Cedars acceptance and transport for that source.</small></dd>'
         : '') +
       '<dt>Volume</dt><dd>' + esc(test.volumeDisplay || 'Verify current requirements') + '</dd>' +
-      '<dt>What to collect</dt><dd>' + esc(test.collect) + '</dd>' +
+      '<dt>What to collect</dt><dd>' + esc(collectionContainer(test)) + '</dd>' +
       '<dt>Container filter</dt><dd>' + esc(test.containerType || 'Verify') + '</dd>' +
       '<dt>What to submit</dt><dd>' + esc(test.submit) + '</dd>' +
       '<dt>Transport</dt><dd>' + esc(test.temp) + '</dd>' +
@@ -553,7 +568,7 @@
     const tests = chosen();
     if (!tests.length) return;
     const heads = ['Test code', 'Test', 'Specimen', 'What to collect', 'What to submit', 'Container count (conservative)', 'Transport', 'Special notes', 'Source', 'Verification'];
-    const rows = tests.map((t) => [[t.code,t.secondaryCode].filter(Boolean).join(' / '), t.name, t.specimen, t.collect, t.submit, t.qty, t.temp,
+    const rows = tests.map((t) => [[t.code,t.secondaryCode].filter(Boolean).join(' / '), t.name, t.specimen, collectionContainer(t), t.submit, t.qty, t.temp,
       t.notes, source(t), 'Verify in current Cedars/Lexicomp directory']);
     const csv = '\uFEFF' + [heads].concat(rows).map((row) => row.map(csvSafe).join(',')).join('\r\n');
     const url = URL.createObjectURL(new Blob([csv], {type: 'text/csv;charset=utf-8'}));
@@ -571,8 +586,7 @@
     // Original urine collection cups can be shared across COMPATIBLE tests.
     // First-stream, clean-catch, and first-morning AFB collection remain separate.
     // Each test still has its own required transport tube and fill/handling rules.
-    const initialCollection = (test) => test.category === 'Stool' ?
-      'Sterile specimen cup (stool)' : originalCollectionGroup(test).container;
+    const initialCollection = (test) => collectionContainer(test);
     const mustTransfer = (test) => (test.category === 'Urine' || test.category === 'Stool') &&
       !/sterile (specimen )?cup|sterile container/i.test(test.submit);
     const initialCountFor = (test) => (test.category === 'Urine' || test.category === 'Stool') ?
@@ -598,7 +612,7 @@
     const transport = new Map();
     tests.forEach((test) => {
       const original = originalCollectionGroup(test);
-      const initialKey = test.category === 'Stool' ? 'stool-cup' : original.key;
+      const initialKey = original.key;
       if (!collection.has(initialKey)) collection.set(initialKey, {
         container:initialCollection(test), subtitle:original.subtitle, shared:original.shared,
         category:test.category, tests:[]
