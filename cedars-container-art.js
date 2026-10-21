@@ -46,6 +46,27 @@
   function tube(x,y,w,h,cap,label,liquid='#edf5f7',labelFill='#ffffff') {
     return roundBottomTube(x,y,w,h,cap,label,liquid,labelFill);
   }
+  // Slender filled blood collection tube: taller colored cap, visible blood,
+  // and a smaller label so the specimen is visible in every rendering size.
+  function bloodTube(cap,label,blood='#a34647') {
+    const x=53,y=4,w=22,h=85,capH=21,tip=y+h,cx=x+w/2,low=tip-12;
+    const glass='M '+x+' '+(y+capH-2)+' H '+(x+w)+' V '+low+
+      ' C '+(x+w)+' '+(low+7)+' '+(x+w-5)+' '+tip+' '+cx+' '+tip+
+      ' C '+(x+5)+' '+tip+' '+x+' '+(low+7)+' '+x+' '+low+' Z';
+    const fillTop=tip-43;
+    const specimen='M '+(x+2)+' '+fillTop+' H '+(x+w-2)+' V '+(low-1)+
+      ' C '+(x+w-2)+' '+(low+6)+' '+(x+w-6)+' '+(tip-2)+' '+cx+' '+(tip-2)+
+      ' C '+(x+6)+' '+(tip-2)+' '+(x+2)+' '+(low+6)+' '+(x+2)+' '+(low-1)+' Z';
+    const capRibs=[0,1,2,3].map(i=>
+      line(x+4+i*4,y+3,x+4+i*4,y+capH-3,'#ffffff',0.6)).join('');
+    return path(glass,'#eef6f9')+
+      path(specimen,blood,'none')+
+      line(x+3,fillTop,x+w-3,fillTop,'#8d3e42',0.8)+
+      rect(x-2,y,w+4,capH,cap,3,'#647e89')+capRibs+
+      rect(x+2,y+29,w-4,25,'#fafcfc',2,'#cfdae0')+
+      txt(cx,y+44,label,'#435d69',label==='EDTA'?5.3:6.7)+
+      line(x+3,y+capH+3,x+3,tip-12,'#ffffff',1.4);
+  }
   function bottle(x,y,cap,band,label,wide=33,fluid='#813a31') {
     // Narrow BACTEC neck with wider shoulders, matching the bottle photos.
     const cx=x+wide/2, neck=6.2;
@@ -127,10 +148,10 @@
         roundBottomTube(90,20,28,68,'#eef1ee','CLEAN','#906b49');
       case 'cleanStool': return roundBottomTube(47,7,34,82,'#eef1ee','CLEAN','#956b48');
       case 'formalin': return roundBottomTube(47,7,34,82,'#c987a1','10%','#b38558');
-      case 'goldSst': return tube(48,6,32,83,'#d4a326','SST','#f8edd0');
-      case 'lavenderEdta': return tube(48,6,32,83,'#9980bb','EDTA','#e8edf3');
-      case 'greenHeparin': return tube(48,6,32,83,'#399a77','HEP','#e7f3ee');
-      case 'redSerum': return tube(48,6,32,83,'#ca4747','SERUM','#f8ece8');
+      case 'goldSst': return bloodTube('#d4a326','SST');
+      case 'lavenderEdta': return bloodTube('#9980bb','EDTA');
+      case 'greenHeparin': return bloodTube('#399a77','HEP');
+      case 'redSerum': return bloodTube('#ca4747','SER');
       case 'sterile50': return roundBottomTube(44,5,40,84,'#edf0f0','50mL','#f1f6f7')+
         line(47,64,79,64,'#bdc8cc',1)+txt(64,74,'TUBE','#637984',6);
       case 'sterile': return cup();
