@@ -1545,3 +1545,150 @@
     .cedars-page .cedars-reference-combined .cedars-reference-note {text-align:left}
   }
 }
+
+
+/* Illustrated Cedars container tiles open the corresponding original
+   user-provided photo. The existing drawing stays visible underneath. */
+@media screen {
+  .cedars-page .cedars-photo-trigger {
+    position:relative;
+    display:inline-flex;
+    flex:0 0 auto;
+    align-items:center;
+    justify-content:center;
+    align-self:center;
+    margin:0;
+    padding:0;
+    border:0;
+    border-radius:9px;
+    background:transparent;
+    color:inherit;
+    font:inherit;
+    line-height:1;
+    cursor:zoom-in;
+    vertical-align:middle;
+  }
+  .cedars-page .cedars-photo-trigger:hover .cedars-container-art,
+  .cedars-page .cedars-photo-trigger:focus-visible .cedars-container-art {
+    border-color:#ac6473;
+    background:#fff7f8;
+    box-shadow:0 0 0 2px #f0d7df;
+  }
+  .cedars-page .cedars-photo-trigger:focus-visible {
+    outline:2px solid #813946;
+    outline-offset:3px;
+  }
+  .cedars-page .cedars-photo-chip {
+    position:absolute;
+    right:-5px;
+    bottom:-4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:21px;
+    height:21px;
+    border:1.5px solid #fff;
+    border-radius:50%;
+    background:#813946;
+    color:#fff;
+    box-shadow:0 1px 3px #29141c40;
+    pointer-events:none;
+  }
+  .cedars-page .cedars-photo-chip svg {
+    display:block;
+    width:13px;
+    height:13px;
+  }
+  .cedars-page .cedars-info-illustrations .cedars-photo-trigger {
+    justify-self:center;
+  }
+}
+.cedars-photo-dialog {
+  box-sizing:border-box;
+  width:min(95vw,490px);
+  max-width:490px;
+  max-height:min(94vh,780px);
+  overflow-y:auto;
+  padding:19px 20px 17px;
+  border:1px solid #e6d2d8;
+  border-radius:14px;
+  color:#31252b;
+  background:#fff;
+  box-shadow:0 20px 60px rgba(32,12,22,.2);
+}
+.cedars-photo-dialog::backdrop {background:rgba(23,22,27,.76);}
+.cedars-photo-dialog .cedars-photo-dialog-head {
+  display:flex;
+  align-items:start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:13px;
+}
+.cedars-photo-dialog .cedars-photo-dialog-head h2 {
+  margin:4px 0 0;
+  font-size:19px;
+  line-height:1.3;
+  color:#61313f;
+}
+.cedars-photo-dialog .eyebrow {color:#903b48;}
+.cedars-photo-dialog .cedars-close {
+  flex:0 0 auto;
+  font-size:27px;
+  line-height:1;
+}
+.cedars-photo-dialog .cedars-photo-figure {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:9px;
+  margin:0;
+}
+.cedars-photo-dialog .cedars-photo-viewport {
+  position:relative;
+  box-sizing:border-box;
+  width:min(100%,340px);
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+  border:1px solid #eee5e7;
+  border-radius:10px;
+  background:#fff;
+}
+.cedars-photo-dialog .cedars-photo-atlas {
+  position:absolute !important;
+  display:block;
+  left:var(--photo-left,0%);
+  top:var(--photo-top,0%);
+  width:400% !important;
+  height:300% !important;
+  max-width:none !important;
+  max-height:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  object-fit:fill;
+}
+.cedars-photo-dialog figcaption {
+  font-size:12px;
+  text-align:center;
+  color:#614654;
+  font-weight:700;
+}
+.cedars-photo-dialog .cedars-photo-disclaimer {
+  margin:12px 0;
+  font-size:11px;
+  line-height:1.5;
+  color:#6b6269;
+  text-align:center;
+}
+.cedars-photo-dialog .cedars-dialog-actions {
+  justify-content:flex-end;
+}
+@media (max-width:520px) {
+  .cedars-photo-dialog {padding:14px;}
+  .cedars-photo-dialog .cedars-photo-viewport {width:min(100%,300px);}
+  .cedars-photo-dialog .cedars-photo-dialog-head h2 {font-size:17px;}
+}
+@media print {
+  .cedars-photo-trigger {display:none !important;}
+  .cedars-photo-dialog {display:none !important;}
+}
