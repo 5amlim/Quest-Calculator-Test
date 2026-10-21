@@ -145,7 +145,7 @@
       manualIndex = Math.max(manualIndex, number);
       knownManual.add(id);
       manual.push({
-        id, name, collect, submit, manual: true, hold: true, blockReason: 'Not performed at Sollis',
+        id, name, collect, submit, manual: true, hold: true, blockReason: 'Not performed at this site',
         code: field(record.code,40),
         category: types.includes(record.category) ? record.category : 'Other',
         specimen: field(record.specimen,120) || 'Verify',
@@ -286,7 +286,7 @@
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
       (test.secondaryCode ? '<div class="cedars-secondary-code">Cedars code: ' + esc(test.secondaryCode) + '</div>' : '') +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
-      (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at Sollis') + '</span>' : '') + '</td>' +
+      (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at this site') + '</span>' : '') + '</td>' +
       '<td><div class="cedars-container-cell">' + photoArt(test.collect, 'table') +
       '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
       '<div class="subtext">' + esc(test.collect) + '</div></div></div></td>' +
@@ -406,7 +406,7 @@
     $('cedarsBlockedList').innerHTML = items.map(test =>
       '<div class="cedars-blocked-item"><div class="cedars-blocked-item-info"><strong>' +
       esc(test.name) + '</strong><small>' + esc(test.code || 'Code not listed') +
-      ' · ' + esc(test.blockReason || 'Not performed at Sollis') + '</small></div>' +
+      ' · ' + esc(test.blockReason || 'Not performed at this site') + '</small></div>' +
       '<button type="button" class="mini-button edit" data-info="' + esc(test.id) +
       '">Details</button></div>').join('');
   }
@@ -430,7 +430,7 @@
       '</div>' +
       '<p class="cedars-illustration-note">Color-matched illustration based on supplied kit photos. Verify the actual manufacturer container before collecting.</p>' +
       '<div class="cedars-summary-notice"><strong>' +
-      (test.hold ? esc(test.blockReason || 'Not performed at Sollis') + '. Do not collect or submit until the workflow is approved.' :
+      (test.hold ? esc(test.blockReason || 'Not performed at this site') + '. Do not collect or submit until the workflow is approved.' :
         '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
       '</strong></div>' +
       '<dl>' +
@@ -615,7 +615,7 @@
         'Unknown volumes and temperatures are intentionally not filled in. No patient identifiers required.</footer>';
     window.print();
   }
-  // Manual entry cannot bypass the published Sollis-performed menu.
+  // Manual entry cannot bypass the published approved menu.
   function openManual() { return; }
   function closeManual() { $('cedarsManualDialog').close(); }
   function submitManual(event) {
