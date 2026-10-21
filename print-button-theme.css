@@ -1,0 +1,26 @@
+/* Shared Print / Save PDF action color across Quest and Cedars.
+   Purple is reserved for print actions; all other lab-specific colors remain. */
+@media screen {
+  :root {
+    --print-action: #7142a4;
+    --print-action-hover: #573080;
+    --print-action-ring: rgba(113, 66, 164, .25);
+  }
+  #printButton.button.primary.cart-header-print:not(:disabled),
+  .cedars-page #cedarsPrint.button.primary.cart-header-print:not(:disabled) {
+    background: var(--print-action) !important;
+    border-color: var(--print-action) !important;
+    color: #fff !important;
+  }
+  #printButton.button.primary.cart-header-print:hover:not(:disabled),
+  .cedars-page #cedarsPrint.button.primary.cart-header-print:hover:not(:disabled) {
+    background: var(--print-action-hover) !important;
+    border-color: var(--print-action-hover) !important;
+    color: #fff !important;
+  }
+  #printButton.button.primary.cart-header-print:focus-visible,
+  .cedars-page #cedarsPrint.button.primary.cart-header-print:focus-visible {
+    outline: 3px solid var(--print-action) !important;
+    outline-offset: 3px;
+  }
+}
