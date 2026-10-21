@@ -460,7 +460,7 @@
     const order = ['eSwab','UTM','cobas urine','cobas swab','Affirm / ATTS',
       'Gray-top urine culture','UA swirl-top','3-vial ParaPak','Clean stool vial',
       'Adult blood culture','Pediatric blood culture','Myco/F Lytic',
-      'Sterile container','Sterile 50 mL tube','Aptima','FIT bottle','SurePath','Other / verify'];
+      'Sterile container','Sterile 50 mL tube','FIT bottle','SurePath','Other / verify'];
     const sorted = Array.from(counts).sort(([a],[b]) =>
       order.indexOf(a) - order.indexOf(b) || a.localeCompare(b));
     const entry = (container, count) => {
