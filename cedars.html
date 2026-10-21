@@ -82,7 +82,8 @@
         </section>
         <div id="batchFeedback" class="panel batch-panel cedars-feedback hidden" aria-live="polite"></div>
         <div class="filter-row cedars-filter">
-          <label class="library-search"><span class="field-label">Search tests</span><input id="cedarsSearch" type="search" placeholder="Name, test code, or abbreviation (e.g. MYCC, LAB268)" autocomplete="off"></label>
+          <label class="library-search"><span class="field-label">Search tests</span><input id="cedarsSearch" type="search" placeholder="Search by code, test name, specimen or container (e.g. CSF, LGFA, ParaPak)" autocomplete="off" aria-controls="cedarsSearchSuggestions"></label>
+          <div id="cedarsSearchSuggestions" class="cedars-search-suggestions hidden" aria-live="polite" aria-label="Suggested Cedars test matches"></div>
           <div class="catalog-filter-control" id="cedarsFilterControl">
             <button class="catalog-filter-toggle" id="cedarsFilterButton" type="button" aria-expanded="false" aria-controls="cedarsFilterPanel"><span class="catalog-filter-icon" aria-hidden="true">☷</span><span>Filters</span><span class="catalog-filter-chevron shared-chevron" aria-hidden="true"></span></button>
             <div class="catalog-filter-panel hidden" id="cedarsFilterPanel">
