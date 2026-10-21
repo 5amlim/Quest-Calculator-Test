@@ -1,32 +1,43 @@
-# Lab Collection Calculator (test build)
+# Lab Collection Calculator
 
-This repository contains two independent collection planning views:
+A browser-based reference for laboratory specimen collection, processing, and send-out preparation. The site provides separate Quest and Cedars-Sinai workflows so staff can search tests, review collection and submission containers, and prepare a printable collection plan.
 
-- **Quest**: `index.html`, with the same catalog, application scripts, stylesheets and printout behavior as the production `5amlim/Lab-Calculator` repository. A small header toggle is added here.
-- **Cedars Lab Guide**: `cedars.html`, using an independent 41-entry directory, specimen-group badges, illustrated containers, clickable reference-photo viewer, separate cart storage and Cedars-specific print summary.
+**Live application:** https://5amlim.github.io/Quest-Calculator-Test/
 
-## Published pages
+## Lab calculators
 
-- Quest test: https://5amlim.github.io/Quest-Calculator-Test/
-- Cedars Lab Guide: https://5amlim.github.io/Quest-Calculator-Test/cedars.html
+| Calculator | Features | Link |
+| --- | --- | --- |
+| Quest Lab Calculator | Test-code and name search, multiple-test collection plans, collection volumes, container estimates, processing instructions, STAT options, and temperature-organized submission groups | [Open Quest](https://5amlim.github.io/Quest-Calculator-Test/) |
+| Cedars Lab Guide | Searchable test directory, illustrated collection and submission containers, specimen-source information, handling notes, and a separate print summary | [Open Cedars](https://5amlim.github.io/Quest-Calculator-Test/cedars.html) |
 
-## File map
+Use the **Select Lab** dropdown to move between calculators. The main site opens on Quest. The calculators maintain separate lists and requirements.
 
-| Files | Purpose |
-|---|---|
-| `index.html`, `assets/js/{app,data,portal-selects}.js`, `assets/css/{styles,experience}.css` | Quest view copied from production |
-| `market-switch.css` | Quest/Cedars navigation |
-| `cedars.html` | Cedars page |
-| `cedars-data.js` | Cedars curated catalog |
-| `cedars-app.js` | Cedars search/cart/print interactions |
-| `cedars-container-art.js` | Crisp SVG container illustrations |
-| `cedars.css` | Cedars appearance and print styling |
-| `assets/images/cedars/container-photo-atlas.webp` | Compact photo reference atlas |
+## Project structure
 
-No patient information should be entered. The collection plan is not a substitute for the current destination laboratory test monograph. If a test is missing from the Cedars guide, request its addition through the contact shown on the page.
+| File or folder | Purpose |
+| --- | --- |
+| `index.html` | Quest calculator interface |
+| `assets/js/data.js` | Quest reference test records |
+| `assets/js/app.js` | Quest search, planning, and print logic |
+| `assets/css/` | Shared interface and print layouts |
+| `quest-theme.css` | Quest visual theme |
+| `cedars.html` | Cedars interface |
+| `cedars-data.js` | Cedars test records |
+| `cedars-app.js` | Cedars search, planning, and print logic |
+| `cedars.css`, `cedars-container-art.js` | Cedars styles and specimen illustrations |
+| `cedars-container-guide.html` | Printable Cedars submission-container reference |
+| `market-switch.css`, `assets/js/lab-select.js` | Laboratory navigation |
+| `print-button-theme.css` | Shared print-action styling |
 
-## Maintenance
+This is a static website. The calculators operate in the browser; they do not require a hosted application server.
 
-The Quest production repository is `5amlim/Lab-Calculator`. When updating the Quest test page, keep the mirrored `assets/js` and `assets/css` files byte-for-byte aligned with production, and limit `index.html` differences to navigation.
+## Collection and specimen safety
 
-Historical source files, test exports and duplicated files were moved out of the active `main` branch on 2026-10-21. For recovery, see the preserved branch `archive/before-runtime-cleanup-2026-10-21`.
+The calculator is a workflow reference, not a replacement for the receiving laboratory's current test directory, specimen acceptance criteria, or internal laboratory procedures. Verify test-specific requirements, stability, processing, and transport before collecting or submitting specimens. Separate specimens when required and check current STAT routing and availability.
+
+**Do not enter patient identifiers or protected health information.**
+
+## Ownership
+
+Proprietary software. See [LICENSE.md](LICENSE.md) for permitted use and licensing terms. Third-party laboratory names and trademarks belong to their respective owners. This independent resource is not represented as an official Quest Diagnostics or Cedars-Sinai product.
