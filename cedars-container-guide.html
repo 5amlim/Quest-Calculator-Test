@@ -12,9 +12,10 @@ body{margin:0}
 .toolbar{width:min(100% - 28px,1120px);margin:17px auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .toolbar a{font-size:13px;color:#2e5b73;font-weight:650;text-decoration:none}
 .toolbar a:hover{text-decoration:underline}
-.toolbar button{background:#7142a4;color:#fff;border:0;border-radius:9px;padding:12px 19px;font-size:13px;font-weight:800;cursor:pointer}
-.toolbar button:hover{background:#573080}
-.toolbar button:focus-visible{outline:3px solid #7142a4;outline-offset:3px}
+.toolbar button{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#8a3441;color:#fff;border:0;border-radius:9px;padding:12px 19px;font-size:13px;font-weight:800;cursor:pointer}
+.toolbar button:hover{background:#69232f}
+.toolbar .print-button-icon{width:17px;height:17px;flex:0 0 17px}
+.toolbar button:focus-visible{outline:3px solid #8a3441;outline-offset:3px}
 .page{width:min(100%,1120px);min-height:800px;margin:0 auto 18px;padding:0 28px 18px;background:#fff;box-shadow:0 7px 22px #233b4b18;display:flex;flex-direction:column}
 .page-header{margin:0 -28px 14px;padding:15px 28px 16px;background:#1d3748;color:white;display:flex;justify-content:space-between;gap:15px;align-items:center;border-bottom:4px solid #a94c5c}
 .supertitle{font-size:10px;font-weight:850;letter-spacing:.11em;color:#ffbcc7}
@@ -114,7 +115,7 @@ body{margin:0}
 </style>
 </head>
 <body>
-<div class="toolbar"><a href="cedars.html">← Return to Cedars Lab Guide</a><button type="button" onclick="window.print()">Print / Save PDF</button></div>
+<div class="toolbar"><a href="cedars.html">← Return to Cedars Lab Guide</a><button type="button" onclick="window.print()"><svg class="print-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="10" rx="2"/><path d="M6 15h12v6H6z"/><path d="M17.5 12.5h.01"/></svg><span>Print / Save PDF</span></button></div>
 <section class="page page-1" aria-label="SWAB TESTS">
   <header class="page-header"><div><div class="supertitle">CEDARS LAB GUIDE · WHAT TO SUBMIT</div><h1>SWAB TESTS</h1><p>Choose the test, then submit the tube or kit shown.</p></div><span class="page-indicator">1 / 4</span></header>
   <main class="container-grid"><article class="container-card type-swab wide">
