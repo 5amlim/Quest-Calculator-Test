@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Cedars-specific collection and transport planning prototype. Always verify with current laboratory directory.">
-  <title>Cedars | Lab Collection Calculator</title>
+  <title>Cedars Lab Guide</title>
   <link rel="stylesheet" href="cedars-main-styles.css">
   <link rel="stylesheet" href="cedars-main-experience.css">
   <link rel="stylesheet" href="market-switch.css?v=2">
-  <link rel="stylesheet" href="cedars.css?v=6">
+  <link rel="stylesheet" href="cedars.css?v=7">
 </head>
 <body class="cedars-page">
   <a class="skip-link" href="#cedarsSearch">Skip to Cedars test search</a>
   <header class="app-header no-print">
     <div class="header-title">
-      <h1>Cedars Lab Collection Calculator</h1>
+      <h1>Cedars Lab Guide</h1>
       <p>Find tests and print specimen collection instructions for Cedars.</p>
     </div>
     <div class="header-actions">
@@ -61,10 +61,8 @@
           </div>
           <div class="cedars-lexicomp-login" role="note" aria-label="Lexicomp login information">
             <span class="cedars-lexicomp-login-heading">Lexicomp login</span>
-            <span class="cedars-lexicomp-login-detail"><strong>Username:</strong> <code>outpatientlab</code></span>
-            <span class="cedars-lexicomp-login-detail"><strong>Password:</strong> Obtain through your approved internal staff channel</span>
+            <span class="cedars-lexicomp-login-detail">For the username and password, <strong>contact Sam.</strong></span>
           </div>
-          <p class="cedars-reference-note">The shared password is not stored on this public page.</p>
         </section>
         <section class="panel search-panel cedars-batch" id="batchEntry" aria-labelledby="batchEntryTitle">
           <div class="batch-entry-heading">
@@ -155,6 +153,20 @@
     <div id="cedarsInfoBody" class="cedars-info-body"></div>
     <div class="cedars-dialog-actions"><button type="button" class="button secondary" id="cedarsInfoDone">Close</button></div>
   </dialog>
+  <dialog id="cedarsPhotoDialog" class="cedars-photo-dialog no-print" aria-labelledby="cedarsPhotoTitle" aria-describedby="cedarsPhotoNote">
+    <div class="cedars-photo-dialog-head">
+      <div><div class="eyebrow">CONTAINER REFERENCE</div><h2 id="cedarsPhotoTitle">Actual container photo</h2></div>
+      <button type="button" class="cedars-close" id="cedarsPhotoClose" aria-label="Close container photo">×</button>
+    </div>
+    <figure class="cedars-photo-figure">
+      <div class="cedars-photo-viewport" id="cedarsPhotoViewport" role="img" aria-label="Actual container reference photo">
+        <img class="cedars-photo-atlas" src="assets/images/cedars/container-photo-atlas.webp" alt="" aria-hidden="true" decoding="async">
+      </div>
+      <figcaption id="cedarsPhotoCaption">Container photo</figcaption>
+    </figure>
+    <p class="cedars-photo-disclaimer" id="cedarsPhotoNote">Reference photo only. Confirm the actual kit and current Cedars collection requirements before use.</p>
+    <div class="cedars-dialog-actions"><button type="button" class="button secondary" id="cedarsPhotoDone">Close</button></div>
+  </dialog>
   <dialog id="cedarsManualDialog" aria-label="Manual entry disabled" class="cedars-dialog">
     <form method="dialog" id="cedarsManualForm">
       <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. Manual entries are disabled for the approved Sollis Cedars menu.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
@@ -174,6 +186,6 @@
   </dialog>
   <script src="cedars-data.js"></script>
   <script src="cedars-container-art.js"></script>
-  <script src="cedars-app.js?v=2"></script>
+  <script src="cedars-app.js?v=3"></script>
 </body>
 </html>
