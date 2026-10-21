@@ -2411,3 +2411,35 @@
     break-inside:avoid;
   }
 }
+
+
+/* Match specimen category colors on paper, not just on the screen. */
+@media print {
+  #cedarsPrintSheet .cedars-print-test-type.type-urine,
+  #cedarsPrintSheet .cedars-print-collector-pill.type-urine {
+    background:#fff2d0!important;
+    color:#895908!important;
+    border-color:#eccd83!important;
+  }
+  #cedarsPrintSheet .cedars-print-test-type.type-stool,
+  #cedarsPrintSheet .cedars-print-collector-pill.type-stool {
+    background:#f4e5d2!important;
+    color:#764b24!important;
+    border-color:#ddc1a2!important;
+  }
+  #cedarsPrintSheet .cedars-print-test-type.type-swab {
+    background:#e6f2ff!important;
+    color:#285d8f!important;
+    border-color:#bad7f1!important;
+  }
+  #cedarsPrintSheet .cedars-print-test-type.type-blood {
+    background:#f7e5ec!important;
+    color:#823450!important;
+    border-color:#e5bdd0!important;
+  }
+  #cedarsPrintSheet .cedars-print-test-type.type-other {
+    background:#eeeaf7!important;
+    color:#61507f!important;
+    border-color:#d5cce8!important;
+  }
+}
