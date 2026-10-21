@@ -2459,6 +2459,13 @@
     width:100%;
     text-align:left;
   }
+  /* Keep the pink guide pill equal in height to the adjacent reference copy. */
+  .cedars-page .cedars-reference-combined .cedars-reference-header .cedars-reference-pill {
+    align-self:stretch;
+    box-sizing:border-box;
+    justify-content:center;
+    text-align:center;
+  }
   .cedars-page .cedars-reference-combined .cedars-reference-copy {
     flex:1 1 auto;
     min-width:0;
@@ -2596,6 +2603,10 @@
     .cedars-page .cedars-reference-combined .cedars-reference-header {
       flex-direction:column;
       gap:8px;
+    }
+    .cedars-page .cedars-reference-combined .cedars-reference-header .cedars-reference-pill {
+      align-self:flex-start;
+      min-height:46px;
     }
     .cedars-page .cedars-reference-resource-row > a.reference-guide {
       width:100%;
