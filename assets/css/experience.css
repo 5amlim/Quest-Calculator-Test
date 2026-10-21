@@ -1,0 +1,1244 @@
+/* Interface refresh. The original print styles and specimen colors are preserved. */
+@media screen {
+:root { --bg:#f2f5f8; --ink:#182d42; --muted:#526578; --brand:#087e83; --brand-dark:#056267; --brand-soft:#e7f5f3; --line:#dce4eb; --radius:14px; --shadow:0 3px 12px #16344d05; }
+body { background:var(--bg); font-size:16px; line-height:1.5; }
+.app-header { max-width:none; padding:27px max(28px, calc((100vw - 1540px)/2)); background:#142f46; color:white; align-items:center; margin-bottom:28px; border-bottom:4px solid #28b7ad; }
+.app-header h1 { font-size:clamp(24px,2.4vw,34px); letter-spacing:-.04em; font-weight:700; margin-bottom:4px; }
+.app-header .eyebrow { color:#79ddd4; font-size:12px; letter-spacing:.16em; }
+.app-header p { color:#c3d3df; font-size:14px; }
+.header-actions { justify-content:flex-end; max-width:370px; }
+.privacy-pill { padding:0; background:none; border:0; color:#c3d3df; font-size:12px; font-weight:500; }
+.header-actions .button { background:#254259; color:white; border-color:#4c6578; }
+.app-shell { max-width:1596px; padding:0 28px 36px; grid-template-columns:minmax(0,1fr) 400px; gap:24px; }
+.workspace { gap:18px; }
+.workspace .library-panel { grid-row:1; }
+.library-panel { padding:24px; }
+.panel-heading { gap:12px; }
+h2 { font-size:23px; font-weight:700; }
+.eyebrow { font-size:12px; font-weight:750; letter-spacing:.12em; }
+.panel-heading p { font-size:13px; }
+.library-actions { justify-content:flex-end; }
+.record-count { border:0; box-shadow:none; font-size:12px; background:#edf2f6; color:var(--muted); padding:6px 10px; font-weight:600; }
+.button { font-size:14px; min-height:42px; padding:10px 14px; font-weight:650; }
+.button:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline:3px solid #118a96; outline-offset:3px; }
+input,select,textarea { font-size:16px; background:white; border-color:#bdcad5; }
+.field-label { font-size:14px; font-weight:600; }
+.library-search { display:grid; gap:6px; grid-column:1/-1; }
+#libraryFilter { min-height:50px; padding-left:16px; border:1.5px solid #829aab; background:#fff; }
+.filter-row { grid-template-columns:200px 1fr; gap:12px; align-items:center; padding:0 0 16px; margin-bottom:0; }
+.filter-row .check-label { font-size:14px; color:var(--muted); justify-self:end; }
+.check-label input { min-width:18px; min-height:18px; accent-color:var(--brand); }
+.library-table { min-width:0; table-layout:fixed; }
+.library-table th { font-size:12px; padding:12px 10px; letter-spacing:.035em; background:#f3f6f9; }
+.library-table th:nth-child(1) { width:9%; }
+.library-table th:nth-child(2) { width:25%; }
+.library-table th:nth-child(3) { width:21%; }
+.library-table th:nth-child(4) { width:15%; }
+.library-table th:nth-child(5) { width:14%; }
+.library-table th:nth-child(6) { width:16%; }
+.library-table td { font-size:14px; padding:16px 10px; overflow-wrap:anywhere; }
+.test-name { font-size:14px; line-height:1.45; font-weight:650; }
+.subtext { font-size:12px; line-height:1.5; margin-top:5px; }
+.library-table .badge { white-space:normal; font-size:12px; }
+.row-actions { white-space:normal; }
+.row-actions .mini-button { display:block; margin:0 0 6px; width:100%; font-size:12px; min-height:32px; }
+.row-actions a.mini-button { background:none; padding:3px 0; font-weight:500; min-height:auto; }
+.row-actions button[data-action=add] { color:white; background:var(--brand); }
+.row-actions button[data-action=add]:disabled { opacity:1; color:#096159; background:#dff1ec; }
+.is-selected td { background:#f5fbf9; }
+.is-selected td:first-child { box-shadow:inset 3px 0 #20a695; }
+.library-help { font-size:13px; margin:16px 0 10px; color:var(--muted); }
+a { color:var(--brand-dark); text-underline-offset:3px; }
+.pagination-row { border-top:1px solid var(--line); padding-top:12px; font-size:13px; color:var(--muted); }
+.search-panel { padding:0; margin:0 0 20px; box-shadow:none; background:#f7fafb; }
+.batch-entry-heading { cursor:default; display:flex; justify-content:space-between; align-items:center; padding:20px 24px; gap:12px; list-style:none; }
+.batch-entry-heading::-webkit-details-marker { display:none; }
+.batch-entry-heading h3 { font-size:16px; margin:0; font-weight:650; }
+.batch-entry-heading small { display:block; color:var(--muted); font-size:13px; margin-top:2px; }
+.batch-entry-action { color:var(--brand-dark); font-size:13px; white-space:nowrap; }
+.batch-entry-body { padding:0 24px 20px; }
+.search-hint { font-size:12px; }
+.keyboard-hint { display:block; margin-top:7px; }
+.order-panel { padding:22px; top:20px; border-top:3px solid var(--brand); max-height:calc(100vh - 40px); scrollbar-width:thin; }
+.order-top { padding-bottom:18px; border-bottom:1px solid var(--line); }
+.order-top h2 { font-size:22px; }
+#selectedCount { font-size:14px; background:var(--brand-soft); color:var(--brand-dark); }
+.tests-summary { border:0; background:none; padding:0; margin-top:20px; }
+.tests-summary-header { gap:8px; }
+.tests-summary-title { font-size:14px; }
+.tests-summary-count { font-size:12px; }
+.tests-summary-actions { max-width:145px; }
+.mini-button { min-height:32px; font-size:12px; }
+.tests-overview-row { padding:12px 0; border-bottom:1px solid var(--line); }
+.tests-overview-name { font-size:14px; }
+.tests-overview-code { font-size:12px; }
+.tests-summary .empty-state { text-align:center; padding:28px 10px; background:#f5f8fa; border:1px dashed #c9d5de; border-radius:10px; }
+.empty-symbol { margin:0 auto 12px; border-radius:12px; background:#e4edf2; color:#496b80; width:46px; height:46px; display:grid; place-items:center; font-size:26px; }
+.empty-state strong { font-size:16px; font-weight:650; color:var(--ink); }
+.empty-state p { font-size:14px; margin:7px 0 0; color:var(--muted); }
+.cart-collapse-summary { min-height:54px; }
+.cart-collapse-title { font-size:15px; }
+.cart-collapse-meta { font-size:12px; }
+.order-actions { margin-top:22px; padding-top:18px; border-top:1px solid var(--line); }
+.disclaimer { font-size:12px; line-height:1.65; color:#526578; }
+.contact-banner { display:none; }
+.ownership-notice { max-width:1540px; margin:0 auto 24px; padding:20px 28px; box-shadow:none; background:transparent; border:0; border-top:1px solid var(--line); }
+.ownership-copy span { font-size:12px; }
+dialog { border:1px solid var(--line); box-shadow:0 28px 90px #10293e40; }
+dialog::backdrop { background:#10293e80; backdrop-filter:blur(3px); }
+.form-grid label, .form-label-text { font-size:14px; }
+.toast { font-size:14px; }
+.sr-only,.skip-link:not(:focus) { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.skip-link:focus { position:fixed; top:8px; left:8px; background:white; padding:12px; z-index:100; }
+.mobile-summary { display:none; }
+@media(min-width:1101px) { .table-wrap { max-height:650px; scrollbar-width:thin; } }
+@media(max-width:1300px) { .app-shell { grid-template-columns:minmax(0,1fr) 355px; gap:18px; } .library-panel { padding:18px; } .library-heading { flex-wrap:wrap; } .library-table th:nth-child(3) { width:23%; } .library-table th:nth-child(2) { width:23%; } }
+@media(max-width:1100px) { .app-shell { grid-template-columns:1fr; } .order-panel { position:static; max-height:none; } .app-header { align-items:flex-start; } .mobile-summary { display:flex; align-items:center; gap:14px; position:fixed; bottom:16px; right:20px; padding:12px 18px; background:#142f46; color:white; border-radius:12px; z-index:5; box-shadow:0 5px 20px #142f4630; text-decoration:none; font-size:14px; } .mobile-summary span:first-child { color:#89e2d7; } .ownership-notice { padding-bottom:85px; } }
+@media(max-width:700px) { .app-header { padding:22px 18px; margin-bottom:18px; flex-direction:column; gap:16px; } .header-actions { justify-content:flex-start; max-width:none; } .app-shell { padding:0 12px 22px; } .library-panel,.order-panel { padding:18px 14px; } .filter-row { grid-template-columns:1fr; } .filter-row .check-label { justify-self:start; } .library-actions { justify-content:flex-start; } .library-table,.library-table tbody { display:block; width:100%; } .library-table thead { display:none; } .library-table tr { display:grid; grid-template-columns:1fr 1fr; padding:14px; gap:12px; border-bottom:1px solid var(--line); } .library-table td { display:block; padding:0; border:0; } .library-table td:first-child { box-shadow:none; font-size:13px; color:var(--brand-dark); grid-column:1/-1; } .library-table td:nth-child(2) { grid-column:1/-1; } .library-table .test-name { font-size:16px; } .library-table td:nth-child(3)::before,.library-table td:nth-child(4)::before,.library-table td:nth-child(5)::before { content:attr(data-label); display:block; color:var(--muted); font-size:12px; margin-bottom:5px; } .library-table .row-actions { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:8px; align-items:center; } .row-actions .mini-button { width:auto; margin:0; min-height:38px; padding:8px 12px; } .row-actions a.mini-button { margin-left:auto; } .is-selected { background:#f5fbf9; } .batch-entry-heading { padding:18px; } .batch-entry-action { font-size:0; } .batch-entry-action span { font-size:20px; } .batch-entry-body { padding:0 18px 18px; } .batch-row { grid-template-columns:1fr; } .button { min-height:44px; } .tests-summary-header { flex-wrap:wrap; } .ownership-notice { padding-left:18px; padding-right:18px; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; scroll-behavior:auto!important; } }
+}
+
+/* Compact header aligned with the main workspace. */
+@media screen {
+  .app-header {
+    padding:24px max(28px, calc((100vw - 1540px)/2));
+    background:#ffffff;
+    color:#182d42;
+    border-bottom:1px solid #dce4eb;
+    margin-bottom:24px;
+    gap:24px;
+  }
+  .header-title { border-left:4px solid #087e83; padding-left:16px; min-width:0; }
+  .app-header h1 { font-size:clamp(24px,2.2vw,32px); line-height:1.2; letter-spacing:-.035em; font-weight:700; margin:0 0 7px; }
+  .app-header p { color:#526578; font-size:13px; line-height:1.5; margin:0; }
+  .header-actions { flex-shrink:0; }
+  .privacy-pill { display:inline-flex; align-items:center; border:1px solid #d5e7e5; background:#f1f8f7; color:#35615f; border-radius:8px; padding:8px 12px; font-size:12px; line-height:1.4; font-weight:500; }
+  @media (max-width:700px) {
+    .app-header { padding:20px 18px; gap:14px; margin-bottom:16px; }
+    .header-title { padding-left:12px; border-left-width:3px; }
+    .app-header h1 { font-size:25px; }
+    .header-actions { padding-left:15px; }
+    .privacy-pill { font-size:12px; padding:6px 10px; }
+  }
+}
+
+@media screen {
+  .app-header { background:#142f46; color:#fff; border-bottom:3px solid #28b7ad; }
+  .header-title { border-left-color:#28b7ad; }
+  .app-header p { color:#c3d3df; }
+  .privacy-pill { background:#203e54; border-color:#416074; color:#d6e7ed; }
+}
+
+@media screen {
+  .header-title { border-left:0; padding-left:0; }
+  @media (max-width:700px) { .header-actions { padding-left:0; } }
+}
+
+
+/* v10.14: keep status/main pagination outside the scroll box, with a second load-more control at the end of the scroll. */
+@media screen {
+  .scroll-load-more-row {
+    display: flex;
+    justify-content: center;
+    padding: 14px 12px 16px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+  }
+  .scroll-load-more-row .button { min-width: 150px; }
+}
+
+
+/* v10.15: polish cart actions without changing cart behavior. */
+@media screen {
+  .tests-summary-actions {
+    display: flex;
+    width: auto;
+    max-width: none;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+  }
+  .tests-summary-actions .mini-button {
+    width: auto;
+    margin-left: 0;
+    white-space: nowrap;
+  }
+  #addSelectedTestButton {
+    padding-inline: 10px;
+  }
+  .remove-flex {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #d5dee4;
+    border-radius: 999px;
+    background: #fff;
+    color: #687985;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+  }
+  .remove-flex .remove-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+  }
+  .remove-flex .remove-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+  .remove-flex:hover,
+  .remove-flex:focus-visible {
+    width: 30px;
+    min-width: 30px;
+    padding: 0;
+    background: #fff4f3;
+    border-color: #e2aaa5;
+    color: #9b3d37;
+    transform: none;
+  }
+  @media (max-width: 520px) {
+    .tests-summary-actions {
+      width: 100%;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+/* v10.17: keep the cart title/actions on one row and center Show details below them. */
+@media screen {
+  .tests-summary-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 8px;
+  }
+  .tests-summary-heading-block {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+  }
+  .tests-summary-actions {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+    max-width: none;
+    margin-left: 0;
+    flex-wrap: nowrap;
+  }
+  .tests-details-toggle {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    width: 42%;
+    min-width: 112px;
+    max-width: 190px;
+    margin: 0;
+  }
+  @media (max-width: 520px) {
+    .tests-summary-header {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+    .tests-summary-heading-block {
+      width: auto;
+    }
+    .tests-summary-actions {
+      width: auto;
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+    }
+    .tests-details-toggle {
+      width: 50%;
+      max-width: 170px;
+    }
+  }
+}
+
+
+
+/* v10.18: compact remove buttons expand to Delete on hover without pushing long test names. */
+@media screen {
+  .remove-flex {
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    white-space: nowrap;
+    background: #fff;
+    transition: width .16s ease, min-width .16s ease, padding .16s ease, background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .remove-flex .remove-icon,
+  .remove-flex .remove-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .remove-flex .remove-icon {
+    width: 16px;
+    opacity: 1;
+    transition: width .12s ease, opacity .12s ease;
+  }
+  .remove-flex .remove-text {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    font-weight: 800;
+    transition: max-width .14s ease, opacity .12s ease;
+  }
+
+  /* The compact cart row keeps its layout fixed. The expanded control overlays text,
+     and its solid background cleanly masks anything beneath it. */
+  .tests-overview-row { position: relative; grid-template-columns: minmax(0, 1fr); }
+  .tests-overview-ident { padding-right: 38px; }
+  .tests-overview-remove {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .remove-flex:hover,
+    .remove-flex:focus-visible {
+      width: 72px;
+      min-width: 72px;
+      padding: 0 10px;
+      background: #fff4f3;
+      border-color: #e2aaa5;
+      color: #9b3d37;
+      box-shadow: -8px 0 12px rgba(255,255,255,.92);
+      z-index: 5;
+    }
+    .remove-flex:hover .remove-icon,
+    .remove-flex:focus-visible .remove-icon {
+      width: 0;
+      opacity: 0;
+    }
+    .remove-flex:hover .remove-text,
+    .remove-flex:focus-visible .remove-text {
+      max-width: 50px;
+      opacity: 1;
+    }
+    .tests-overview-remove:hover,
+    .tests-overview-remove:focus-visible {
+      transform: translateY(-50%);
+    }
+  }
+}
+
+/* v10.19: tighten cart-header hierarchy and reduce secondary-action weight. */
+@media screen {
+  .tests-summary-header {
+    column-gap: 8px;
+    row-gap: 6px;
+  }
+
+  .tests-summary-actions {
+    gap: 5px;
+  }
+
+  #addSelectedTestButton {
+    padding: 7px 9px;
+    font-size: 10.5px;
+  }
+
+  #clearOrderButton {
+    padding: 7px 8px;
+    font-size: 10.5px;
+    background: #fff7f6;
+    border: 1px solid #f0d8d5;
+    color: #9b3d37;
+  }
+
+  .tests-details-toggle {
+    width: 136px;
+    min-width: 120px;
+    max-width: 136px;
+    padding: 6px 10px;
+    font-size: 10.5px;
+    border-radius: 8px;
+  }
+
+  @media (max-width: 520px) {
+    .tests-details-toggle {
+      width: 128px;
+      min-width: 112px;
+      max-width: 128px;
+    }
+  }
+}
+
+
+/* v10.22: smaller Show details button aligned directly under Tests, with disclosure arrow. */
+@media screen {
+  .tests-details-toggle {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    padding: 5px 8px;
+    font-size: 10px;
+    line-height: 1.1;
+    border-radius: 7px;
+  }
+
+  @media (max-width: 520px) {
+    .tests-details-toggle {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+    }
+  }
+}
+
+/* v11.42: match the warning/special-handling chevron inset (10px). */
+#specimenFilter {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23172f42' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 17px 17px;
+}
+
+/* v11.11: mobile-safe cart actions. STAT and remove never occupy the same space. */
+@media screen {
+  .tests-overview-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 34px;
+    column-gap: 8px;
+    row-gap: 5px;
+    align-items: center;
+    padding: 9px 0;
+  }
+  .tests-overview-row .tests-overview-ident {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding-right: 0;
+    min-width: 0;
+  }
+  .tests-overview-row .stat-toggle {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+    min-height: 30px;
+    margin: 0;
+    position: static;
+  }
+  .tests-overview-row .tests-overview-remove {
+    grid-column: 2;
+    grid-row: 2;
+    position: static;
+    top: auto;
+    right: auto;
+    transform: none !important;
+    margin: 0;
+    justify-self: end;
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+  .tests-overview-row .tests-overview-remove .remove-text { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    .tests-overview-row .tests-overview-remove:hover,
+    .tests-overview-row .tests-overview-remove:focus-visible {
+      width: 32px;
+      min-width: 32px;
+      padding: 0;
+      transform: none !important;
+    }
+    .tests-overview-row .tests-overview-remove:hover .remove-icon,
+    .tests-overview-row .tests-overview-remove:focus-visible .remove-icon {
+      width: 16px;
+      opacity: 1;
+    }
+  }
+}
+
+/* v11.17: selected-test actions share a single row on desktop and phone.
+   Overrides legacy v11.11 mobile rules that pushed delete below the name. */
+@media screen {
+  .tests-overview-row,
+  .tests-overview-row.no-stat-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 34px;
+    align-items: center;
+    column-gap: 6px;
+    row-gap: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 6px 0;
+  }
+  .tests-overview-row .tests-overview-ident {
+    grid-column: 1;
+    grid-row: 1;
+    flex: initial;
+    min-width: 0;
+    width: auto;
+    padding-right: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    align-items: baseline;
+  }
+  .tests-overview-row .tests-overview-code { flex: 0 0 auto; }
+  .tests-overview-row .tests-overview-name { flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap; }
+  .tests-overview-row .stat-toggle {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 30px;
+    margin: 0;
+    position: static;
+    justify-self: end;
+    white-space: nowrap;
+  }
+  .tests-overview-row .tests-overview-remove {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    position: relative;
+    top: auto;
+    right: auto;
+    transform: none !important;
+    width: 34px;
+    min-width: 34px;
+    height: 32px;
+    padding: 0;
+    margin: 0;
+    z-index: 2;
+  }
+  .tests-overview-row .tests-overview-remove .remove-text { display: inline-flex; }
+  @media (hover: hover) and (pointer: fine) {
+    .tests-overview-row .tests-overview-remove:hover,
+    .tests-overview-row .tests-overview-remove:focus-visible {
+      width: 72px;
+      min-width: 72px;
+      padding: 0 6px;
+      background: #fff4f3;
+      box-shadow: -8px 0 12px rgba(255,255,255,.93);
+      transform: none !important;
+      z-index: 5;
+    }
+    .tests-overview-row .tests-overview-remove:hover .remove-icon,
+    .tests-overview-row .tests-overview-remove:focus-visible .remove-icon { width: 0; opacity: 0; }
+    .tests-overview-row .tests-overview-remove:hover .remove-text,
+    .tests-overview-row .tests-overview-remove:focus-visible .remove-text { max-width: 56px; opacity: 1; }
+  }
+}
+
+/* v11.17 final library toolbar: override the original two-column filter grid. */
+@media screen and (min-width: 1161px) {
+  .filter-row {
+    display: grid;
+    grid-template-columns: minmax(135px,1fr) 170px minmax(300px,320px) max-content;
+    gap: 9px;
+    align-items: end;
+  }
+  .filter-row .library-search { grid-column: 1; grid-row: 1; min-width: 0; }
+  .filter-row #specimenFilter { grid-column: 2; grid-row: 1; min-width: 0; width: 100%; }
+  .filter-row .stat-library-control {
+    grid-column: 3; grid-row: 1;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    grid-template-rows: auto auto;
+    gap: 5px 6px;
+    width: 100%; min-width: 0;
+  }
+  .filter-row .stat-library-control label { grid-column: 1/-1; grid-row: 1; }
+  .filter-row .stat-library-control select { grid-column: 1; grid-row: 2; width: 100%; min-width: 0; max-width: none; }
+  .filter-row .stat-library-control .stat-menu-button { grid-column: 2; grid-row: 2; white-space: nowrap; min-height: 35px; }
+  .filter-row .blocked-list-button { grid-column: 4; grid-row: 1; align-self: end; min-height: 35px; justify-self: end; white-space: nowrap; }
+}
+@media screen and (min-width: 721px) and (max-width: 1160px) {
+  .filter-row { display: grid; grid-template-columns: minmax(0,1fr) 170px; gap: 9px; }
+  .filter-row .library-search { grid-column: 1; grid-row: 1; }
+  .filter-row #specimenFilter { grid-column: 2; grid-row: 1; width: 100%; }
+  .filter-row .stat-library-control { grid-column: 1; grid-row: 2; justify-content: flex-start; }
+  .filter-row .blocked-list-button { grid-column: 2; grid-row: 2; align-self: end; width: 100%; }
+}
+@media screen and (max-width: 720px) {
+  .filter-row { display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .filter-row .library-search,
+  .filter-row #specimenFilter,
+  .filter-row .stat-library-control,
+  .filter-row .blocked-list-button { grid-column: 1; width: 100%; }
+  .filter-row .stat-library-control { grid-row: auto; }
+  .filter-row .stat-library-control select { flex: 1 1 100%; max-width: 100%; }
+}
+
+/* v11.19: put the searchable test input on its own row above all filters. */
+@media screen and (min-width: 1161px) {
+  .filter-row { grid-template-columns: 175px minmax(0,1fr) max-content; align-items: end; }
+  .filter-row .library-search { grid-column: 1 / -1; grid-row: 1; width: 100%; }
+  .filter-row #specimenFilter { grid-column: 1; grid-row: 2; width: 100%; }
+  .filter-row .stat-library-control { grid-column: 2; grid-row: 2; width: 100%; justify-self: stretch; }
+  .filter-row .blocked-list-button { grid-column: 3; grid-row: 2; align-self: end; }
+}
+@media screen and (min-width: 721px) and (max-width: 1160px) {
+  .filter-row { grid-template-columns: 175px minmax(0,1fr); align-items: end; }
+  .filter-row .library-search { grid-column: 1 / -1; grid-row: 1; width: 100%; }
+  .filter-row #specimenFilter { grid-column: 1; grid-row: 2; width: 100%; }
+  .filter-row .stat-library-control { grid-column: 2; grid-row: 2; width: 100%; min-width: 0; }
+  .filter-row .blocked-list-button { grid-column: 1 / -1; grid-row: 3; justify-self: end; width: auto; }
+}
+@media screen and (max-width: 720px) {
+  .filter-row { display: grid; grid-template-columns: minmax(0,1fr); gap: 8px; }
+  .filter-row .library-search { grid-column: 1; grid-row: 1; width: 100%; }
+  .filter-row #specimenFilter { grid-column: 1; grid-row: 2; width: 100%; }
+  .filter-row .stat-library-control { grid-column: 1; grid-row: 3; width: 100%; }
+  .filter-row .blocked-list-button { grid-column: 1; grid-row: 4; justify-self: stretch; width: 100%; }
+}
+
+
+/* v11.21: keep the specimen filter on the left, and group three STAT
+   selection actions compactly along the right edge. */
+@media screen and (min-width: 1161px) {
+  .filter-row { grid-template-columns: 175px minmax(0,1fr) max-content; column-gap: 12px; }
+  .filter-row .library-search { grid-column: 1 / -1; grid-row: 1; }
+  .filter-row #specimenFilter { grid-column: 1; grid-row: 2; }
+  .filter-row .stat-library-control {
+    grid-column: 2; grid-row: 2; justify-self: end;
+    width: auto; display: grid;
+    grid-template-columns: 202px max-content;
+    grid-template-rows: auto 38px;
+    column-gap: 9px; row-gap: 5px;
+  }
+  .filter-row .stat-library-control label { grid-column: 1 / -1; grid-row: 1; }
+  .filter-row .stat-library-control select {
+    grid-column: 1; grid-row: 2; width: 202px; max-width: 202px;
+    min-width: 0; min-height: 38px;
+  }
+  .filter-row .stat-library-control .stat-menu-button {
+    grid-column: 2; grid-row: 2; min-height: 38px;
+  }
+  .filter-row .blocked-list-button { grid-column: 3; grid-row: 2; align-self: end; min-height: 38px; }
+}
+@media screen and (min-width: 721px) and (max-width: 1160px) {
+  .filter-row .stat-library-control {
+    justify-self: end; width: auto; max-width: 100%;
+    display: grid; grid-template-columns: minmax(0, 202px) max-content;
+    grid-template-rows: auto 38px; column-gap: 8px; row-gap: 4px;
+  }
+  .filter-row .stat-library-control label { grid-column: 1 / -1; grid-row: 1; }
+  .filter-row .stat-library-control select { grid-column: 1; grid-row: 2; width: 100%; max-width: 202px; min-height: 38px; }
+  .filter-row .stat-library-control .stat-menu-button { grid-column: 2; grid-row: 2; min-height: 38px; }
+}
+@media screen and (max-width: 720px) {
+  .filter-row .stat-library-control select { max-width: 100%; }
+}
+/* v11.42: use the same right-aligned caret inset as the warning disclosure. */
+.stat-library-control select {
+  appearance: none; -webkit-appearance: none;
+  padding-right: 34px !important;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23384e58' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 17px 17px;
+  text-overflow: ellipsis;
+}
+
+/* Medium screens with a wide single-column workspace still have room for
+   the three STAT actions on one row. Only stack them when truly narrow. */
+@media screen and (min-width: 900px) and (max-width: 1160px) {
+  .filter-row { grid-template-columns: 175px minmax(0,1fr) max-content; column-gap: 9px; align-items: end; }
+  .filter-row .library-search { grid-column: 1 / -1; grid-row: 1; }
+  .filter-row #specimenFilter { grid-column: 1; grid-row: 2; }
+  .filter-row .stat-library-control {
+    grid-column: 2; grid-row: 2; width: auto; justify-self: end;
+    grid-template-columns: 195px max-content;
+  }
+  .filter-row .stat-library-control select { max-width: 195px; }
+  .filter-row .blocked-list-button {
+    grid-column: 3; grid-row: 2; align-self: end;
+    min-height: 38px; justify-self: end; width: auto;
+  }
+}
+
+/* The sidebar still occupies space around this intermediate viewport range.
+   Prevent the last toolbar action from colliding with View STAT tests. */
+@media screen and (min-width: 1101px) and (max-width: 1199px) {
+  .filter-row .blocked-list-button {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: end;
+    width: auto;
+  }
+}
+
+/* v11.23: slightly widen specimen type selector on the actual responsive grid.
+   Earlier layout rules in this stylesheet had fixed the track at 175px. */
+@media screen and (min-width: 900px) {
+  .filter-row { grid-template-columns: 215px minmax(0, 1fr) max-content; }
+}
+@media screen and (min-width: 721px) and (max-width: 899px) {
+  .filter-row { grid-template-columns: 215px minmax(0, 1fr); }
+}
+
+/* v11.24: tighter, right-aligned batch-entry actions. Styling of the existing
+   three buttons is deliberately unchanged. */
+@media screen {
+  .search-panel .batch-entry-heading {
+    display: block;
+    padding: 15px 24px 7px;
+  }
+  .search-panel .batch-entry-heading h3 {
+    font-size: 16px;
+    line-height: 1.3;
+    font-weight: 750;
+    margin: 0 0 3px;
+  }
+  .search-panel .batch-entry-description {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .search-panel .batch-entry-body { padding: 0 24px 14px; }
+  .search-panel #searchInput { display: block; min-height: 108px; }
+  .search-panel .search-actions {
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 10px;
+  }
+  .search-panel .batch-keyboard-hint {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--muted);
+    margin: 5px 0 0;
+  }
+}
+@media screen and (max-width: 700px) {
+  .search-panel .batch-entry-heading { padding: 14px 18px 7px; }
+  .search-panel .batch-entry-body { padding: 0 18px 14px; }
+}
+
+/* v11.45: unified STAT selection control and bounded cart with fixed header. */
+@media screen {
+  .stat-library-control select,
+  .filter-row .stat-library-control .stat-menu-button {
+    box-sizing: border-box;
+    height: 38px;
+    min-height: 38px;
+    border: 1px solid #c6d7dd;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 800;
+    line-height: 1.25;
+  }
+  .filter-row .stat-library-control .stat-menu-button {
+    padding: 7px 13px;
+    color: #1b6470;
+    border-color: #b4d1d7;
+    background: #edf7f7;
+    white-space: nowrap;
+  }
+  .filter-row .stat-library-control .stat-menu-button[aria-expanded="true"] {
+    background: #dceff0;
+    color: #0b5f69;
+    border-color: #70abb4;
+  }
+  .filter-row .stat-library-control .stat-menu-button:focus-visible,
+  .filter-row .stat-library-control select:focus-visible {
+    outline: 2px solid #228894;
+    outline-offset: 2px;
+  }
+  .tests-summary .cart-tests-viewport {
+    box-sizing: border-box;
+    width: 100%;
+    max-height: min(340px, 43vh);
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #b7c9d0 transparent;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background: #fff;
+  }
+  .tests-summary .cart-tests-viewport:focus-visible {
+    outline: 2px solid #228894;
+    outline-offset: -2px;
+  }
+  .tests-summary .cart-tests-viewport::-webkit-scrollbar { width: 7px; }
+  .tests-summary .cart-tests-viewport::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background: #b7c9d0;
+  }
+  .tests-summary .cart-tests-viewport .tests-details-panel { padding-bottom: 10px; }
+}
+@media screen and (max-width: 520px) {
+  .tests-summary .cart-tests-viewport { max-height: min(290px, 39vh); }
+}
+@media screen and (max-width: 400px) {
+  .filter-row .stat-library-control {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+  .filter-row .stat-library-control label { grid-row: 1; grid-column: 1; }
+  .filter-row .stat-library-control select,
+  .filter-row .stat-library-control .stat-menu-button {
+    grid-column: 1;
+    width: 100%;
+    max-width: none;
+  }
+  .filter-row .stat-library-control select { grid-row: 2; }
+  .filter-row .stat-library-control .stat-menu-button { grid-row: 3; }
+}
+
+/* v11.46: Cart title and actions above a balanced Show details / test-count row.
+   The header remains outside the cart's independent scrolling viewport. */
+@media screen {
+  .tests-summary-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .tests-summary-heading-block {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .tests-summary-actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .tests-details-toggle {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+    justify-self: start;
+  }
+  .tests-summary-count {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    align-self: center;
+    margin: 0;
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+/* v11.47: subtle separation between the STAT menu action and Do not perform.
+   Only show the rule when these two controls sit beside one another. */
+@media screen and (min-width: 1200px), screen and (min-width: 900px) and (max-width: 1100px) {
+  .filter-row .blocked-list-button {
+    position: relative;
+    margin-left: 13px;
+  }
+  .filter-row .blocked-list-button::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 27px;
+    background: #d4dde2;
+    pointer-events: none;
+  }
+}
+
+/* v11.49: Live test count next to Cart, with print access in the header.
+   The right grid column is sized by the Add / Clear actions above and the
+   print button stretches to that exact same track width. */
+@media screen {
+  .tests-summary-header {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+  .tests-summary-heading {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 9px;
+    row-gap: 0;
+    align-items: baseline;
+  }
+  .tests-summary-heading .tests-summary-count {
+    font-size: 11px;
+    font-weight: 750;
+    margin: 0;
+    color: var(--muted);
+  }
+  .tests-summary-actions {
+    width: max-content;
+    max-width: none;
+  }
+  .cart-header-print {
+    grid-column: 2;
+    grid-row: 2;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    margin: 0;
+    padding: 7px 10px;
+    justify-self: stretch;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .tests-summary .cart-tests-viewport { width: 100%; }
+}
+
+/* v11.50: give the Cart heading clearer hierarchy without enlarging the test count. */
+@media screen {
+  .tests-summary-heading .tests-summary-title {
+    font-size: 22px;
+    line-height: 1.1;
+    font-weight: 900;
+  }
+}
+
+/* v11.51: align the visible bottom edges of the large Cart heading and
+   smaller live test count while preserving their separate font sizes. */
+@media screen {
+  .tests-summary-heading {
+    align-items: flex-end;
+  }
+  .tests-summary-heading .tests-summary-count {
+    align-self: flex-end;
+    line-height: 1.1;
+  }
+}
+
+/* v11.52: use the same SVG chevron as Warning / Special Handling.
+   Preserve the compact cart button and rotate the icon when expanded. */
+@media screen {
+  .tests-details-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .tests-details-toggle .collection-alerts-chevron {
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+    background-size: 13px 13px;
+  }
+  .tests-details-toggle[aria-expanded="true"] .collection-alerts-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+/* v11.68: Match Add best matches and enabled test-list Add actions to the
+   navy site header. Missing-test buttons and Print / Save PDF keep their styles. */
+@media screen {
+  #addBestButton,
+  .row-actions button[data-action="add"]:not(:disabled) {
+    background: #142f46;
+    color: #fff;
+  }
+  #addBestButton:hover,
+  .row-actions button[data-action="add"]:not(:disabled):hover {
+    background: #1c4059;
+    color: #fff;
+  }
+  .cart-header-print {
+    font-size: 15px;
+  }
+}
+
+/* v11.58: Emphasize the two primary missing-test form section headings.
+   Scope to these cards so other modal sections and the print output are unchanged. */
+@media screen {
+  #testForm .form-section-emphasis {
+    padding: 0;
+    overflow: hidden;
+  }
+  #testForm .form-section-emphasis > .form-section-heading {
+    align-items: center;
+    margin: 0;
+    padding: 12px 14px;
+    gap: 8px 14px;
+    background: #314f5e;
+    border-left: 4px solid #20a49e;
+    border-bottom: 1px solid #284451;
+    color: #fff;
+  }
+  #testForm .form-section-emphasis > .form-section-heading h3 {
+    margin: 0 0 3px;
+    font-size: 15px;
+    line-height: 1.25;
+    font-weight: 850;
+    color: #fff;
+  }
+  #testForm .form-section-emphasis > .form-section-heading p {
+    color: #dae8ed;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  #testForm .form-section-emphasis > .form-section-heading .directory-text-button {
+    color: #d9fcf6;
+  }
+  #testForm .form-section-emphasis > .form-grid {
+    padding: 13px 14px 14px;
+  }
+  @media (max-width: 720px) {
+    #testForm .form-section-emphasis > .form-section-heading {
+      align-items: flex-start;
+    }
+  }
+}
+
+/* v11.61: Keep the receiving lab caption above the select, centered over the
+   select itself (not across the select and Show STAT tests button). Return only
+   the two requested Add action labels to white. */
+@media screen {
+  .filter-row .stat-library-control label {
+    grid-column: 1 !important;
+    grid-row: 1;
+    text-align: center;
+    justify-self: stretch;
+    align-self: end;
+  }
+  #addBestButton,
+  #addBestButton:hover,
+  #addBestButton:focus-visible,
+  .row-actions button[data-action="add"]:not(:disabled),
+  .row-actions button[data-action="add"]:not(:disabled):hover,
+  .row-actions button[data-action="add"]:not(:disabled):focus-visible {
+    color: #fff;
+  }
+}
+
+/* v11.76: compact multiselect library filters, browser-created entries only */
+@media screen {
+  .filter-row .catalog-filter-control { position: relative; min-width: 0; isolation: isolate; }
+  .catalog-filter-toggle { width: 100%; min-height: 38px; display: flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid #c6d5db; border-radius: 10px; background: white; color: #293e4c; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+  .catalog-filter-toggle.has-filters { border-color: #0c7d86; background: #eff8f8; color: #0c6671; }
+  .catalog-filter-icon { font-size: 17px; font-weight: 900; line-height: 1; }
+  .catalog-filter-chevron { margin-left: auto; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); width: 7px; height: 7px; transition: transform .15s; }
+  .catalog-filter-toggle[aria-expanded="true"] .catalog-filter-chevron { transform: rotate(225deg); }
+  .catalog-filter-panel { position: absolute; top: calc(100% + 7px); left: 0; z-index: 30; width: min(320px, calc(100vw - 44px)); padding: 14px; border: 1px solid #cfdee3; box-shadow: 0 12px 28px rgba(20,47,70,.13); background: #fff; border-radius: 12px; display: grid; gap: 11px; }
+  .catalog-filter-heading { display:flex; justify-content: space-between; align-items: center; gap:8px; font-size: 14px; color: #193243; }
+  .catalog-filter-panel label:not(.catalog-filter-check) { display:grid; gap: 5px; font-size: 11px; font-weight: 800; color: #3b505b; }
+  .catalog-filter-panel select { width: 100% !important; max-width: 100%; min-height: 37px; padding: 7px 28px 7px 9px; border: 1px solid #cbd9df; border-radius: 8px; background-color: #fff; font-size: 12px; color: #213b49; }
+  .catalog-filter-reset { background: none; border: none; color: #0c6471; font-size: 11px; font-weight: 800; padding: 6px; cursor: pointer; }
+  .catalog-filter-check { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 750; color: #253f4e; cursor: pointer; }
+  .catalog-filter-check input { width: 16px; height: 16px; flex: 0 0 auto; accent-color: #087e85; }
+  .catalog-filter-check small { font-size: 10px; color: #73838b; font-weight: 600; }
+  .catalog-filter-done { background: #142f46; color: white; border: 0; border-radius: 8px; padding: 9px; font-weight: 850; cursor: pointer; }
+  .library-footer-actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+  .browser-custom-clear { border: 1px solid #e2d3d1; background: white; color: #9a4d46; padding: 9px 12px; font-size: 11px; font-weight: 800; border-radius: 9px; cursor: pointer; }
+  .browser-custom-clear:not(:disabled):hover { background: #fff5f4; }
+  .browser-custom-clear:disabled { opacity: .48; cursor: default; }
+}
+@media screen and (min-width: 1161px) {
+  .filter-row .catalog-filter-control { grid-column: 1; grid-row: 2; width: 175px; }
+}
+@media screen and (min-width: 721px) and (max-width: 1160px) {
+  .filter-row .catalog-filter-control { grid-column: 1; grid-row: 2; width: 175px; }
+}
+@media screen and (max-width: 720px) {
+  .filter-row .catalog-filter-control { grid-column: 1; grid-row: 2; width: 100%; }
+  .catalog-filter-panel { width: min(350px, calc(100vw - 55px)); }
+  .pagination-row { gap: 8px; }
+  .library-footer-actions { width: 100%; justify-content: flex-end; }
+}
+
+@media screen { .filter-row .catalog-filter-panel #specimenFilter { grid-column: auto; grid-row: auto; width: 100%; background-image: none; appearance: auto; -webkit-appearance: menulist; padding-right: 28px; } }
+/* Keep the open filter popover above the sticky table headers. */
+@media screen { .filter-row { position: relative; z-index: 5; } .catalog-filter-control { z-index: 6; } }
+
+/* v11.77: shared chevron and consistent inset across all selection controls. */
+@media screen {
+  .shared-chevron {
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    margin-left: auto;
+    border: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23233d48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 18px;
+    transform: none;
+    transition: transform .15s ease;
+  }
+  .catalog-filter-toggle {
+    box-sizing: border-box;
+    height: 38px;
+    min-height: 38px;
+    padding: 7px 14px;
+    border-color: #c6d7dd;
+    border-radius: 9px;
+    font-size: 11.5px;
+    color: #34464d;
+    gap: 8px;
+  }
+  .catalog-filter-toggle[aria-expanded="true"] .shared-chevron,
+  .stat-area-picker-button[aria-expanded="true"] .shared-chevron { transform: rotate(180deg); }
+  .catalog-filter-control .catalog-filter-panel select,
+  #testForm select,
+  .batch-match-choice {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    padding-right: 44px !important;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23233d48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 14px center !important;
+    background-size: 18px 18px !important;
+  }
+  .catalog-filter-panel select { text-overflow: ellipsis; }
+  .filter-row .stat-library-control .stat-select-wrap {
+    grid-column: 1;
+    grid-row: 2;
+    position: relative;
+    min-width: 0;
+    width: 100%;
+    isolation: isolate;
+  }
+  .stat-area-picker-button {
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    height: 38px;
+    padding: 7px 14px;
+    border: 1px solid #c6d7dd;
+    border-radius: 9px;
+    background: white;
+    color: #34464d;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+  }
+  .stat-area-picker-button:hover, .catalog-filter-toggle:hover { background-color: #f8fbfd; }
+  .stat-area-picker-button:focus-visible, .catalog-filter-toggle:focus-visible { outline: 2px solid #228894; outline-offset: 2px; }
+  .stat-area-picker-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 auto; }
+  .stat-area-options {
+    position: absolute;
+    top: calc(100% + 7px);
+    right: 0;
+    width: min(355px, calc(100vw - 44px));
+    max-height: min(360px, 57vh);
+    overflow-y: auto;
+    z-index: 50;
+    border: 1px solid #cfdee3;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(20,47,70,.14);
+    background: white;
+    padding: 7px;
+    overscroll-behavior: contain;
+  }
+  .stat-area-optgroup { padding: 12px 11px 5px; color: #607984; font-size: 10px; font-weight: 850; }
+  .stat-area-option {
+    display: block;
+    width: 100%;
+    padding: 10px 11px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #263e4c;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    text-align: left;
+    cursor: pointer;
+  }
+  .stat-area-option:hover, .stat-area-option:focus-visible { background: #edf6f7; outline: none; }
+  .stat-area-option.selected { background: #e5f2f3; color: #0a6471; font-weight: 800; }
+  @media (max-width: 400px) {
+    .filter-row .stat-library-control .stat-select-wrap { grid-column: 1; grid-row: 2; }
+  }
+}
+
+/* v11.78: portal-style selectors inside Filters and Add/Edit Test. */
+@media screen {
+  .stat-area-option-nested { padding-left: 27px !important; font-weight: 550; position: relative; }
+  .stat-area-option-nested::before { content: ''; position: absolute; left: 14px; top: 50%; width: 4px; height: 4px; border-radius: 100%; background: #b8cbd3; transform: translateY(-50%); }
+  .portal-select-native { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: 0 !important; opacity: 0 !important; pointer-events: none !important; border: 0 !important; }
+  .portal-select-wrap { position: relative; display: block; width: 100%; min-width: 0; }
+  .portal-select-button { box-sizing: border-box; display: flex; align-items: center; width: 100%; min-width: 0; min-height: 42px; gap: 8px; padding: 8px 14px; border: 1px solid #c6d7dd; border-radius: 9px; background: #fff; color: #34464d; font-family: inherit; font-size: 13px; font-weight: 750; line-height: 1.35; text-align: left; cursor: pointer; }
+  .portal-select-button:hover { background: #f8fbfc; }
+  .portal-select-button:focus-visible { outline: 2px solid #228894; outline-offset: 2px; }
+  .portal-select-button:disabled { background: #f1f5f6; color: #7b8b91; cursor: not-allowed; }
+  .portal-select-placeholder { color: #98a4ab; }
+  .portal-select-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .portal-select-button .shared-chevron { margin-right: 0; flex: 0 0 18px; }
+  .portal-select-button[aria-expanded="true"] .shared-chevron { transform: rotate(180deg); }
+  .catalog-filter-panel .portal-select-button { min-height: 37px; font-size: 12px; }
+  #testForm .portal-select-button { min-height: 38px; font-size: 12px; }
+  .portal-select-menu { position: fixed; z-index: 100000; overflow-y: auto; overscroll-behavior: contain; box-sizing: border-box; padding: 6px; background: #fff; border: 1px solid #cadbe0; border-radius: 11px; box-shadow: 0 14px 34px rgba(20,47,70,.2); }
+  .portal-select-option { display: block; width: 100%; padding: 10px 12px; border: none; border-radius: 7px; background: transparent; color: #293e4c; font: inherit; font-size: 12px; font-weight: 600; text-align: left; line-height: 1.35; white-space: normal; cursor: pointer; }
+  .portal-select-option:hover, .portal-select-option:focus-visible { outline: 0; background: #eff6f7; }
+  .portal-select-option.is-selected { color: #096773; background: #e5f2f3; font-weight: 850; }
+  .portal-select-option:disabled { opacity: .5; cursor: not-allowed; }
+  @media (max-width: 720px) {
+    .portal-select-button { min-height: 42px; }
+    #testForm .portal-select-button { min-height: 38px; }
+  }
+}
+@media print {
+  .portal-select-menu, .portal-select-wrap { display: none !important; }
+}
+
+/* v11.79: quiet, accessible menu motion and container icons reused from the directory. */
+@media screen {
+  @keyframes select-pop-in {
+    from { opacity: 0; transform: translateY(-4px) scale(.995); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .portal-select-menu,
+  .catalog-filter-panel:not(.hidden),
+  .stat-area-options:not(.hidden) {
+    transform-origin: top center;
+    animation: select-pop-in 145ms cubic-bezier(.2,.75,.35,1) both;
+  }
+  .portal-select-icon {
+    display: inline-block;
+    flex: 0 0 13px;
+    width: 13px;
+    height: 19px;
+    padding: 0;
+    margin: 0;
+    vertical-align: middle;
+  }
+  .portal-select-icon.tube::before {
+    left: 2px;
+    top: 50%;
+    height: 16px;
+    width: 8px;
+  }
+  .portal-select-icon.tube-urine-cup::before,
+  .portal-select-icon.tube-24h-urine::before,
+  .portal-select-icon.tube-trace-metal-container::before { width: 12px; left: 0; }
+  .portal-select-button .portal-select-icon { flex-shrink: 0; }
+  .portal-select-option { display: flex; align-items: center; gap: 9px; }
+  .portal-option-label { flex: 1; min-width: 0; }
+  .portal-select-menu { will-change: opacity, transform; }
+  .portal-select-button .shared-chevron,
+  .catalog-filter-toggle .shared-chevron,
+  .stat-area-picker-button .shared-chevron { transition: transform 160ms ease; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portal-select-menu,
+  .catalog-filter-panel:not(.hidden),
+  .stat-area-options:not(.hidden) { animation: none !important; }
+  .portal-select-button .shared-chevron,
+  .catalog-filter-toggle .shared-chevron,
+  .stat-area-picker-button .shared-chevron { transition: none !important; }
+}

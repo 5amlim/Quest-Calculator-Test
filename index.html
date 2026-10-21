@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lab Collection Calculator</title>
   <meta name="description" content="Batch-search and print-friendly specimen collection planning from a curated local test directory.">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="experience.css">
+  <link rel="stylesheet" href="assets/css/styles.css?v=11.91">
+  <link rel="stylesheet" href="assets/css/experience.css?v=11.80">
 </head>
 <body>
   <a class="skip-link" href="#libraryFilter">Skip to test search</a>
@@ -28,7 +28,7 @@
           <div>
             <div class="eyebrow">1. SELECT TESTS</div>
             <h2>Find tests</h2>
-            <p>Search by test name, code, specimen, or tube.</p>
+            <p>Search by test code or names.</p>
           </div>
           <div class="library-actions">
             <div class="record-count" id="recordCount">0 tests</div>
@@ -36,33 +36,75 @@
           </div>
         </div>
       <section class="panel search-panel" id="batchEntry" aria-labelledby="batchEntryTitle">
-        <div class="batch-entry-heading"><h3 id="batchEntryTitle">Add a list of tests</h3></div>
+        <div class="batch-entry-heading">
+          <h3 id="batchEntryTitle">Add Tests</h3>
+          <p class="batch-entry-description" id="batchEntryDescription">Enter one test name or code per line. Common shorthand works; approximate matches require confirmation.</p>
+        </div>
         <div class="batch-entry-body">
-          <label for="searchInput" class="field-label">One test name or code per line</label>
-          <textarea id="searchInput" rows="4" placeholder="211&#10;Hemoglobin A1c&#10;Quantiferon Gold TB" aria-describedby="batchHint"></textarea>
+          <label for="searchInput" class="sr-only">Test names or codes, one per line</label>
+          <textarea id="searchInput" rows="4" placeholder="211&#10;Hemoglobin A1c&#10;Quantiferon Gold TB" aria-describedby="batchEntryDescription"></textarea>
           <div class="search-actions">
-            <button class="button primary" id="addBestButton">Add best matches</button>
-            <button class="button secondary" id="previewButton">Review matches</button>
             <button class="button ghost" id="clearSearchButton">Clear</button>
+            <button class="button secondary" id="previewButton">Review matches</button>
+            <button class="button primary" id="addBestButton">Add best matches</button>
           </div>
-          <p class="search-hint" id="batchHint">Use test codes when available. Check the matches before printing/collecting. <span class="keyboard-hint">⌘ / Ctrl + Enter to add</span></p>
+          <p class="keyboard-hint batch-keyboard-hint">⌘ / Ctrl + Enter to add</p>
         </div>
       </section>
 
         <div id="batchResults" class="panel batch-panel hidden" aria-live="polite"></div>
 
         <div class="filter-row">
-          <label class="library-search"><span class="field-label">Search tests</span><input id="libraryFilter" type="search" placeholder="Test name or code" autocomplete="off"></label>
-          <select id="specimenFilter" aria-label="Filter by specimen type">
-            <option value="">All specimen types</option>
-            <option value="Blood">Blood (serum / plasma / whole blood)</option>
-            <option value="Urine">Urine</option>
-            <option value="Stool">Stool</option>
-            <option value="Swab">Swab</option>
-            <option value="Other">Other</option>
-          </select>
+          <label class="library-search"><span class="field-label">Search tests</span><input id="libraryFilter" type="search" placeholder="Name, code, or abbreviation (e.g. QFT)" autocomplete="off"></label>
+          <div class="catalog-filter-control" id="catalogFilterControl">
+            <button class="catalog-filter-toggle" id="catalogFilterButton" type="button" aria-expanded="false" aria-controls="catalogFilterPanel"><span class="catalog-filter-icon" aria-hidden="true">☷</span><span id="catalogFilterButtonText">Filters</span><span class="catalog-filter-chevron shared-chevron" aria-hidden="true"></span></button>
+            <div class="catalog-filter-panel hidden" id="catalogFilterPanel">
+              <div class="catalog-filter-heading"><strong>Filter tests</strong><button type="button" id="catalogFilterReset" class="catalog-filter-reset">Clear filters</button></div>
+              <label>Specimen type<select id="specimenFilter"><option value="">All specimens</option><option value="Blood">Blood (serum / plasma / whole blood)</option><option value="Urine">Urine</option><option value="Stool">Stool</option><option value="Swab">Swab</option><option value="Other">Other</option></select></label>
+              <label>Transport temperature<select id="temperatureFilter"><option value="">All temperatures</option><option value="room">Room temperature</option><option value="refrigerated">Refrigerated</option><option value="frozen">Frozen</option><option value="mixed">Mixed / verify</option></select></label>
+              <label>Transport container<select id="transportContainerFilter"><option value="">All transport containers</option><option value="transport">Transport tube (unspecified)</option><option value="sst">Spun SST / Gold</option><option value="original">Original tube / no transfer</option><option value="serum">Serum transport tube</option><option value="plasma">Plasma transport tube</option><option value="amber">Amber / light-protected tube</option><option value="metal">Metal-free / acid-washed container</option><option value="urine-cup">Urine cup / container</option><option value="urine-ua">Urinalysis preservative tube</option><option value="urine-culture">Urine culture preservative tube</option><option value="aptima">Aptima transport</option><option value="viral">Viral transport medium</option><option value="stool">Stool preservative (Total-Fix)</option><option value="special">Other / special container</option></select></label>
+              <label>Fasting<select id="fastingFilter"><option value="">All fasting instructions</option><option value="required">Required</option><option value="preferred">Preferred</option><option value="verify">Fasting mentioned: verify</option></select></label>
+              <label class="catalog-filter-check"><input type="checkbox" id="pediatricFilter"><span>Pediatric / neonatal tests <small>(explicitly named)</small></span></label>
+              <label class="catalog-filter-check"><input type="checkbox" id="spinFilter"><span>Requires centrifugation</span></label>
+              <button class="catalog-filter-done" id="catalogFilterDone" type="button">Done</button>
+            </div>
+          </div>
+      <div class="stat-library-control" aria-label="STAT receiving laboratory">
+        <label for="statAreaButton">STAT receiving lab</label>
+        <div class="stat-select-wrap" id="statSelectWrap">
+        <select id="statAreaSelect" aria-label="STAT receiving laboratory" hidden tabindex="-1" aria-hidden="true">
+          <option value="unselected">Select receiving lab</option>
+          <option value="socal">Southern California · Common to all labs</option>
+          <optgroup label="Southern California · specific receiving lab">
+            <option value="socal_arcadia">Arcadia RRL</option>
+            <option value="socal_bakersfield">Bakersfield RRL</option>
+            <option value="socal_highland">Highland RRL</option>
+            <option value="socal_orange">Orange RRL</option>
+            <option value="socal_redlands">Redlands RRL</option>
+            <option value="socal_riverside">Riverside RRL</option>
+            <option value="socal_san_diego">San Diego RRL</option>
+            <option value="socal_ventura">Ventura RRL</option>
+            <option value="socal_west_hills">West Hills Laboratory</option>
+          </optgroup>
+          <option value="norcal">Northern California</option>
+          <option value="ny">New York</option>
+          <option value="fl">Florida</option>
+          <option value="va_short_pump">Virginia, Short Pump RRL only</option>
+        </select>
+        <button id="statAreaButton" class="stat-area-picker-button" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="statAreaOptions" aria-label="Choose STAT receiving lab"><span id="statAreaButtonLabel" class="stat-area-picker-text">Select receiving lab</span><span class="shared-chevron" aria-hidden="true"></span></button>
+        <div id="statAreaOptions" class="stat-area-options hidden" role="listbox" aria-label="STAT receiving labs"></div>
+        </div>
+        <button id="statMenuButton" class="button secondary stat-menu-button" type="button" aria-expanded="false" aria-controls="statMenuPanel">Show STAT tests</button>
+      </div>
+
           <button class="button ghost blocked-list-button" id="blockedListButton" type="button" aria-expanded="false" aria-controls="blockedListPanel">Do not perform list</button>
         </div>
+        <section class="stat-menu-panel hidden" id="statMenuPanel" aria-label="STAT tests offered by receiving lab">
+          <div class="stat-menu-heading"><div><strong id="statMenuTitle">STAT test menu</strong><span id="statMenuCount"></span></div><button type="button" class="mini-button edit" id="statMenuClose">Close</button></div>
+          <p class="stat-menu-note" id="statAreaHelp">Select a receiving lab. Menu availability requires current confirmation.</p>
+          <label class="stat-menu-filter">Find an eligible code or test<input id="statMenuSearch" type="search" placeholder="Search this lab's STAT menu"></label>
+          <div class="stat-menu-results" id="statMenuResults"></div>
+        </section>
         <section class="blocked-list-panel hidden" id="blockedListPanel" aria-label="Do not perform list">
           <div class="blocked-list-heading">
             <div><strong>Do not perform</strong><span>Tests that require collection, processing, storage, or supplies outside the supported onsite workflow.</span></div>
@@ -89,7 +131,7 @@
         </div>
         <div class="pagination-row">
           <span id="libraryStatus" role="status"></span>
-          <button class="button ghost" id="loadMoreButton">Show more tests</button>
+          <div class="library-footer-actions"><button class="button ghost" id="loadMoreButton">Show more tests</button><button class="button browser-custom-clear" id="clearBrowserTestsButton" type="button" disabled title="Only tests added manually in this browser; packaged tests stay">Clear manually added tests <span id="browserCustomCount"></span></button></div>
         </div>
         <p class="library-help">Can’t find a test? <a href="https://testdirectory.questdiagnostics.com/" target="_blank" rel="noreferrer">Check the official directory ↗</a> or contact Sam to have it added.</p>
       </div>
@@ -103,6 +145,27 @@
         </div>
       </div>
 
+      <section class="sst-mode-control" aria-labelledby="sstModeLabel">
+        <div class="sst-mode-copy">
+          <strong id="sstModeLabel">SST tube</strong>
+          <span>Choose one type.</span>
+        </div>
+        <div class="sst-mode-toggle" role="group" aria-label="Select SST tube size">
+          <button type="button" class="sst-mode-option" data-sst-mode="gold" aria-pressed="true"><span class="sst-mode-tube tube tube-sst"><span class="sst-mode-name">Gold / SST</span><small class="sst-mode-volume">5 mL</small></span></button>
+          <button type="button" class="sst-mode-option" data-sst-mode="tiger" aria-pressed="false"><span class="sst-mode-tube tube tube-tiger-sst"><span class="sst-mode-name">Tiger SST</span><small class="sst-mode-volume">7.5 mL</small></span></button>
+        </div>
+      </section>
+
+      <section class="sst-mode-control urine-culture-mode-control" id="urineCultureModeControl" aria-labelledby="urineCultureModeLabel">
+        <div class="sst-mode-copy">
+          <strong id="urineCultureModeLabel">Urine culture</strong>
+          <span>Choose one type.</span>
+        </div>
+        <div class="sst-mode-toggle" role="group" aria-label="Select urine culture transport">
+          <button type="button" class="sst-mode-option" data-urine-culture-mode="gray" aria-pressed="true"><span class="sst-mode-tube tube tube-urine-culture"><span class="sst-mode-name">Gray Top</span></span></button>
+          <button type="button" class="sst-mode-option" data-urine-culture-mode="urisponge" aria-pressed="false"><span class="sst-mode-tube tube tube-urisponge"><span class="sst-mode-name">UriSponge</span></span></button>
+        </div>
+      </section>
 
       <div id="collectionAlerts" class="alerts"></div>
 
@@ -110,19 +173,22 @@
         <div class="tests-summary-header">
           <div class="tests-summary-heading-block">
             <div class="tests-summary-heading">
-              <span class="tests-summary-title" id="testsOverviewTitle">Tests</span>
-              <span class="tests-summary-count" id="testsOverviewSummary">0 tests</span>
+              <span class="tests-summary-title" id="testsOverviewTitle">Cart</span>
+              <span class="tests-summary-count" id="testsOverviewSummary" aria-live="polite">0 tests</span>
             </div>
           </div>
           <div class="tests-summary-actions">
             <button class="mini-button" id="addSelectedTestButton" type="button">+ Add a missing test</button>
             <button class="mini-button remove" id="clearOrderButton" type="button">Clear all</button>
           </div>
-          <button class="mini-button edit tests-details-toggle" id="testsDetailsButton" type="button" aria-expanded="false" aria-controls="testsOverviewList testsDetailsPanel">▾ Show details</button>
+          <button class="mini-button edit tests-details-toggle" id="testsDetailsButton" type="button" aria-expanded="false" aria-controls="testsOverviewList testsDetailsPanel"><span class="collection-alerts-chevron" aria-hidden="true"></span><span class="tests-details-label">Show details</span></button>
+          <button class="button primary cart-header-print" id="printButton" type="button">Print / Save PDF</button>
         </div>
-        <div id="testsOverviewList" class="tests-overview-list empty-state">No tests selected.</div>
-        <div id="testsDetailsPanel" class="tests-details-panel hidden" aria-hidden="true">
-          <div id="selectedList" class="selected-list empty-state">No tests selected.</div>
+        <div class="cart-tests-viewport" id="cartTestsViewport" role="region" aria-label="Selected tests, scroll for more" tabindex="0">
+          <div id="testsOverviewList" class="tests-overview-list empty-state">No tests selected.</div>
+          <div id="testsDetailsPanel" class="tests-details-panel hidden" aria-hidden="true">
+            <div id="selectedList" class="selected-list empty-state">No tests selected.</div>
+          </div>
         </div>
       </section>
 
@@ -157,7 +223,6 @@
       </details>
 
       <div class="order-actions">
-        <button class="button primary wide" id="printButton">Print / Save PDF</button>
         <button class="button secondary wide" id="exportSummaryButton">Download spreadsheet</button>
       </div>
       
@@ -171,7 +236,7 @@
       <strong>Copyright and ownership notice</strong>
       <span>Copyright © 2026 Sam Hay. All rights reserved. Independently developed and maintained by Sam Hay as a personal software project and hosted through a personally controlled account. No license or ownership interest is granted except through Sam Hay’s express written authorization. Use by any organization does not, by itself, transfer ownership of the software or source code. Access to this hosted version is provided by permission and may be modified, suspended, or withdrawn by Sam Hay at any time and for any reason.</span>
     </div>
-    <a class="agreement-download" href="Sam_Hay_Workplace_Use_Agreement.docx" download="Sam_Hay_Workplace_Use_Agreement.docx">Download workplace use agreement</a>
+    <a class="agreement-download" href="docs/Sam_Hay_Workplace_Use_Agreement.docx" download="Sam_Hay_Workplace_Use_Agreement.docx">Download workplace use agreement</a>
   </footer>
 
   <section id="printSheet" class="print-sheet" aria-hidden="true"></section>
@@ -190,7 +255,7 @@
       <div class="dialog-required-note"><span aria-hidden="true">*</span> Required fields</div>
 
       <div class="dialog-form-sections">
-        <section class="form-section" aria-labelledby="testInfoHeading">
+        <section class="form-section form-section-emphasis" aria-labelledby="testInfoHeading">
           <div class="form-section-heading">
             <div>
               <h3 id="testInfoHeading">Test info</h3>
@@ -204,7 +269,7 @@
           </div>
         </section>
 
-        <section class="form-section" aria-labelledby="collectionInfoHeading">
+        <section class="form-section form-section-emphasis" aria-labelledby="collectionInfoHeading">
           <div class="form-section-heading">
             <div>
               <h3 id="collectionInfoHeading">Collection &amp; transport</h3>
@@ -236,8 +301,6 @@
               <option>Sterile Urine Cup</option>
               <option>Red/Yellow Swirl UA Preservative Tube</option>
               <option>Gray-Top Urine Culture Preservative Tube</option>
-              <option>Urine Container</option>
-              <option>Stool Container</option>
               <option>Swab / Collection Kit</option>
               <option>Aptima Multitest Transport Tube (orange label)</option>
               <option>Viral transport media (VCM/M4)</option>
@@ -246,7 +309,35 @@
               <option value="__other__">Other / manually type</option>
             </select></label>
             <label id="customDrawContainerRow" class="custom-draw-container-row full-width hidden"><span class="form-label-text">Custom draw container <span class="required-mark" aria-hidden="true">*</span></span><input id="customDrawContainer" disabled placeholder="Type any tube, cup, swab, or collection kit" autocomplete="off"></label>
-            <label><span class="form-label-text">Transport tube / container <span class="required-mark" aria-hidden="true">*</span></span><input id="transportContainer" required placeholder="Example: serum transport tube"></label>
+            <label><span class="form-label-text">Transport tube / container <span class="required-mark" aria-hidden="true">*</span></span><select id="transportContainer" required>
+              <option value="">Choose a transport container</option>
+              <option value="Submit in original tube">Submit in original tube</option>
+              <option>Transport Tube</option>
+              <option>Serum Transport Tube</option>
+              <option>Plasma Transport Tube</option>
+              <option>Plastic Screw-Cap Serum Transport Vial</option>
+              <option>Polypropylene Transport Tube</option>
+              <option>Chilled Plastic Screw-Cap Vial</option>
+              <option>Amber Serum Transport Tube — Protect From Light</option>
+              <option>Amber Plasma Transport Tube — Protect From Light</option>
+              <option>Acid-Washed / Metal-Free Serum Transport Tube</option>
+              <option>Acid-Washed / Metal-Free Plasma Transport Tube</option>
+              <option>Trace Metal-Free Plastic Container</option>
+              <option>Trace-Element / Metal-Free RBC Transport Tube</option>
+              <option>Protease Inhibitor Transport Tube</option>
+              <option>Red/Yellow Swirl UA Preservative Tube</option>
+              <option>Gray-Top Urine Culture Preservative Tube</option>
+              <option>UriSponge Urine Culture Transport</option>
+              <option>Sterile Urine Cup</option>
+              <option>24-Hour Urine Container</option>
+              <option>Total-Fix® Transport Vial</option>
+              <option>Aptima Multitest Transport Tube (orange label)</option>
+              <option>Viral transport media (VCM/M4)</option>
+              <option>Amies Liquid Transport Dual Swab</option>
+              <option>Fetal Fibronectin Special Collection Kit</option>
+              <option value="__other__">Other / manually type</option>
+            </select></label>
+            <label id="customTransportContainerRow" class="custom-draw-container-row full-width hidden"><span class="form-label-text">Custom transport container <span class="required-mark" aria-hidden="true">*</span></span><input id="customTransportContainer" disabled placeholder="Enter the transport container exactly as specified" autocomplete="off"></label>
             <label><span class="form-label-text">Transport temperature <span class="required-mark" aria-hidden="true">*</span></span><select id="transportTemperature" required>
               <option value="">Choose a transport temperature</option><option>Room Temperature</option><option>Refrigerated</option><option>Frozen</option><option>Room / Refrigerated</option><option>Mixed</option><option>Not specified</option>
             </select></label>
@@ -287,7 +378,8 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script src="assets/js/data.js?v=11.84"></script>
+  <script src="assets/js/app.js?v=11.92"></script>
+  <script src="assets/js/portal-selects.js?v=11.84"></script>
 </body>
 </html>
