@@ -1190,3 +1190,141 @@
     border: 1px solid #edcc96 !important;
   }
 }
+
+
+/* Cedars has its own darker red visual identity. Source/transport warning
+   colors remain semantic; Quest stays green/teal on its separate entry page. */
+@media screen {
+  body.cedars-page {
+    --bg:#f7f3f4;
+    --brand:#893540;
+    --brand-dark:#65252f;
+    --brand-soft:#f7e8eb;
+    --ink:#30242a;
+    --muted:#71616a;
+    --line:#e9dfe2;
+    --shadow:0 3px 12px #58304109;
+    background:#f7f3f4;
+  }
+  .cedars-page .app-header {
+    background:#34222b;
+    border-bottom:4px solid #a34450;
+  }
+  .cedars-page .app-header p,
+  .cedars-page .app-header .privacy-pill {
+    color:#e1cbd2;
+  }
+  .cedars-page .eyebrow,
+  .cedars-page .panel-heading .eyebrow {
+    color:#903b48;
+  }
+  .cedars-page .app-header .eyebrow {color:#f3a8b3}
+  .cedars-page .order-panel {border-top:3px solid #943947}
+  .cedars-page #selectedCount,
+  .cedars-page .cedars-count {
+    color:#752f3e;
+    background:#f8e7eb;
+    border-color:#e9c6ce;
+  }
+  .cedars-page .button.primary,
+  .cedars-page .cart-header-print,
+  .cedars-page .catalog-filter-done {
+    background:#8a3441;
+    color:white;
+    border-color:#8a3441;
+  }
+  .cedars-page .button.primary:hover,
+  .cedars-page .cart-header-print:hover,
+  .cedars-page .catalog-filter-done:hover {
+    background:#69232f;
+    border-color:#69232f;
+  }
+  .cedars-page .button.secondary,
+  .cedars-page .mini-button:not(.remove),
+  .cedars-page .catalog-filter-toggle {
+    border-color:#e2c9d0;
+    color:#6f3443;
+  }
+  .cedars-page .button.secondary:hover,
+  .cedars-page .mini-button:not(.remove):hover,
+  .cedars-page .catalog-filter-toggle:hover {
+    background:#fcf0f3;
+    border-color:#bd8895;
+  }
+  .cedars-page .cedars-reference-combined {
+    background:#fdf9fa;
+    border-color:#ead4da;
+  }
+  .cedars-page .cedars-reference-combined .cedars-reference-pill {
+    color:#79303c;
+    background:#f8e6ea;
+    border-color:#e4bdc7;
+  }
+  .cedars-page .cedars-reference-combined .cedars-reference-copy strong {
+    color:#76303d;
+  }
+  .cedars-page .cedars-reference-actions a.cedars-reference-link {
+    border-color:#e4c6ce;
+    color:#7a3443;
+  }
+  .cedars-page .cedars-reference-actions a.cedars-reference-link:hover {
+    background:#f9ecf0;
+    border-color:#c994a0;
+  }
+  .cedars-page .cedars-specimen-heading td {
+    background:#f6e9ed !important;
+    border-color:#e9ced5;
+    color:#74313e;
+  }
+  .cedars-page .cedars-container-filter-option.is-selected {
+    color:#79303c;
+    border-color:#9b4351;
+    background:#f9e9ed;
+  }
+  .cedars-page .cedars-container-filter-all {
+    color:#8a4050;
+    background:#f6e9ed;
+  }
+  .cedars-page .cedars-container-filter-option:hover,
+  .cedars-page .cedars-container-filter-option:focus-visible {
+    border-color:#c68b98;
+    background:#fcf3f5;
+  }
+  .cedars-page .cedars-container-art.cedars-container-drawing {
+    background:#fff;
+    border-color:#ebdfe2;
+  }
+  .cedars-page .cedars-library .mini-button:not(.remove),
+  .cedars-page .cedars-plan-row {
+    border-color:#eadfe2;
+  }
+  .cedars-page .cedars-cart-heading strong,
+  .cedars-page .cedars-plan-row strong {
+    color:#52313b;
+  }
+  .cedars-page .cedars-print-section-heading {
+    color:#6b2e3d;
+  }
+  .cedars-page :is(input,textarea,select):focus-visible {
+    outline-color:#ab5b68;
+    border-color:#ab5b68;
+  }
+}
+@media print {
+  #cedarsPrintSheet .cedars-print-header,
+  #cedarsPrintSheet .print-header {
+    border-bottom-color:#863743 !important;
+  }
+  #cedarsPrintSheet .cedars-print-section-heading {
+    background:#f7eaee !important;
+    border-color:#e6c6cf;
+    color:#71303d;
+  }
+  #cedarsPrintSheet .cedars-print-section-heading strong {
+    color:#71303d !important;
+  }
+  #cedarsPrintSheet .cedars-print-total {
+    background:#f8e7eb !important;
+    color:#71303d !important;
+  }
+}
