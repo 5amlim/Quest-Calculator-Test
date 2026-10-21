@@ -283,6 +283,7 @@ window.CEDARS_TESTS = [
     "id": "respiratory-panel",
     "code": "",
     "name": "Respiratory viral panel",
+    "testMethod": "PCR",
     "category": "Swab",
     "specimen": "Respiratory swab",
     "collect": "UTM viral transport tube (red top)",
