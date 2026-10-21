@@ -295,8 +295,11 @@
   const rowSummary = (test) => {
     const sourceNames = Array.isArray(test.sourceOptions)
       ? test.sourceOptions.map(item => item.name).filter(Boolean) : [];
-    const parts = [methodLabel(test), sourceNames.length
-      ? 'Sources: ' + sourceNames.join(', ') : keyDetail(test)];
+    const swabSites = Array.isArray(test.swabSites)
+      ? test.swabSites.filter(Boolean) : [];
+    const parts = [methodLabel(test), swabSites.length
+      ? 'Swab sites: ' + swabSites.join(', ') :
+      sourceNames.length ? 'Sources: ' + sourceNames.join(', ') : keyDetail(test)];
     const volume = (test.volumeDisplay || '').trim();
     if (volume && !/^(verify|not specified|n\/a|unknown)$/i.test(volume))
       parts.push('Volume: ' + volume);
@@ -543,6 +546,9 @@
       '<dl>' +
       '<dt>Test code</dt><dd>' + esc([test.code, test.secondaryCode].filter(Boolean).join(' / ') || 'Not supplied') + '</dd>' +
       '<dt>Specimen</dt><dd>' + esc(test.specimen) + '</dd>' +
+      (Array.isArray(test.swabSites) && test.swabSites.length
+        ? '<dt>Swab sites</dt><dd>' + esc(test.swabSites.join(' · ')) +
+          '<small>Use the ordered site and verify current Cedars specimen acceptance.</small></dd>' : '') +
       (Array.isArray(test.sourceOptions) && test.sourceOptions.length
         ? '<dt>Specimen source options</dt><dd><ul class="cedars-source-options">' +
           test.sourceOptions.map(item =>
