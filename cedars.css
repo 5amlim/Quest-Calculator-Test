@@ -1743,3 +1743,173 @@
     outline-offset:2px;
   }
 }
+
+
+/* Readable Cedars search: distinct suggested tests, collection containers,
+   order codes, transport rules and clearer bulk search review. */
+@media screen {
+  .cedars-shell .cedars-library td {
+    font-size:13px;
+    line-height:1.5;
+  }
+  .cedars-shell .cedars-library .test-name {
+    font-size:14px;
+    font-weight:800;
+    line-height:1.4;
+  }
+  .cedars-shell .cedars-library .subtext {
+    font-size:11.5px;
+    line-height:1.5;
+  }
+  .cedars-shell .cedars-library .code-cell {
+    font-size:12px;
+    font-weight:700;
+  }
+  .cedars-shell .cedars-library .cedars-secondary-code {
+    margin-top:3px;
+    color:#7b4552;
+    font-size:11px;
+    font-weight:700;
+  }
+  .cedars-shell #cedarsSearch {
+    min-height:51px;
+    font-size:15px;
+    border-width:1.5px;
+  }
+  .cedars-shell .cedars-search-suggestions {
+    grid-column:1 / -1;
+    padding:12px;
+    margin:0 0 3px;
+    display:grid;
+    gap:8px;
+    background:#fffbfc;
+    border:1px solid #e7cdd4;
+    border-radius:11px;
+  }
+  .cedars-shell .cedars-search-suggestions.hidden {display:none !important}
+  .cedars-shell .cedars-feedback {
+    font-size:13px;
+    padding:15px;
+    gap:12px;
+  }
+  .cedars-shell .cedars-match-heading {
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:6px 12px;
+    padding-bottom:4px;
+  }
+  .cedars-shell .cedars-match-heading strong {
+    color:#713644;
+    font-size:13px;
+    font-weight:850;
+  }
+  .cedars-shell .cedars-match-heading span {
+    color:#687781;
+    font-size:11.5px;
+  }
+  .cedars-shell .cedars-match-result {
+    display:grid;
+    gap:8px;
+    padding:10px;
+    border:1px solid #e9e1e4;
+    border-radius:9px;
+    background:#fff;
+  }
+  .cedars-shell .cedars-match-query {
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:6px;
+    font-size:12px;
+    color:#5c4c53;
+  }
+  .cedars-shell .cedars-match-query strong {
+    color:#6d303e;
+    font-size:13px;
+  }
+  .cedars-shell .cedars-match-query span {color:#718087}
+  .cedars-shell .cedars-match-list {display:grid;gap:7px}
+  .cedars-shell .cedars-match-choice {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 12px;
+    border:1px solid #e0e4e6;
+    border-left:4px solid #d9c1c9;
+    border-radius:8px;
+    background:#fff;
+    min-width:0;
+  }
+  .cedars-shell .cedars-match-choice.type-swab {border-left-color:#a9cbe9}
+  .cedars-shell .cedars-match-choice.type-urine {border-left-color:#eed59a}
+  .cedars-shell .cedars-match-choice.type-stool {border-left-color:#dcc1a4}
+  .cedars-shell .cedars-match-choice.type-blood {border-left-color:#dfb2c1}
+  .cedars-shell .cedars-match-choice.type-other {border-left-color:#c5bedf}
+  .cedars-shell .cedars-match-info {min-width:0;flex:1}
+  .cedars-shell .cedars-match-title {
+    color:#372930;
+    font-size:13.5px;
+    line-height:1.4;
+    font-weight:800;
+  }
+  .cedars-shell .cedars-match-meta {
+    display:flex;
+    flex-wrap:wrap;
+    gap:3px 10px;
+    margin-top:5px;
+    color:#62727d;
+    font-size:11.5px;
+    line-height:1.45;
+  }
+  .cedars-shell .cedars-match-meta span {overflow-wrap:anywhere}
+  .cedars-shell .cedars-match-code {
+    background:#f5ecef;
+    color:#743948;
+    border-radius:5px;
+    padding:1px 5px;
+    font-weight:850;
+  }
+  .cedars-shell .cedars-match-actions {
+    flex:0 0 auto;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:7px;
+  }
+  .cedars-shell .cedars-match-actions .mini-button {
+    width:auto;
+    min-height:35px;
+    margin:0;
+    padding:7px 12px;
+    font-size:12px;
+  }
+  .cedars-shell .cedars-match-held {color:#805b14;font-size:11px}
+  .cedars-shell .cedars-match-success {color:#237458;font-size:12px;font-weight:800}
+  .cedars-shell .cedars-no-matches {margin:4px 0;font-size:12px}
+  .cedars-page .cedars-eos-link {
+    color:#743748;
+    text-decoration:underline;
+    text-underline-offset:2px;
+    font-weight:800;
+  }
+  .cedars-page .cedars-eos-link:hover,
+  .cedars-page .cedars-eos-link:focus-visible {color:#aa4b5e}
+  .cedars-page .temp-delay {
+    color:#6c4518 !important;
+    background:#fff3df !important;
+    border:1px solid #ecd29b !important;
+    white-space:normal;
+    line-height:1.4;
+  }
+  @media(max-width:650px) {
+    .cedars-shell .cedars-match-choice {
+      flex-direction:column;
+      align-items:stretch;
+    }
+    .cedars-shell .cedars-match-actions {justify-content:flex-end}
+    .cedars-shell .cedars-library .test-name {font-size:13px}
+  }
+}
