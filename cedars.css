@@ -1692,3 +1692,54 @@
   .cedars-photo-trigger {display:none !important;}
   .cedars-photo-dialog {display:none !important;}
 }
+
+
+/* Independent photo control for specimen-container filters. The filter remains
+   a single button, and the camera is its separate sibling button. */
+@media screen {
+  .cedars-page .cedars-container-filter-item {
+    position:relative;
+    display:flex;
+    align-items:stretch;
+    min-width:0;
+  }
+  .cedars-page .cedars-container-filter-item > .cedars-container-filter-option {
+    width:100%;
+    min-width:0;
+  }
+  .cedars-page .cedars-container-filter-item.has-reference-photo > .cedars-container-filter-option {
+    padding-right:32px;
+  }
+  .cedars-page .cedars-container-filter-item > .cedars-filter-photo-button {
+    position:absolute;
+    top:50%;
+    right:5px;
+    transform:translateY(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:26px;
+    height:29px;
+    margin:0;
+    padding:0;
+    border:1px solid #d6b7c0;
+    border-radius:7px;
+    background:#fff;
+    color:#813946;
+    cursor:zoom-in;
+  }
+  .cedars-page .cedars-container-filter-item > .cedars-filter-photo-button svg {
+    width:15px;
+    height:15px;
+    display:block;
+  }
+  .cedars-page .cedars-filter-photo-button:hover,
+  .cedars-page .cedars-filter-photo-button:focus-visible {
+    border-color:#843946;
+    background:#f8e9ee;
+  }
+  .cedars-page .cedars-filter-photo-button:focus-visible {
+    outline:2px solid #843946;
+    outline-offset:2px;
+  }
+}
