@@ -316,7 +316,7 @@ window.CEDARS_TESTS = [
     "category": "Urine",
     "specimen": "Urine (first-morning preferred)",
     "collect": "Sterile, leak-proof specimen cup or 50 mL sterile transport tube",
-    "submit": "Sterile specimen cup or 50 mL sterile transport tube (individually bagged)",
+    "submit": "Sterile specimen cup (urine), individually bagged; 50 mL sterile tube also acceptable",
     "qty": 1,
     "temp": "Room Temperature",
     "notes": "The Cedars AFB culture monograph includes urine as a specimen type and lists a sterile transport vessel; sterile leak-proof specimen cup is also an accepted local option. Bag individually. Prior Cedars guide recommends first-morning urine. Confirm urine collection volume, number of specimens and current transport instructions in the complete monograph.",
@@ -324,7 +324,7 @@ window.CEDARS_TESTS = [
     "aliases": "AFB urine|urine mycobacteria|urine tuberculosis culture|urine TB culture",
     "hold": false,
     "blockReason": "",
-    "containerType": "Sterile specimen cup / 50 mL tube",
+    "containerType": "Sterile container",
     "sourceNote": "Cedars Mycobacteria Culture AFBC monograph screenshot lists urine AFB culture; historical guide specifies first-morning urine"
   },
   {
