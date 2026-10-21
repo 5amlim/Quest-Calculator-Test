@@ -689,8 +689,8 @@ window.CEDARS_TESTS = [
     "hold": false,
     "blockReason": "",
     "containerType": "Clean stool vial"
-  }
-,{
+  },
+  {
     "id": "atypical-pneumonia-pcr-panel",
     "code": "LAB2604",
     "name": "Atypical Pneumonia PCR Panel (MYCCHL)",
