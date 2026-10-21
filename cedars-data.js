@@ -491,24 +491,6 @@ window.CEDARS_TESTS = [
     "containerType": "SurePath"
   },
   {
-    "id": "myco-ureaplasma",
-    "code": "",
-    "name": "Mycoplasma / Ureaplasma PCR (Aptima)",
-    "category": "Swab",
-    "specimen": "Site and assay dependent",
-    "collect": "Aptima swab transport tube (verify kit)",
-    "submit": "Aptima swab transport tube (verify kit)",
-    "qty": 0,
-    "temp": "Room Temperature",
-    "hold": false,
-    "notes": "The historical quick guide lists Aptima for PCR, but current test-specific acceptance must be checked before collection. Separate from Ureaplasma urealyticum culture MYCC, which uses UTM.",
-    "slide": "2-3",
-    "aliases": "mycoplasma ureaplasma pcr culture",
-    "blockReason": "",
-    "sourceNote": "Cedars quick microbiology guide: Mycoplasma/Ureaplasma PCR mentions Aptima",
-    "containerType": "Aptima"
-  },
-  {
     "id": "cdiff",
     "code": "",
     "name": "C. difficile stool testing",
