@@ -41,6 +41,10 @@
   }
   function kind(value) {
     const s=String(value||'').toLowerCase();
+    if (/gray[- ]top.*urine culture|urine culture.*gray[- ]top/.test(s)) return 'gray-urine';
+    if (/red.*yellow.*swirl|swirl.*urinalysis|swirl.*ua/.test(s)) return 'ua-swirl';
+    if (/pediatric blood culture|peds blood culture/.test(s)) return 'peds-culture';
+    if (/adult blood culture set/.test(s)) return 'blood-pair';
     if (/boritex/.test(s)) return 'boritex';
     if (/4-tube|four qft|quanti.?feron|qft collection/.test(s)) return 'qft';
     if (/bactec aerobic.*anaerobic|one aerobic and one anaerobic/.test(s)) return 'blood-pair';
@@ -66,6 +70,10 @@
     switch(type) {
       case 'eswab': return swab(45,13,'#f7f8f8','eSwab');
       case 'utm': return swab(45,13,'#c7474c','UTM');
+      case 'gray-urine': return tube(49,14,'#8f9b9f',30,'URINE','#e8f3f7',58);
+      case 'ua-swirl': return tube(49,14,'#eed15b',30,'UA','#e8f3f7',58) +
+        '<path d="M49 22 Q57 13 64 20 T79 20" fill="none" stroke="#ca464b" stroke-width="4"/>';
+      case 'peds-culture': return cultureBottle(46,9,'#e3a5b5','PEDS');
       case 'boritex': return cup(33,16,'#e88924','BORITEX');
       case 'cup': return cup(33,16,'#f7f8f8','STERILE');
       case 'parapak': return tube(19,20,'#e6b636',22,'C&S','#edf5f9',48) +
@@ -95,6 +103,9 @@
   const descriptors={
     'eswab':'eSwab specimen transport tube with collection swab',
     'utm':'Universal transport medium tube with collection swab',
+    'gray-urine':'Gray-top urine culture preservative tube',
+    'ua-swirl':'Red-and-yellow swirl-top urinalysis preservative tube',
+    'peds-culture':'Pediatric blood culture bottle schematic',
     'boritex':'BORITEX urine culture transport container',
     'cup':'Sterile specimen cup',
     'parapak':'Three-vial stool collection kit',
