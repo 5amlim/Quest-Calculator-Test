@@ -85,3 +85,11 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - If browser storage is unavailable, a small message warns that the cart may reset, but collection planning still works during the current page session.
 - Browser state does not follow the user between devices or private/incognito browser sessions. Clearing browser site data removes the saved cart.
 - Simulated reload checks confirmed additions, removals, Clear all, manual record restoration, held-test blocking, and the storage-denied fallback.
+
+
+## Container illustrations (October 21, 2026)
+- Added `cedars-container-art.js` with original lightweight SVG drawings for common Cedars collection/transport categories: eSwab, UTM, BORITEX urine culture transport, sterile specimen cups, three-vial ParaPak, preserved stool collection vials, cobas PCR kits, BACTEC blood culture bottles, QuantiFERON four-tube sets, Affirm, FIT, and SurePath.
+- The drawings appear beside collection containers in the search list, Draw Plan, What to Submit, selected-test details and print summaries. Visuals are embedded as SVG, so they also print without separate image downloads.
+- The app includes explicit notes that illustrations are representative only, not actual kit photographs. Do not rely on cap colors, vial size, label art or these renderings to select supplies. Always confirm current Cedars/Lexicomp instructions and the exact manufacturer kit.
+- Unknown or ambiguous specimen types display a neutral "VERIFY" illustration rather than a guessed kit. No clinical processing, pooling, storage, or transport rules were changed.
+- Functional checks: 29 library thumbnails rendered, six collection and six submission illustrations appeared for a six-test cart, 12 SVG visuals appeared in the generated print HTML, and the cart/illustrations survived a refresh in a simulated browser environment.
