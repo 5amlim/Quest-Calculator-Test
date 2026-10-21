@@ -324,8 +324,8 @@ window.CEDARS_TESTS = [
     "collect": "Sterile specimen cup (urine)",
     "submit": "Sterile specimen cup (urine)",
     "qty": 1,
-    "temp": "Room Temperature",
-    "notes": "The Cedars AFB culture monograph includes urine as a specimen type and specifies a sterile transport vessel; a sterile leak-proof specimen cup is the local default, and a 50 mL sterile transport tube is an accepted alternative. Bag each specimen individually. Prior Cedars guide recommends first-morning urine. Confirm urine collection volume, number of specimens and current transport instructions in the complete monograph.",
+    "temp": "Refrigerated",
+    "notes": "The Cedars AFB culture monograph includes urine as a specimen type and specifies a sterile transport vessel; a sterile leak-proof specimen cup is the local default, and a 50 mL sterile transport tube is an accepted alternative. Bag each specimen individually. Prior Cedars guide recommends first-morning urine. Refrigerate for transport per local workflow. Confirm urine collection volume, number of specimens and current transport instructions in the complete monograph.",
     "slide": "11",
     "aliases": "AFB urine|urine mycobacteria|urine tuberculosis culture|urine TB culture",
     "hold": false,
@@ -470,8 +470,8 @@ window.CEDARS_TESTS = [
     "collect": "Sterile specimen cup (leak-proof)",
     "submit": "Sterile specimen cup (individually bagged)",
     "qty": 1,
-    "temp": "Verify",
-    "notes": "Cedars AFBC accepts multiple nonblood specimen sources: sputum, body fluids, gastric aspirates, tissue and CSF. Each specimen must be individually sealed and submitted in an approved sterile, leak-proof cup or 50 mL sterile specimen transport tube as directed by Cedars. Sputum: three specimens 8–24 hours apart (24 hours preferred), including one first-morning sample; 5–10 mL each (minimum 1 mL). Body fluid: 5 mL (minimum 1 mL, culture only). Gastric aspirate: 5–10 mL (minimum 1 mL, culture only); neutralize to pH 7 with sodium carbonate if transport will exceed 4 hours. Tissue: visible amount; no formalin. CSF: 5 mL (minimum 1 mL for culture only); less than 5 mL may be accepted for pediatrics. Confirm current source-specific transport and acceptance instructions in Cedars Lexicomp.",
+    "temp": "Refrigerated",
+    "notes": "Cedars AFBC accepts multiple nonblood specimen sources: sputum, body fluids, gastric aspirates, tissue and CSF. Refrigerate routine applicable specimens per local workflow, but CSF, gastric aspirate, and some special specimen sources can require different handling. Confirm source-specific temperature with Cedars before chilling those specimens. Each specimen must be individually sealed and submitted in an approved sterile, leak-proof cup or 50 mL sterile specimen transport tube as directed by Cedars. Sputum: three specimens 8–24 hours apart (24 hours preferred), including one first-morning sample; 5–10 mL each (minimum 1 mL). Body fluid: 5 mL (minimum 1 mL, culture only). Gastric aspirate: 5–10 mL (minimum 1 mL, culture only); neutralize to pH 7 with sodium carbonate if transport will exceed 4 hours. Tissue: visible amount; no formalin. CSF: 5 mL (minimum 1 mL for culture only); less than 5 mL may be accepted for pediatrics. Confirm current source-specific transport and acceptance instructions in Cedars Lexicomp.",
     "slide": "3",
     "hold": false,
     "blockReason": "",
@@ -486,7 +486,7 @@ window.CEDARS_TESTS = [
       },
       {
         "name": "Gastric aspirate",
-        "requirements": "5–10 mL; minimum 1 mL for culture only. If transport is delayed more than 4 hours, neutralize to pH 7 with sodium carbonate per Cedars."
+        "requirements": "5–10 mL; minimum 1 mL for culture only. If transport is delayed more than 4 hours, neutralize to pH 7 with sodium carbonate per Cedars. Verify special temperature handling; do not assume routine refrigeration."
       },
       {
         "name": "Tissue",
@@ -494,7 +494,7 @@ window.CEDARS_TESTS = [
       },
       {
         "name": "CSF",
-        "requirements": "5 mL; minimum 1 mL for culture only. Less than 5 mL is acceptable for pediatric patients."
+        "requirements": "5 mL; minimum 1 mL for culture only. Less than 5 mL is acceptable for pediatric patients. CSF may require prompt room-temperature transport; confirm Cedars-specific handling before refrigeration."
       }
     ],
     "sourceNote": "Cedars Lexicomp screenshot: Mycobacteria Culture AFBC (current excerpt); sterile specimen cup added as an owner-confirmed collection option",
@@ -769,7 +769,7 @@ window.CEDARS_TESTS = [
     "collect": "Green-top heparin (5 mL)",
     "submit": "Green-top heparin (5 mL)",
     "qty": 1,
-    "temp": "Verify",
+    "temp": "Refrigerated",
     "containerType": "Green heparin",
     "testMethod": "Drug level",
     "submissionOptions": [
@@ -782,7 +782,7 @@ window.CEDARS_TESTS = [
         "requirements": "Allow serum to clot for 20–30 minutes; centrifuge per validated protocol. Cedars screenshot cites a minimum 2000 rpm for 10–15 minutes."
       }
     ],
-    "notes": "Cedars accepts a green-top 5 mL heparinized tube or red-top serum tube. Reference states the test is ordered as random; document dose and collection timing. When clinically requested, reference timing is peak 0.5–2 hours after infusion, trough immediately before next dose (within 30 minutes). For red-top serum, clot 20–30 minutes and centrifuge per local validated centrifuge protocol. Verify current stability and transport; screenshot does not provide them.",
+    "notes": "Cedars accepts a green-top 5 mL heparinized tube or red-top serum tube. Reference states the test is ordered as random; document dose and collection timing. When clinically requested, reference timing is peak 0.5–2 hours after infusion, trough immediately before next dose (within 30 minutes). For red-top serum, clot 20–30 minutes and centrifuge per local validated centrifuge protocol. Refrigerate for transport per local Cedars workflow; confirm current stability requirements in Cedars Lexicomp.",
     "sourceNote": "Cedars Lexicomp screenshot: Vancomycin VANC, CS-Link LAB40",
     "aliases": "vancomycin|vanc|vanco|vancomycin trough|vancomycin peak|LAB40",
     "hold": false,
