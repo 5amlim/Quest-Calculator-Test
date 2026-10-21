@@ -690,4 +690,21 @@ window.CEDARS_TESTS = [
     "blockReason": "",
     "containerType": "Clean stool vial"
   }
+,{
+    "id": "atypical-pneumonia-pcr-panel",
+    "code": "LAB2604",
+    "name": "Atypical Pneumonia PCR Panel (MYCCHL)",
+    "category": "Swab",
+    "specimen": "Nasopharyngeal swab",
+    "collect": "UTM viral transport tube (red top)",
+    "submit": "UTM viral transport tube (red top)",
+    "qty": 1,
+    "temp": "Room Temperature",
+    "sourceNote": "Cedars Lexicomp monograph screenshot: Atypical Pneumonia PCR Panel MYCCHL, CS-Link LAB2604",
+    "notes": "Nasopharyngeal swab in viral transport medium (VTM) or universal transport medium (UTM), per the supplied Cedars monograph screenshot. Sollis workflow uses red-top UTM. Method: PCR/microarray hybridization. Verify current stability, volume and handling requirements before collection; room temperature follows the Sollis workflow default.",
+    "aliases": "MYCCHL|Atypical Pneumonia|Mycoplasma pneumoniae PCR|Chlamydia pneumoniae PCR|Nasopharyngeal swab|NP swab",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "UTM"
+  }
 ];
