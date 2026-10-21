@@ -838,7 +838,7 @@
   .cedars-source-strip .cedars-reference-link { margin-left: auto; }
 }
 
-/* Explicit Sollis service scope: unavailable tests stay visible in a separate list. */
+/* Explicit supported service scope: unavailable tests stay visible in a separate list. */
 .cedars-shell .cedars-do-not-perform-toggle {
   color: #803c35;
   background: #fff8f6;
