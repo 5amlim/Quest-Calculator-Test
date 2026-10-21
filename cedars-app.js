@@ -301,10 +301,16 @@
 
     // Keep all source-specific directions available, but away from the main
     // collection/transport cards to reduce repeated instructions and clutter.
-    const handlingCards = tests.filter(test => clean(test.notes)).map(test =>
+    const isPrecaution = (test) => /\b(fill|first[- ]morning|immediately|shake|avoid|reject\w*|discard|prime|do not|no swabs|no diapers)\b/i.test(test.notes || '');
+    const noteCard = (test) =>
       '<article class="cedars-print-handling-item"><div class="cedars-print-handling-head">' +
       testTag(test) + '</div><p>' + esc(test.notes) + '</p><small>' +
-      esc(source(test)) + '</small></article>').join('');
+      esc(source(test)) + '</small></article>';
+    // Collection-critical notes come first, without duplicating them later.
+    const precautionCards = tests.filter(test => clean(test.notes) && isPrecaution(test))
+      .map(noteCard).join('');
+    const handlingCards = tests.filter(test => clean(test.notes) && !isPrecaution(test))
+      .map(noteCard).join('');
 
     const totalContainers = tests.reduce((sum,test) => sum + countFor(test), 0);
     $('cedarsPrintSheet').innerHTML =
@@ -316,6 +322,10 @@
         'The built-in catalog is based on a 2023 Cedars guide, not current Lexicomp. ' +
         'Confirm volume, kit, patient preparation, processing, stability, temperature and courier requirements. ' +
         'No specimens are pooled automatically.</div>' +
+      (precautionCards ? '<section class="cedars-print-precautions">' +
+        '<div class="cedars-print-precautions-title"><strong>Check before collection</strong>' +
+        '<span>Source-specific requirements that can affect specimen acceptance</span></div>' +
+        '<div class="cedars-print-handling-grid">' + precautionCards + '</div></section>' : '') +
       '<section class="cedars-print-section"><div class="cedars-print-section-heading">' +
         '<div><strong>1. What to collect</strong><small>Collection containers, grouped by type</small></div>' +
         '<span>' + totalContainers + ' total containers</span></div>' +
@@ -330,7 +340,7 @@
         '<p class="cedars-print-section-note">These are planning groups, not pre-approved bags. ' +
           'Do not combine specimens or assign unverified temperatures.</p></section>' +
       (handlingCards ? '<section class="cedars-print-section cedars-print-handling-section">' +
-        '<div class="cedars-print-section-heading"><div><strong>3. Collection precautions &amp; handling</strong>' +
+        '<div class="cedars-print-section-heading"><div><strong>3. Additional handling notes</strong>' +
         '<small>Test-specific instructions from the listed source</small></div></div>' +
         '<div class="cedars-print-handling-grid">' + handlingCards + '</div></section>' : '') +
       '<footer class="cedars-print-footer">For planning only. Check the current Cedars/Lexicomp directory and local SOP. ' +
