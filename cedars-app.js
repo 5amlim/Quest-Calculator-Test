@@ -49,6 +49,7 @@
     affirm:{label:'BD Affirm VPIII / ATTS swab kit'},
     urine:{label:'Gray-top urine culture preservative tube'},
     parapak:{label:'ParaPak three-vial stool collection set'},
+    sterile:{label:'Sterile specimen collection cup (green lid)'} ,
     ua:{label:'Red and yellow swirl-top urinalysis preservative tube'},
     cleanStool:{label:'ParaPak three-vial set, including clean stool vial', imageKey:'parapak'},
     formalin:{label:'ParaPak three-vial set, including formalin vial', imageKey:'parapak'}
