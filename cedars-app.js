@@ -267,6 +267,7 @@
   // Show decision-useful collection details instead of long source citations.
   // Source citations remain available under Details.
   const methodLabel = (test) => {
+    if (test.testMethod) return test.testMethod;
     const name = (test.name || '').toLowerCase();
     if (/pcr|molecular|nucleic acid/.test(name)) return 'PCR';
     if (/culture/.test(name)) return 'Culture';
@@ -481,6 +482,7 @@
     const order = ['eSwab','UTM','cobas urine','cobas swab','Affirm / ATTS',
       'Gray-top urine culture','UA swirl-top','3-vial ParaPak','Clean stool vial',
       'Adult blood culture','Pediatric blood culture','Myco/F Lytic',
+      'Gold SST','Lavender EDTA','Green heparin','Red serum',
       'Sterile container','Sterile 50 mL tube','FIT bottle','SurePath','Other / verify'];
     const sorted = Array.from(counts).sort(([a],[b]) =>
       order.indexOf(a) - order.indexOf(b) || a.localeCompare(b));
@@ -560,6 +562,13 @@
       '<dt>What to collect</dt><dd>' + esc(collectionContainer(test)) + '</dd>' +
       '<dt>Container filter</dt><dd>' + esc(test.containerType || 'Verify') + '</dd>' +
       '<dt>What to submit</dt><dd>' + esc(test.submit) + '</dd>' +
+      (Array.isArray(test.submissionOptions) && test.submissionOptions.length
+        ? '<dt>Accepted tube options</dt><dd><ul class="cedars-source-options">' +
+          test.submissionOptions.map(item =>
+            '<li><strong>' + esc(item.name) + ':</strong> ' +
+            esc(item.requirements || 'Confirm with Cedars') + '</li>'
+          ).join('') + '</ul><small>The cart uses the default tube only. Confirm the selected alternative and adjust collection instructions before collecting.</small></dd>'
+        : '') +
       '<dt>Transport</dt><dd>' + esc(test.temp) + '</dd>' +
       '<dt>Handling notes</dt><dd>' + esc(test.notes || 'Verify current requirements.') + '</dd>' +
       '<dt>Source</dt><dd>' + esc(source(test)) + '</dd></dl>';
