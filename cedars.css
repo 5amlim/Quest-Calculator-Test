@@ -2209,3 +2209,152 @@
     .cedars-photo-dialog .cedars-photo-image {max-height:calc(65vh - 20px);}
   }
 }
+
+
+/* Directory-first Cedars workflow: the former bulk Add Tests form is gone.
+   Make the short, searchable test directory the clear primary interaction. */
+@media screen {
+  .cedars-page .cedars-directory-panel {
+    margin: 15px 0 0;
+    padding: 18px 20px 14px;
+    border: 1px solid #e3d4d9;
+    border-radius: 14px;
+    background: #f7f9fa;
+    box-shadow: 0 2px 9px rgba(60,32,42,.045);
+    min-width: 0;
+  }
+  .cedars-page .cedars-directory-header {
+    display: flex;
+    align-items: center;
+    margin: 0 0 15px;
+  }
+  .cedars-page .cedars-directory-heading {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+  }
+  .cedars-page .cedars-directory-icon {
+    width: 42px;
+    height: 42px;
+    padding: 9px;
+    border: 1px solid #e7cbd4;
+    border-radius: 12px;
+    color: #873747;
+    background: #f9e9ef;
+    flex: 0 0 42px;
+  }
+  .cedars-page .cedars-directory-heading h3 {
+    margin: 0 0 3px;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 850;
+    color: #4b303b;
+  }
+  .cedars-page .cedars-directory-heading p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #687782;
+  }
+  .cedars-page .cedars-directory-panel .filter-row.cedars-filter {
+    margin: 0 0 18px;
+    column-gap: 12px;
+    row-gap: 10px;
+  }
+  .cedars-page .cedars-directory-panel .library-search {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    width: 100%;
+  }
+  .cedars-page .cedars-directory-panel .library-search .field-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: #4e3541;
+  }
+  .cedars-page .cedars-directory-panel #cedarsSearch {
+    box-sizing: border-box;
+    width: 100%;
+    height: 55px;
+    min-height: 55px;
+    padding: 12px 15px;
+    font-size: 15px;
+    border: 1.5px solid #cfbdc5;
+    border-radius: 10px;
+    background: #fff;
+    color: #243b48;
+  }
+  .cedars-page .cedars-directory-panel #cedarsSearch:focus-visible {
+    outline: 2px solid #9b5766;
+    outline-offset: 1px;
+    border-color: #9b5766;
+  }
+  .cedars-page .cedars-directory-panel .catalog-filter-control,
+  .cedars-page .cedars-directory-panel #cedarsBlockedButton {
+    margin: 0;
+  }
+  .cedars-page .cedars-directory-panel .table-wrap {
+    min-width: 0;
+    border: 1px solid #dfe5e8;
+    background: #fff;
+    border-radius: 12px;
+    overflow: auto;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library {
+    margin: 0;
+    background: #fff;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library thead th {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background: #eef1f4;
+    color: #425865;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-test-row td {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+  .cedars-page .cedars-directory-panel .pagination-row {
+    padding: 8px 0 0;
+  }
+  .cedars-page .cedars-directory-panel .library-help {
+    margin: 8px 0 0;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  /* Clean single-stroke X, matching Quest's compact circular control. */
+  .cedars-page .cedars-cart-remove .remove-icon svg,
+  .cedars-page .cedars-cart-remove .remove-icon svg path {
+    fill: none !important;
+    stroke: currentColor !important;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .cedars-page .cedars-cart-remove {
+    flex: 0 0 30px;
+    box-sizing: border-box;
+  }
+  @media (max-width: 640px) {
+    .cedars-page .cedars-directory-panel {
+      margin-top: 12px;
+      padding: 13px 11px 11px;
+      border-radius: 12px;
+    }
+    .cedars-page .cedars-directory-heading h3 { font-size: 16px; }
+    .cedars-page .cedars-directory-heading p { font-size: 11px; }
+    .cedars-page .cedars-directory-icon {
+      width: 36px;
+      height: 36px;
+      padding: 8px;
+      flex-basis: 36px;
+    }
+    .cedars-page .cedars-directory-panel .cedars-library .cedars-test-row td {
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .cedars-page .cedars-directory-panel #cedarsSearch {font-size: 14px;}
+  }
+}
