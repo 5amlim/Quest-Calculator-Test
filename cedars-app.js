@@ -154,6 +154,12 @@
       (test.aliases || '').split('|').some((alias) => alias.trim() && compact(alias) === q));
   }
 
+  // Use a closed set of specimen classes so dynamic data cannot become CSS.
+  const specimenClass = (category) => {
+    const value = String(category || '').toLowerCase();
+    return ['swab','urine','stool','blood','other'].includes(value)
+      ? 'type-' + value : 'type-other';
+  };
   function makeRows() {
     const q = $('cedarsSearch').value;
     const cat = $('cedarsType').value;
@@ -176,9 +182,9 @@
       records().filter((t) => t.hold).length + ' restricted / needs verification';
     $('cedarsLibraryBody').innerHTML = rows.map(({test}, index) => {
       const heading = index === 0 || rows[index - 1].test.category !== test.category
-        ? '<tr class="cedars-specimen-heading"><td colspan="6">' + esc(test.category) + ' specimens</td></tr>'
+        ? '<tr class="cedars-specimen-heading ' + specimenClass(test.category) + '"><td colspan="6">' + esc(test.category) + ' specimens</td></tr>'
         : '';
-      return heading + '<tr><td class="code-cell">' + esc(test.code || '—') + '</td>' +
+      return heading + '<tr class="cedars-test-row ' + specimenClass(test.category) + '"><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at Sollis') + '</span>' : '') + '</td>' +
@@ -207,7 +213,7 @@
     $('cedarsDetailsToggle').setAttribute('aria-expanded', String(showCartDetails));
     $('cedarsDetailsToggleText').textContent = showCartDetails ? 'Hide details' : 'Show details';
     $('cedarsCart').innerHTML = tests.length ? tests.map((test) =>
-      '<article class="cedars-cart-item"><div class="cedars-cart-top">' +
+      '<article class="cedars-cart-item ' + specimenClass(test.category) + '"><div class="cedars-cart-top">' +
       '<div class="cedars-cart-heading"><strong>' + esc(test.name) +
       '</strong>' + (test.code ? '<small>' + esc(test.code) + '</small>' : '') + '</div>' +
       '<button type="button" class="mini-button remove" data-remove="' + esc(test.id) +
@@ -223,16 +229,17 @@
     const groups = new Map();
     tests.forEach((test) => {
       const key = test.collect;
-      if (!groups.has(key)) groups.set(key, {count:0, tests:[]});
+      if (!groups.has(key)) groups.set(key, {count:0, tests:[], category:test.category});
       const row = groups.get(key);
       row.count += Math.max(1, Number(test.qty) || 1);
       row.tests.push(test.name);
+      if (row.category !== test.category) row.category = 'Other';
     });
     $('cedarsDrawCount').textContent = groups.size ?
       groups.size + ' collection types' : 'No collection types';
     $('cedarsDraw').innerHTML = tests.length ?
       Array.from(groups, ([container, group]) =>
-        '<div class="cedars-plan-row"><span class="cedars-count">' + group.count + '×</span>' +
+        '<div class="cedars-plan-row ' + specimenClass(group.category) + '"><span class="cedars-count">' + group.count + '×</span>' +
         containerArt(container, 'card') +
         '<div><strong>' + esc(container) + '</strong><small>' +
         esc(group.tests.join('; ')) + '</small></div></div>').join('') :
@@ -250,7 +257,7 @@
       Array.from(bags, ([bucket, items]) =>
         '<div class="cedars-bag"><div class="cedars-bag-header"><span class="badge ' +
         bagClass(bucket) + '">' + esc(bucket) + '</span><span>' + items.length + ' tests</span></div>' +
-        items.map((test) => '<div class="cedars-bag-line">' +
+        items.map((test) => '<div class="cedars-bag-line ' + specimenClass(test.category) + '">' +
           containerArt(test.submit, 'card') +
           '<div><strong>' + esc(test.name) +
           '</strong><small>' + esc(test.submit) + '</small></div></div>').join('') + '</div>').join('') :
