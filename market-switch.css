@@ -13,7 +13,7 @@
     --lab-light: #eaf7f0;
     position: relative;
     display: block;
-    width: 246px;
+    width: 210px;
     max-width: 100%;
     flex: 0 0 auto;
     color: #213947;
@@ -27,9 +27,9 @@
   .lab-select > summary {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     min-height: 65px;
-    padding: 10px 15px;
+    padding: 10px 12px;
     border: 2px solid var(--lab-accent);
     border-radius: 13px;
     background: #ffffff;
@@ -181,7 +181,7 @@
       justify-content: flex-start;
       flex-wrap: wrap;
     }
-    .lab-select { width: min(100%, 310px); }
+    .lab-select { width: min(100%, 210px); }
     .lab-select > summary { min-height: 61px; }
     .lab-select-menu { right: auto; left: 0; width: 100%; max-width: 100%; }
   }
