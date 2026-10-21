@@ -332,10 +332,11 @@
     const groups = new Map();
     tests.forEach((test) => {
       const key = test.collect;
-      if (!groups.has(key)) groups.set(key, {count:0, tests:[], category:test.category});
+      if (!groups.has(key)) groups.set(key, {count:0, tests:[], category:test.category, singleOptions:[]});
       const row = groups.get(key);
       row.count += Math.max(1, Number(test.qty) || 1);
       row.tests.push(test.name);
+      if (test.singleVialOption) row.singleOptions.push(test.name);
       if (row.category !== test.category) row.category = 'Other';
     });
     $('cedarsDrawCount').textContent = groups.size ?
@@ -345,7 +346,9 @@
         '<div class="cedars-plan-row ' + specimenClass(group.category) + '"><span class="cedars-count">' + group.count + '×</span>' +
         photoArt(container, 'card') +
         '<div><strong>' + esc(container) + '</strong>' + specimenBadge(group.category) + '<small>' +
-        esc(group.tests.join('; ')) + '</small></div></div>').join('') :
+        esc(group.tests.join('; ')) + '</small>' +
+        (group.singleOptions.length ? '<small class="cedars-single-vial-note">Single white-cap clean vial also acceptable for: ' + esc(group.singleOptions.join('; ')) + '</small>' : '') +
+        '</div></div>').join('') :
       '<div class="cedars-empty">Add tests to view collection containers.</div>';
 
     const bags = new Map();
@@ -363,7 +366,9 @@
         items.map((test) => '<div class="cedars-bag-line ' + specimenClass(test.category) + '">' +
           photoArt(test.submit, 'card') +
           '<div><strong>' + esc(test.name) + specimenBadge(test.category) +
-          '</strong><small>' + esc(test.submit) + '</small></div></div>').join('') + '</div>').join('') :
+          '</strong><small>' + esc(test.submit) + '</small>' +
+          (test.singleVialOption ? '<small class="cedars-single-vial-note">' + esc(test.singleVialOption) + '</small>' : '') +
+          '</div></div>').join('') + '</div>').join('') :
       '<div class="cedars-empty">Add tests to view transport groups.</div>';
   }
   function renderContainerFilters() {
@@ -531,7 +536,8 @@
         (group.length === 1 ? ' test' : ' tests') + '</div>' +
         '<ul class="cedars-print-test-list">' +
         group.map((test) => '<li>' + testTag(test) +
-          (countFor(test)>1 ? '<span class="cedars-print-count-note">' + countFor(test) + ' containers</span>' : '') +
+          (countFor(test)>1 ? '<span class="cedars-print-count-note">' + countFor(test) + ' containers (standard)</span>' : '') +
+          (test.singleVialOption ? '<small class="cedars-print-single-vial">' + esc(test.singleVialOption) + '</small>' : '') +
           '</li>').join('') + '</ul></article>';
     }).join('');
 
@@ -571,7 +577,9 @@
           '<div class="cedars-print-submit-item"><div class="cedars-print-submit-line">' +
           containerArt(container, 'print') + '<strong>' + esc(container) + '</strong></div>' +
           '<ul class="cedars-print-test-list">' +
-          items.map(test => '<li>' + testTag(test) + '</li>').join('') +
+          items.map(test => '<li>' + testTag(test) +
+            (test.singleVialOption ? '<small class="cedars-print-single-vial">' + esc(test.singleVialOption) + '</small>' : '') +
+            '</li>').join('') +
           '</ul></div>').join('') +
         '</article>';
     }).join('');
