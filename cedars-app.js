@@ -169,13 +169,13 @@
       '<tr><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
-      (test.hold ? '<span class="cedars-hold">Not performed at Sollis</span>' : '') + '</td>' +
+      (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at Sollis') + '</span>' : '') + '</td>' +
       '<td><div class="cedars-container-cell">' + containerArt(test.collect, 'table') +
       '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
       '<div class="subtext">' + esc(test.collect) + '</div></div></div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
       esc(test.temp || 'Verify') + '</span></td>' +
-      '<td class="cedars-volume-unknown">Verify</td>' +
+      '<td class="cedars-volume-unknown">' + esc(test.volumeDisplay || 'Verify') + '</td>' +
       '<td class="row-actions"><button class="mini-button edit" type="button" data-info="' +
       esc(test.id) + '">Details</button>' +
       (!test.hold ? '<button class="mini-button" type="button" data-add="' + esc(test.id) + '">' +
@@ -274,7 +274,7 @@
     $('cedarsBlockedList').innerHTML = items.map(test =>
       '<div class="cedars-blocked-item"><div class="cedars-blocked-item-info"><strong>' +
       esc(test.name) + '</strong><small>' + esc(test.code || 'Code not listed') +
-      ' · Not performed at Sollis</small></div>' +
+      ' · ' + esc(test.blockReason || 'Not performed at Sollis') + '</small></div>' +
       '<button type="button" class="mini-button edit" data-info="' + esc(test.id) +
       '">Details</button></div>').join('');
   }
@@ -298,12 +298,13 @@
       '</div>' +
       '<p class="cedars-illustration-note">Color-matched illustration based on supplied kit photos. Verify the actual manufacturer container before collecting.</p>' +
       '<div class="cedars-summary-notice"><strong>' +
-      (test.hold ? 'Not performed at Sollis. Do not collect or submit under this workflow.' :
+      (test.hold ? esc(test.blockReason || 'Not performed at Sollis') + '. Do not collect or submit until the workflow is approved.' :
         '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
       '</strong></div>' +
       '<dl>' +
       '<dt>Test code</dt><dd>' + esc(test.code || 'Not supplied') + '</dd>' +
       '<dt>Specimen</dt><dd>' + esc(test.specimen) + '</dd>' +
+      '<dt>Volume</dt><dd>' + esc(test.volumeDisplay || 'Verify current requirements') + '</dd>' +
       '<dt>What to collect</dt><dd>' + esc(test.collect) + '</dd>' +
       '<dt>Container filter</dt><dd>' + esc(test.containerType || 'Verify') + '</dd>' +
       '<dt>What to submit</dt><dd>' + esc(test.submit) + '</dd>' +
