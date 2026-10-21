@@ -2067,3 +2067,24 @@
     text-rendering:optimizeLegibility;
   }
 }
+
+
+@media print {
+ #cedarsPrintSheet .cedars-print-test-type {
+   display:inline-block;
+   margin-left:5px;
+   padding:1px 5px;
+   border-radius:4px;
+   background:#eef2f3!important;
+   color:#38505f;
+   border:1px solid #d8e2e5;
+   font-size:7pt;
+   font-weight:800;
+   white-space:nowrap;
+   vertical-align:baseline;
+ }
+ #cedarsPrintSheet .cedars-print-test-code {white-space:normal;overflow-wrap:anywhere;}
+ #cedarsPrintSheet .cedars-print-header h1 {color:#642d3b;font-weight:900;}
+ #cedarsPrintSheet .cedars-print-submit-card .cedars-print-submit-line {font-size:9pt;}
+ #cedarsPrintSheet .cedars-print-section-note {margin-top:6px!important;}
+}
