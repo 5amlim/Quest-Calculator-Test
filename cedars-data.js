@@ -1,9 +1,6 @@
-/* Cedars test menu (Sollis workflows plus source-labeled Cedars guide entries).
-   Transport: room temperature is the lab supervisor's workflow default for
-   performed tests, EXCEPT refrigerated body-fluid culture, and the CSF order
-   which requires immediate delivery. Actual manufacturer/laboratory stability
-   must still be checked, especially for older directory entries. Tests on hold
-   retain their unverified status and cannot be selected. */
+/* Cedars Lab Guide: owner-confirmed Sollis workflows plus named Cedars monographs.
+   Screenshot excerpts support specific media and handling; verify current test
+   availability and site-specific requirements before collection. */
 window.CEDARS_TESTS = [
   {
     "id": "culture-eswab",
@@ -316,36 +313,41 @@ window.CEDARS_TESTS = [
   },
   {
     "id": "urine-afb",
-    "code": "",
+    "code": "AFBC",
     "name": "Urine AFB / mycobacteria culture",
     "category": "Urine",
-    "specimen": "First-morning urine",
-    "collect": "Sterile container",
-    "submit": "Sterile container",
+    "specimen": "Urine (first-morning preferred)",
+    "collect": "50 mL sterile, leak-proof specimen transport tube",
+    "submit": "50 mL sterile specimen transport tube (individually bagged)",
     "qty": 1,
-    "temp": "Verify",
-    "notes": "The guide specifies first-morning void for urine AFB/mycobacteria.",
+    "temp": "Room Temperature",
+    "notes": "The Cedars AFB culture monograph includes urine as a specimen type and calls for an individually bagged 50 mL sterile transport tube. Prior Cedars guide recommends first-morning urine. Confirm urine collection volume, number of specimens and current transport instructions in the complete monograph.",
     "slide": "11",
-    "aliases": "tb urine acid fast",
-    "hold": true,
-    "blockReason": "Not performed at Sollis",
-    "containerType": "Sterile container"
+    "aliases": "AFB urine|urine mycobacteria|urine tuberculosis culture|urine TB culture",
+    "hold": false,
+    "blockReason": "",
+    "containerType": "Sterile container",
+    "sourceNote": "Cedars Mycobacteria Culture AFBC monograph screenshot lists urine AFB culture; historical guide specifies first-morning urine"
   },
   {
     "id": "urine-legionella",
-    "code": "",
-    "name": "Urine Legionella testing",
+    "code": "LGFA",
+    "name": "Legionella pneumophila urinary antigen",
     "category": "Urine",
     "specimen": "Urine",
-    "collect": "Sterile container",
-    "submit": "Sterile container",
+    "collect": "Sterile specimen cup (urine)",
+    "submit": "Sterile specimen cup (urine)",
     "qty": 1,
-    "temp": "Verify",
-    "notes": "Verify precise assay and specimen volume in current directory.",
+    "temp": "Room Temperature (refrigerate if delayed)",
+    "notes": "Collect 1 mL urine in a sterile container; Cedars also accepts urine with boric acid preservative (gray-top urine culture tube). Transport immediately; refrigerate if delayed. Assay is an enzyme immunoassay for L. pneumophila serogroup 1.",
     "slide": "11",
-    "hold": true,
-    "blockReason": "Not performed at Sollis",
-    "containerType": "Sterile container"
+    "hold": false,
+    "blockReason": "",
+    "containerType": "Sterile container",
+    "secondaryCode": "LAB1628",
+    "volumeDisplay": "1 mL",
+    "sourceNote": "Cedars Lexicomp screenshot: Legionella Urinary Antigen LGFA, CS-Link LAB1628",
+    "aliases": "Legionella urinary antigen|Legionella antigen|Legionella direct|LAB1628|LGFA"
   },
   {
     "id": "stool-ova",
@@ -385,20 +387,22 @@ window.CEDARS_TESTS = [
   {
     "id": "fecal-guaiac",
     "code": "OCLT",
-    "name": "Fecal occult blood (guaiac, stool sample)",
+    "name": "Fecal occult blood (guaiac / Hemoccult SENSA)",
     "category": "Stool",
-    "specimen": "Stool",
-    "collect": "ParaPak clean vial (white cap)",
-    "submit": "ParaPak clean vial (white cap)",
+    "specimen": "Stool, raw and unpreserved",
+    "collect": "ParaPak clean vial (white cap, no preservative)",
+    "submit": "ParaPak clean vial (white cap, no preservative)",
     "qty": 1,
-    "temp": "Room Temperature",
-    "notes": "Collect stool in a clean unpreserved vial per the reference poster. Confirm requested occult blood methodology, volume and dietary restrictions before collection; do not substitute for FIT kit.",
+    "temp": "Room Temperature (refrigerate if delayed)",
+    "notes": "Cedars monograph: collect raw stool without preservative in a sterile container. White-cap clean vial is an unpreserved option shown in the Cedars collection guide; a sterile unpreserved cup may also be accepted. Transport immediately; refrigerate if delayed. This is guaiac (Hemoccult SENSA), not FIT; check patient preparation, volume and collection instructions.",
     "slide": "14",
-    "aliases": "stool blood hemoccult",
+    "aliases": "FOBT|fecal occult blood|occult blood|guaiac|Hemoccult SENSA|stool occult blood|LAB694",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Cedars stool collection poster: clean vial for occult blood",
-    "containerType": "Clean stool vial"
+    "sourceNote": "Cedars Lexicomp screenshot: Occult Blood, Fecal OCLT (Outreach), CS-Link LAB694",
+    "containerType": "Clean stool vial",
+    "secondaryCode": "LAB694",
+    "volumeDisplay": "Verify sample quantity"
   },
   {
     "id": "blood-afb",
@@ -472,20 +476,22 @@ window.CEDARS_TESTS = [
   },
   {
     "id": "afbculture",
-    "code": "",
-    "name": "AFB culture with smear (nonblood)",
+    "code": "AFBC",
+    "name": "Mycobacteria culture (AFB, nonblood)",
     "category": "Other",
-    "specimen": "Source-specific clinical material",
-    "collect": "Sterile specimen cup",
-    "submit": "Sterile specimen cup",
+    "specimen": "Nonblood clinical specimen (e.g., sputum or body fluid)",
+    "collect": "50 mL sterile, leak-proof specimen transport tube",
+    "submit": "50 mL sterile specimen transport tube (one bag per specimen)",
     "qty": 1,
     "temp": "Room Temperature",
-    "notes": "AFB culture with smear uses a sterile unpreserved container. Confirm specimen type, volume, and transport instructions.",
+    "notes": "Cedars monograph: place each specimen in a 50 mL sterile specimen transport tube, individually bagged. Respiratory: recommended three sputum specimens 8–24 hours apart (24 hours preferred), including one first-morning; 5–10 mL each (minimum 1 mL). Body fluids: 5 mL (minimum 1 mL for culture only). Specimen acceptance, transport and site-specific requirements must be confirmed in current Cedars instructions.",
     "slide": "3",
     "hold": false,
     "blockReason": "",
-    "sourceNote": "Cedars quick microbiology guide: AFB smear and culture in sterile container",
-    "containerType": "Sterile container"
+    "sourceNote": "Cedars Lexicomp screenshot: Mycobacteria Culture AFBC (current excerpt)",
+    "containerType": "Sterile container",
+    "aliases": "AFB|mycobacteria|acid-fast bacilli|TB culture|AFB culture|AFBC|AFB smear|sputum AFB|body fluid AFB",
+    "volumeDisplay": "Sputum 5–10 mL (min 1 mL); fluid 5 mL (min 1 mL, culture only)"
   },
   {
     "id": "pap-surepath",
@@ -527,16 +533,17 @@ window.CEDARS_TESTS = [
     "name": "C. difficile stool testing",
     "category": "Stool",
     "specimen": "Stool",
-    "collect": "VERIFY IN LEXICOMP",
-    "submit": "VERIFY IN LEXICOMP",
-    "qty": 0,
-    "temp": "Verify",
-    "hold": true,
-    "notes": "Historical Cedars quick guide lists 3-vial ParaPak but the stool collection poster lists clean vial for C. difficile. Keep on hold until the current assay's collection instructions are confirmed.",
+    "collect": "3-vial ParaPak stool collection set",
+    "submit": "All three ParaPak vials (yellow C & S / pink formalin / white clean)",
+    "qty": 3,
+    "temp": "Room Temperature",
+    "hold": false,
+    "notes": "Sollis-confirmed collection: three-vial ParaPak kit, including yellow C & S Medium, pink 10% Formalin and white Clean Vial. Submit all three vials at room temperature. Confirm the ordered C. difficile assay and current Cedars acceptance before collection.",
     "slide": "3, 13",
-    "aliases": "clostridioides difficile toxin pcr",
-    "blockReason": "Collection instructions conflict: verify current assay/container",
-    "containerType": "Other / verify"
+    "aliases": "C diff|C difficile|Clostridioides difficile|CDIFF|stool Cdiff",
+    "blockReason": "",
+    "containerType": "3-vial ParaPak",
+    "sourceNote": "Sollis-confirmed workflow (October 21, 2026): C. difficile uses 3-vial ParaPak, room temperature"
   },
   {
     "id": "mpox",
@@ -602,7 +609,7 @@ window.CEDARS_TESTS = [
     "submit": "Sterile specimen cup (CSF)",
     "sourceNote": "Cedars Lexicomp screenshot: CSF Culture, Routine CSFC / LAB268",
     "notes": "Submit CSF 1 mL preferred (0.5 mL minimum) in sterile unpreserved container. Deliver to lab immediately. When possible collect from CSF tube #2 or #3 to reduce contamination. Do NOT apply refrigerated body-fluid transport instructions to CSF without explicit current laboratory approval.",
-    "aliases": "spinal fluid culture gram stain CSFC LAB268",
+    "aliases": "CSF|CSF culture|cerebrospinal fluid|spinal fluid culture|gram stain CSF|CSFC|LAB268",
     "hold": false,
     "blockReason": "",
     "containerType": "Sterile container",
