@@ -41,10 +41,10 @@
         </div>
         <section class="cedars-reference-section cedars-reference-combined" aria-labelledby="cedarsReferencesTitle">
           <div class="cedars-reference-header">
-            <span class="cedars-reference-pill">Sollis Cedars menu</span>
+            <span class="cedars-reference-pill">Cedars Lab Guide</span>
             <div class="cedars-reference-copy">
               <strong id="cedarsReferencesTitle">Collection references</strong>
-              <p>Tests follow Sollis collection workflows, with room temperature as the default. Body fluid culture is refrigerated; CSF requires immediate delivery. Confirm test-specific requirements in Cedars Lexicomp. Drawings match the reference photos but never replace kit identification.</p>
+              <p>Use this guide for collection planning. Room temperature is the usual workflow unless an exception is shown. Body fluid culture is refrigerated; CSF requires immediate delivery. Confirm test-specific requirements in Cedars Lexicomp. Drawings match the reference photos but never replace kit identification.</p>
             </div>
           </div>
           <div class="cedars-reference-actions">
@@ -63,6 +63,7 @@
             <span class="cedars-lexicomp-login-heading">Lexicomp login</span>
             <span class="cedars-lexicomp-login-detail">For the username and password, refer to the <a class="cedars-eos-link" href="https://ppcny.sharepoint.com/:w:/s/LA_RN/IQATLlRXestESal7mA0scRj-AZL2W8ZVxiRLOnWImLgK3n0?e=4eN780" target="_blank" rel="noopener noreferrer">EOS document ↗</a> or <strong>contact Sam.</strong></span>
           </div>
+          <p class="cedars-missing-test-note">Found a test in Lexicomp that is missing from this guide? <strong>Contact Sam</strong> to request its addition.</p>
         </section>
         <section class="panel search-panel cedars-batch" id="batchEntry" aria-labelledby="batchEntryTitle">
           <div class="batch-entry-heading">
@@ -91,13 +92,13 @@
               <label>Specimen type<select id="cedarsType" aria-label="Filter by specimen type"><option value="">All specimens</option><option>Swab</option><option>Urine</option><option>Stool</option><option>Blood</option><option>Other</option></select></label>
               <div class="cedars-container-filter-heading">Collection container <span>Choose an icon to filter</span></div>
               <div id="cedarsContainerFilters" class="cedars-container-filter-grid" role="group" aria-label="Filter tests by collection container"></div>
-              <label class="catalog-filter-check"><input id="showHolds" type="checkbox"><span>Include Not performed at Sollis</span></label>
+              <label class="catalog-filter-check"><input id="showHolds" type="checkbox"><span>Include Not performed at this site</span></label>
               <button class="catalog-filter-done" type="button" id="cedarsFilterDone">Done</button>
             </div>
           </div>
         </div>
-        <section id="cedarsBlockedPanel" class="cedars-blocked-panel hidden" aria-label="Tests not performed at Sollis">
-          <div class="cedars-blocked-heading"><strong>Not performed at Sollis</strong><span>These tests cannot be added to the collection cart.</span></div>
+        <section id="cedarsBlockedPanel" class="cedars-blocked-panel hidden" aria-label="Tests Not performed at this site">
+          <div class="cedars-blocked-heading"><strong>Not performed at this site</strong><span>These tests cannot be added to the collection cart.</span></div>
           <div id="cedarsBlockedList" class="cedars-blocked-list"></div>
         </section>
         <div class="table-wrap">
@@ -109,14 +110,14 @@
           </table>
         </div>
         <div class="pagination-row"><span id="libraryStatus" role="status"></span></div>
-        <p class="library-help">Only listed Sollis workflows can be added. For a missing test, contact Sam to review the workflow before adding it.</p>
+        <p class="library-help">Only listed site workflows can be added. For a missing test, contact Sam to review the workflow before adding it.</p>
       </div>
     </section>
     <aside class="panel order-panel" id="cedarsSummary" tabindex="-1">
       <div class="order-top">
         <div><div class="eyebrow">2. CHECK SUMMARY</div><h2>Collection summary <span id="selectedCount">0</span></h2></div>
       </div>
-      <div class="cedars-summary-notice">Sollis Cedars workflow. <strong>Verify specimen collection and transport requirements against current Cedars/Lexicomp instructions.</strong> No automatic pooling.</div>
+      <div class="cedars-summary-notice">Cedars workflow. <strong>Verify specimen collection and transport requirements against current Cedars/Lexicomp instructions.</strong> No automatic pooling.</div>
       <p class="cedars-storage-status" id="cedarsStorageStatus" role="status" aria-live="polite"></p>
       <section class="summary-section tests-summary" aria-labelledby="cedarsCartTitle">
         <div class="tests-summary-header cedars-cart-header">
@@ -170,7 +171,7 @@
   </dialog>
   <dialog id="cedarsManualDialog" aria-label="Manual entry disabled" class="cedars-dialog">
     <form method="dialog" id="cedarsManualForm">
-      <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. Manual entries are disabled for the approved Sollis Cedars menu.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
+      <div class="cedars-dialog-head"><div><div class="eyebrow">TEST RECORD</div><h2>Add missing Cedars test</h2><p>Enter verified details from the current directory. Manual entries are disabled for the approved Cedars Lab Guide.</p></div><button type="button" id="manualClose" aria-label="Close" class="cedars-close">×</button></div>
       <div class="cedars-form-grid">
         <label>Test name *<input id="manualName" required maxlength="150"></label>
         <label>Test code<input id="manualCode" maxlength="40"></label>
