@@ -231,53 +231,110 @@
   function printPlan() {
     const tests = chosen();
     if (!tests.length) return;
+
+    // The Cedars 2023 reference often lacks verified tube volumes or shipping
+    // temperatures. Counts are additive per test; never silently pool specimens.
     const collection = new Map();
     const transport = new Map();
-    tests.forEach((t) => {
-      const key = t.collect;
-      if (!collection.has(key)) collection.set(key, {qty:0, tests:[]});
-      collection.get(key).qty += Math.max(1, Number(t.qty) || 1);
-      collection.get(key).tests.push(t);
-      const bucket = transportBucket(t);
+    tests.forEach((test) => {
+      if (!collection.has(test.collect)) collection.set(test.collect, []);
+      collection.get(test.collect).push(test);
+      const bucket = transportBucket(test);
       if (!transport.has(bucket)) transport.set(bucket, []);
-      transport.get(bucket).push(t);
+      transport.get(bucket).push(test);
     });
-    const collectCards = Array.from(collection, ([container, group]) =>
-      '<article class="cedars-print-card"><div class="cedars-print-card-heading"><span class="cedars-print-total">' +
-      group.qty + '</span><strong>' + esc(container) + '</strong></div>' +
-      '<div class="cedars-print-card-detail">Separate collection sets; no pooling assumed.</div>' +
-      '<ul>' + group.tests.map((t) => '<li>' + esc(t.code ? t.code + ' · ' : '') +
-      esc(t.name) + '</li>').join('') + '</ul></article>').join('');
-    const submitCards = Array.from(transport, ([bucket, items]) =>
-      '<article class="cedars-print-card"><div class="cedars-print-card-heading"><span class="badge ' +
-      bagClass(bucket) + '">' + esc(bucket) + '</span></div>' +
-      '<div class="cedars-print-card-detail">Check the required destination and transport conditions. Do not combine different specimens.</div>' +
-      '<ul>' + items.map((t) => '<li><strong>' + esc(t.submit) + '</strong> · ' +
-      esc(t.name) + '</li>').join('') + '</ul></article>').join('');
-    const rows = tests.map((t) =>
-      '<tr><td>' + esc(t.code || '—') + '</td><td><strong>' + esc(t.name) +
-      '</strong><div class="cedars-print-source">' + esc(source(t)) +
-      '</div></td><td>' + esc(t.specimen) + '</td><td>' + esc(t.collect) +
-      '</td><td>' + esc(t.submit) + '</td><td>' + esc(transportBucket(t)) +
-      '</td><td>' + esc(t.notes || 'Verify') + '</td></tr>').join('');
+    const countFor = (test) => Math.max(1, Number(test.qty) || 1);
+    const testTag = (test) =>
+      '<strong>' + esc(test.name) + '</strong>' +
+      (test.code ? '<span class="cedars-print-test-code">' + esc(test.code) + '</span>' : '');
+    const collectionCards = Array.from(collection, ([container, group]) => {
+      const quantity = group.reduce((sum, test) => sum + countFor(test), 0);
+      return '<article class="cedars-print-card cedars-print-collection-card">' +
+        '<div class="cedars-print-card-heading"><span class="cedars-print-total">' + quantity +
+        '</span><div class="cedars-print-card-name"><strong>' + esc(container) +
+        '</strong><small>Separate collections; no pooling</small></div></div>' +
+        '<div class="cedars-print-for-tests">For ' + group.length +
+        (group.length === 1 ? ' test' : ' tests') + '</div>' +
+        '<ul class="cedars-print-test-list">' +
+        group.map((test) => '<li>' + testTag(test) +
+          (countFor(test)>1 ? '<span class="cedars-print-count-note">' + countFor(test) + ' containers</span>' : '') +
+          '</li>').join('') + '</ul></article>';
+    }).join('');
+
+    // Keep unknown and choice-of-temperature specimens OUT of a shipping bag
+    // assignment. The visual groups are verification queues, not bag labels.
+    const sortedTransport = Array.from(transport.entries()).sort(([a],[b]) => {
+      const order = (str) => str === 'Room temperature' ? 0 :
+        str === 'Refrigerated' ? 1 : str === 'Frozen' ? 2 : str.startsWith('Room or') ? 3 : 4;
+      return order(a) - order(b);
+    });
+    const pendingCount = sortedTransport.filter(([bucket]) =>
+      bucket.startsWith('Transport temperature:') || bucket.startsWith('Room or')).length;
+    const transportCards = sortedTransport.map(([bucket, group]) => {
+      const pending = bucket.startsWith('Transport temperature:') || bucket.startsWith('Room or');
+      const name = pending ?
+        (bucket.startsWith('Room or') ? 'Transport choice needs confirmation' : 'Transport temperature not specified') :
+        bucket;
+      const byContainer = new Map();
+      group.forEach((test) => {
+        if (!byContainer.has(test.submit)) byContainer.set(test.submit, []);
+        byContainer.get(test.submit).push(test);
+      });
+      return '<article class="cedars-print-card cedars-print-submit-card' +
+        (pending ? ' is-unverified' : '') + '">' +
+        '<div class="cedars-print-card-heading">' +
+          '<span class="cedars-print-transport-pill ' + (pending ? 'pending' : 'known') + '">' +
+            esc(name) + '</span>' +
+          '<span class="cedars-print-group-count">' + group.length +
+            (group.length===1 ? ' test' : ' tests') + '</span>' +
+        '</div>' +
+        (pending ?
+          '<p class="cedars-print-pending-note">Do not assign to a transport bag until the current directory confirms requirements.</p>' :
+          '<p class="cedars-print-pending-note">Temperature listed in the record. Reconfirm with current Cedars requirements before packing.</p>') +
+        Array.from(byContainer, ([container, items]) =>
+          '<div class="cedars-print-submit-item"><strong>' + esc(container) + '</strong>' +
+          '<ul class="cedars-print-test-list">' +
+          items.map(test => '<li>' + testTag(test) + '</li>').join('') +
+          '</ul></div>').join('') +
+        '</article>';
+    }).join('');
+
+    // Keep all source-specific directions available, but away from the main
+    // collection/transport cards to reduce repeated instructions and clutter.
+    const handlingCards = tests.filter(test => clean(test.notes)).map(test =>
+      '<article class="cedars-print-handling-item"><div class="cedars-print-handling-head">' +
+      testTag(test) + '</div><p>' + esc(test.notes) + '</p><small>' +
+      esc(source(test)) + '</small></article>').join('');
+
+    const totalContainers = tests.reduce((sum,test) => sum + countFor(test), 0);
     $('cedarsPrintSheet').innerHTML =
-      '<div class="print-header"><div><h1 class="print-title">Lab Collection Summary</h1>' +
-      '<div class="print-subtitle">Cedars send-out workflow · test build</div></div>' +
-      '<div class="print-meta">Generated ' + esc(new Date().toLocaleString()) +
-      '<span class="print-selected-count">' + tests.length + ' selected tests</span></div></div>' +
-      '<div class="cedars-print-warning"><strong>Current-directory confirmation required.</strong> ' +
-      'These entries are from a 2023 reference or manually entered. Confirm each test, collection kit, volume, stability, transport temperature and courier routing in current Cedars/Lexicomp. ' +
-      'Unknown temperatures are not assigned to transport bags. No pooling assumed.</div>' +
-      '<section class="cedars-print-section"><div class="cedars-print-section-heading"><strong>What to collect</strong><span>' +
-      Array.from(collection.values()).reduce((n, group) => n + group.qty, 0) + ' collection containers (conservative)</span></div>' +
-      '<div class="cedars-print-grid">' + collectCards + '</div></section>' +
-      '<section class="cedars-print-section cedars-print-submit-section"><div class="cedars-print-section-heading"><strong>What to submit after processing</strong><span>' +
-      transport.size + ' transport groups · verify before packing</span></div>' +
-      '<div class="cedars-print-grid">' + submitCards + '</div></section>' +
-      '<section class="cedars-print-detail-section"><h2>Test-specific collection and handling details</h2>' +
-      '<table><thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Collect</th><th>Submit</th><th>Transport</th><th>Handling / precautions</th></tr></thead><tbody>' +
-      rows + '</tbody></table></section>' +
-      '<p class="cedars-print-footer">Reference only. No patient identifiers required. Source: Cedars 2023 specimen guide and individually labeled manual entries.</p>';
+      '<header class="cedars-print-header"><div><h1>Lab Collection Summary</h1>' +
+        '<p>Cedars send-outs · Collection and transport plan</p></div>' +
+        '<div class="cedars-print-meta"><span>' + esc(new Date().toLocaleString()) + '</span>' +
+        '<strong>' + tests.length + (tests.length===1 ? ' test' : ' tests') + '</strong></div></header>' +
+      '<div class="cedars-print-warning"><strong>Verify before collecting or sending.</strong> ' +
+        'The built-in catalog is based on a 2023 Cedars guide, not current Lexicomp. ' +
+        'Confirm volume, kit, patient preparation, processing, stability, temperature and courier requirements. ' +
+        'No specimens are pooled automatically.</div>' +
+      '<section class="cedars-print-section"><div class="cedars-print-section-heading">' +
+        '<div><strong>1. What to collect</strong><small>Collection containers, grouped by type</small></div>' +
+        '<span>' + totalContainers + ' total containers</span></div>' +
+        '<div class="cedars-print-grid">' + collectionCards + '</div></section>' +
+      '<section class="cedars-print-section' +
+        (collection.size > 4 ? ' cedars-print-start-page' : '') + '">' +
+        '<div class="cedars-print-section-heading"><div><strong>2. What to submit</strong>' +
+          '<small>Transport containers, organized by temperature status</small></div>' +
+          '<span>' + transport.size + ' groups' +
+          (pendingCount ? ' · ' + pendingCount + ' pending' : '') + '</span></div>' +
+        '<div class="cedars-print-grid">' + transportCards + '</div>' +
+        '<p class="cedars-print-section-note">These are planning groups, not pre-approved bags. ' +
+          'Do not combine specimens or assign unverified temperatures.</p></section>' +
+      (handlingCards ? '<section class="cedars-print-section cedars-print-handling-section">' +
+        '<div class="cedars-print-section-heading"><div><strong>3. Collection precautions &amp; handling</strong>' +
+        '<small>Test-specific instructions from the listed source</small></div></div>' +
+        '<div class="cedars-print-handling-grid">' + handlingCards + '</div></section>' : '') +
+      '<footer class="cedars-print-footer">For planning only. Check the current Cedars/Lexicomp directory and local SOP. ' +
+        'Unknown volumes and temperatures are intentionally not filled in. No patient identifiers required.</footer>';
     window.print();
   }
   function openManual() { $('cedarsManualDialog').showModal(); }
