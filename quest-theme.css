@@ -56,21 +56,34 @@
   .portal-select-button:focus-visible {
     outline-color: #4c7637;
   }
-  .button.primary, #addBestButton,
-  .row-actions button[data-action="add"]:not(:disabled) {
+  .button.primary {
     background: #4c7637;
     border-color: #4c7637;
     color: #fff;
   }
-  .button.primary:hover, #addBestButton:hover,
-  .row-actions button[data-action="add"]:not(:disabled):hover {
+  .button.primary:hover {
     background: #315a27;
     border-color: #315a27;
     color: #fff;
   }
+  /* Restore original navy Add actions instead of using the Quest brand green. */
+  #addBestButton.button.primary,
+  .row-actions button[data-action="add"]:not(:disabled) {
+    background: #142f46;
+    border-color: #142f46;
+    color: #fff;
+  }
+  #addBestButton.button.primary:hover,
+  #addBestButton.button.primary:focus-visible,
+  .row-actions button[data-action="add"]:not(:disabled):hover,
+  .row-actions button[data-action="add"]:not(:disabled):focus-visible {
+    background: #1c4059;
+    border-color: #1c4059;
+    color: #fff;
+  }
   .row-actions button[data-action="add"]:disabled {
-    background: #e5efdc;
-    color: #466e37;
+    background: #dff1ec;
+    color: #096159;
   }
   .portal-select-option:hover, .portal-select-option:focus-visible {
     background: #f0f6ea;
