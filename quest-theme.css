@@ -1,19 +1,6 @@
-/* Quest-only presentation theme. Loaded after the shared styles on index.html.
-   Based on Quest Diagnostics published color palette: #4c7637 and #c6d52f.
-   Do not override clinical specimen, tube or temperature color coding. */
+/* Quest-branded header only. Keep the shared navy/teal calculator interface
+   and all specimen, temperature, Add button and print styling unchanged. */
 @media screen {
-  :root {
-    --bg: #f4f7f1;
-    --ink: #26392d;
-    --muted: #5d6d5e;
-    --line: #dce6d8;
-    --brand: #4c7637;
-    --brand-dark: #315a27;
-    --brand-soft: #edf5e8;
-    --shadow: 0 3px 12px rgba(40,79,44,.06);
-  }
-  html, body { background: var(--bg); }
-  body { color: var(--ink); }
   .app-header {
     background: #23472c;
     color: #fff;
@@ -22,110 +9,14 @@
   .app-header h1 { color: #fff; }
   .app-header p { color: #e4efd9; }
   .app-header .eyebrow { color: #dbe9b3; }
-  .privacy-pill {
-    color: #e8f1df;
-    border-color: #6b895d;
+  .app-header .privacy-pill {
     background: #345a38;
+    border-color: #6b895d;
+    color: #e8f1df;
   }
-  .app-header .header-actions .button {
-    background: #35573e;
-    border-color: #7a9769;
-    color: #fff;
-  }
-  .panel { border-color: #d7e4d2; }
-  .panel-heading .eyebrow, .eyebrow { color: #4c7637; }
-  .record-count, #selectedCount {
-    background: #eaf3e3;
-    color: #365c2b;
-  }
-  .library-table th { background: #f0f5eb; color: #36553a; }
-  .is-selected td { background: #f3f9ef; }
-  .is-selected td:first-child { box-shadow: inset 3px 0 #78a84b; }
-  .order-panel { border-top-color: #4c7637; }
-  .tests-summary .empty-state { background: #f8fbf6; border-color: #cfddc6; }
-  .empty-symbol { background: #eaf2e4; color: #4c7637; }
-  .search-panel { background: #f9fbf7; }
-  #libraryFilter { border-color: #9eaf96; }
-  input:focus, select:focus, textarea:focus,
-  #libraryFilter:focus {
-    border-color: #4c7637;
-    box-shadow: 0 0 0 3px rgba(76,118,55,.17);
-  }
-  button:focus-visible, a:focus-visible, summary:focus-visible,
-  .filter-row .stat-library-control .stat-menu-button:focus-visible,
-  .portal-select-button:focus-visible {
-    outline-color: #4c7637;
-  }
-  .button.primary {
-    background: #4c7637;
-    border-color: #4c7637;
-    color: #fff;
-  }
-  .button.primary:hover {
-    background: #315a27;
-    border-color: #315a27;
-    color: #fff;
-  }
-  /* Restore original navy Add actions instead of using the Quest brand green. */
-  #addBestButton.button.primary,
-  .row-actions button[data-action="add"]:not(:disabled) {
-    background: #142f46;
-    border-color: #142f46;
-    color: #fff;
-  }
-  #addBestButton.button.primary:hover,
-  #addBestButton.button.primary:focus-visible,
-  .row-actions button[data-action="add"]:not(:disabled):hover,
-  .row-actions button[data-action="add"]:not(:disabled):focus-visible {
-    background: #1c4059;
-    border-color: #1c4059;
-    color: #fff;
-  }
-  .row-actions button[data-action="add"]:disabled {
-    background: #dff1ec;
-    color: #096159;
-  }
-  .portal-select-option:hover, .portal-select-option:focus-visible {
-    background: #f0f6ea;
-  }
-  .portal-select-option.is-selected { background: #e8f2df; color: #375f2a; }
-  .filter-row .stat-library-control .stat-menu-button {
-    background: #eff6e9;
-    border-color: #c8dcb8;
-    color: #365e2b;
-  }
-  .filter-row .stat-library-control .stat-menu-button[aria-expanded="true"] {
-    background: #e4f0da;
-    border-color: #85ab70;
-    color: #315a27;
-  }
-  .mobile-summary { background: #23472c; color: #fff; }
-  .mobile-summary span:first-child { color: #d5e5a4; }
-  .lab-select--quest {
+  .app-header .lab-select--quest {
     --lab-accent: #4c7637;
     --lab-accent-strong: #315a27;
     --lab-light: #edf5e8;
   }
-  .lab-select-choice.quest {
-    background: #edf5e8;
-    border-color: #d2e2c7;
-    color: #315a27;
-  }
-  .lab-select-choice.quest:hover,
-  .lab-select-choice.quest:focus-visible {
-    background: #e0edd5;
-    border-color: #4c7637;
-  }
-}
-
-/* Brand the neutral print heading without changing specimen or temperature colors. */
-@media print {
-  .print-header { border-bottom-color: #4c7637; }
-  .print-title { color: #315a27; }
-  .print-selected-count {
-    border-color: #a6c092;
-    background: #edf5e8 !important;
-    color: #315a27;
-  }
-  .print-ownership { border-left-color: #4c7637; }
 }
