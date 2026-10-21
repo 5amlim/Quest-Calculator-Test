@@ -3537,3 +3537,80 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   .print-sheet .print-source-tube-badge.tube-gray .print-source-tube-name { color: #4d5d66 !important; }
   .print-sheet .print-source-tube-badge.tube-yellow .print-source-tube-name { color: #80630b !important; }
 }
+
+
+/* Print temperature pictograms are in a dedicated badge AFTER the bag name.
+   Keep the word label intact; the icon is supplemental. */
+@media print {
+  .print-bag-title {
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    column-gap:7px;
+    row-gap:3px;
+  }
+  .print-temperature-emoji {
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    vertical-align:middle;
+    flex:0 0 auto;
+    min-width:23px;
+    min-height:22px;
+    padding:2px 5px;
+    border:1.5px solid #aebac3;
+    border-radius:7px;
+    background:#fff !important;
+    color:#28485a !important;
+    font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+    font-size:12.5px !important;
+    font-weight:850;
+    line-height:1.25;
+    letter-spacing:0;
+    white-space:nowrap;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .print-temperature-emoji.badge-room {
+    background:#fff1b6 !important; border-color:#d4a333; color:#6a4907 !important;
+  }
+  .print-temperature-emoji.badge-refrigerated {
+    background:#def1ff !important; border-color:#5aa7d3; color:#205e85 !important;
+  }
+  .print-temperature-emoji.badge-frozen {
+    background:#e7e0ff !important; border-color:#8071cc; color:#3e3079 !important;
+    min-width:36px;
+  }
+  .print-temperature-emoji.badge-mixed,.print-temperature-emoji.badge-verify {
+    background:#fff0de !important; border-color:#c6a373; color:#75501d !important;
+  }
+  .print-bag-pill {
+    display:inline-flex !important;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:5px;
+    padding:3px 5px 3px 8px !important;
+  }
+  .print-bag-pill .print-temperature-emoji {
+    min-width:19px;
+    min-height:18px;
+    padding:1px 4px;
+    font-size:10px !important;
+    border-radius:5px;
+  }
+  .print-bag-pill .print-temperature-emoji.badge-frozen {min-width:30px;}
+  .print-bag-short-label {
+    display:inline-flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:4px;
+  }
+  .print-bag-short-label .print-temperature-emoji {
+    min-width:19px;
+    min-height:18px;
+    padding:1px 4px;
+    border-radius:5px;
+    font-size:10px !important;
+  }
+  .print-bag-short-label .print-temperature-emoji.badge-frozen {min-width:30px;}
+}
