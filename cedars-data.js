@@ -1,22 +1,24 @@
 /* Cedars collection catalog (Sollis workflow restricted).
-   Only the explicit allowed workflows are selectable; every other record is
-   marked Not performed at Sollis. This is not a complete/current Lexicomp
-   directory. Verify every performed test and container with current Cedars SOP.
-   The historical 2023 reference remains visible in Do Not Perform for context. */
+   White-top eSwab is used for swab CULTURES, including throat, wound/aerobic,
+   anaerobic and fungal/yeast swab cultures. Screening assays and PCR swabs
+   remain separate workflows; non-swab cultures are not automatically allowed.
+   Use current Cedars/Lexicomp instructions for assay/source acceptance. */
 window.CEDARS_TESTS = [
   {
     "id": "culture-eswab",
     "code": "",
-    "name": "Culture (eSwab)",
+    "name": "Swab culture (eSwab)",
     "category": "Swab",
-    "specimen": "Site-specific swab",
-    "collect": "eSwab",
-    "submit": "eSwab",
+    "specimen": "Site-specific culture swab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Culture collection uses eSwab at Sollis. Confirm that the ordered culture, specimen source, and transport time are accepted by Cedars before collecting.",
-    "sourceNote": "Sollis collection workflow; verify order and source in Cedars",
-    "aliases": "culture eswab aerobic throat wound swab"
+    "notes": "For swab-based bacterial, throat, wound, anaerobic or fungal/yeast cultures ordered by the provider. Use the white-top eSwab. Confirm the specific culture order, collection site and specimen acceptance in current Cedars instructions.",
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars",
+    "aliases": "culture eswab e swab aerobic throat wound anaerobic fungal yeast swab",
+    "hold": false,
+    "blockReason": ""
   },
   {
     "id": "urine-culture",
@@ -163,48 +165,51 @@ window.CEDARS_TESTS = [
   {
     "id": "throat-culture",
     "code": "",
-    "name": "Throat culture",
+    "name": "Throat swab culture",
     "category": "Swab",
-    "specimen": "Throat swab",
-    "collect": "eSwab",
-    "submit": "eSwab",
+    "specimen": "Throat culture swab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Use eSwab for throat culture.",
+    "notes": "Collect a throat swab using the white-top eSwab for culture. Verify the specific culture order and current Cedars transport requirements.",
     "slide": "3",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
   },
   {
     "id": "wound-culture",
     "code": "",
-    "name": "Wound / aerobic culture",
+    "name": "Wound / aerobic swab culture",
     "category": "Swab",
-    "specimen": "Wound swab or material",
-    "collect": "eSwab or sterile container",
-    "submit": "eSwab or sterile container",
+    "specimen": "Wound swab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Use appropriate collection container for specimen source; verify aerobic culture instructions.",
+    "notes": "For wound or aerobic CULTURES using a swab, collect with white-top eSwab. This does not authorize sterile-container, tissue, fluid or non-swab specimen handling.",
     "slide": "2-3",
-    "aliases": "aerobic culture wound abscess",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "aliases": "aerobic culture wound abscess swab",
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
   },
   {
     "id": "anaerobic-culture",
     "code": "",
-    "name": "Anaerobic culture",
+    "name": "Anaerobic swab culture",
     "category": "Swab",
-    "specimen": "Swab / clinical material",
-    "collect": "eSwab",
-    "submit": "eSwab",
+    "specimen": "Site-specific anaerobic culture swab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Guide lists eSwab for anaerobic culture. Confirm acceptable source and transport timing.",
+    "notes": "Use white-top eSwab for swab-based anaerobic culture under the Sollis workflow. Confirm site-specific anaerobic specimen acceptance and rapid transport conditions with Cedars.",
     "slide": "2-3",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
   },
   {
     "id": "mrsa-screen",
@@ -239,18 +244,19 @@ window.CEDARS_TESTS = [
   {
     "id": "fungal-culture",
     "code": "",
-    "name": "Fungal / yeast culture (nonblood)",
+    "name": "Fungal / yeast swab culture (nonblood)",
     "category": "Swab",
-    "specimen": "Site-specific swab or material",
-    "collect": "eSwab or sterile container",
-    "submit": "eSwab or sterile container",
+    "specimen": "Site-specific fungal or yeast culture swab",
+    "collect": "eSwab (white top)",
+    "submit": "eSwab (white top)",
     "qty": 1,
     "temp": "Verify",
-    "notes": "Nonblood culture. Confirm source-specific requirements.",
+    "notes": "White-top eSwab applies to swab-based fungal or yeast CULTURES only. Does not apply to fungal BLOOD culture or tissue/non-swab collections. Verify accepted collection site and assay in current Cedars instructions.",
     "slide": "2-3",
-    "aliases": "yeast",
-    "hold": true,
-    "blockReason": "Not performed at Sollis"
+    "aliases": "fungal culture yeast swab nonblood",
+    "hold": false,
+    "blockReason": "",
+    "sourceNote": "Sollis swab-culture workflow; verify test/site acceptance against Cedars"
   },
   {
     "id": "respiratory-panel",
