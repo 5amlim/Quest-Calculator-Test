@@ -685,3 +685,28 @@
     line-height: 1.4;
   }
 }
+
+@media print {
+  .cedars-print-precautions {
+    margin-top: 12px;
+    border: 1px solid #e4d6b6;
+    border-radius: 7px;
+    background: #fffcf6 !important;
+    break-inside: auto;
+  }
+  .cedars-print-precautions-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    color: #6c521f;
+    border-bottom: 1px solid #e8dcc6;
+    background: #fff6e3 !important;
+    break-after: avoid;
+  }
+  .cedars-print-precautions-title strong { font-size: 10.5pt; }
+  .cedars-print-precautions-title span { color: #826e48; font-size: 7.5pt; }
+  .cedars-print-precautions .cedars-print-handling-grid { border: 0; }
+  .cedars-print-precautions .cedars-print-handling-item { background: #fffcf6 !important; }
+}
