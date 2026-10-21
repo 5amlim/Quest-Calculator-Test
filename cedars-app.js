@@ -6,6 +6,7 @@
   const manual = [];
   const selected = new Set();
   let manualIndex = 0;
+  let showCartDetails = false;
   const byId = (id) => published.concat(manual).find((t) => t.id === id);
   const clean = (value) => String(value == null ? '' : value).trim();
   const esc = (value) => clean(value).replace(/[&<>"']/g, (ch) =>
@@ -79,38 +80,47 @@
       .filter(({test, score}) => score && (!cat || test.category === cat) && (showHolds || !test.hold))
       .sort((a, b) => q ? b.score - a.score || a.test.name.localeCompare(b.test.name) :
         a.test.name.localeCompare(b.test.name));
-    $('recordCount').textContent = records().filter((t) => !t.hold).length + ' starter tests';
-    $('libraryStatus').textContent = rows.length + ' matching records · ' +
-      records().filter((t) => t.hold).length + ' restricted pending verification';
+    $('recordCount').textContent = records().filter((t) => !t.hold).length + ' tests';
+    $('libraryStatus').textContent = rows.length + ' matching tests · ' +
+      records().filter((t) => t.hold).length + ' records requiring verification';
     $('cedarsLibraryBody').innerHTML = rows.map(({test}) =>
       '<tr><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
-      '<div class="subtext">' + esc(source(test)) + '</div>' +
-      (test.hold ? '<span class="cedars-hold">Verify-only</span>' : '<span class="cedars-dated">2023 reference</span>') +
-      '</td><td><div>' + esc(test.specimen) + '</div><div class="subtext">' + esc(test.collect) + '</div></td>' +
+      '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
+      (test.hold ? '<span class="cedars-hold">Verify-only</span>' : '') + '</td>' +
+      '<td><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
+      '<div class="subtext">' + esc(test.collect) + '</div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
       esc(test.temp || 'Verify') + '</span></td>' +
-      '<td class="row-actions"><button class="mini-button ' + (test.hold ? 'edit' : '') +
-      '" type="button" data-info="' + esc(test.id) + '">Details</button>' +
+      '<td class="cedars-volume-unknown">Verify</td>' +
+      '<td class="row-actions"><button class="mini-button edit" type="button" data-info="' +
+      esc(test.id) + '">Details</button>' +
       (!test.hold ? '<button class="mini-button" type="button" data-add="' + esc(test.id) + '">' +
       (selected.has(test.id) ? '✓ Added' : 'Add') + '</button>' : '') +
       '</td></tr>').join('');
     if (!rows.length) $('cedarsLibraryBody').innerHTML =
-      '<tr><td colspan="5" class="cedars-empty">No matches. Check spelling or add a verified manual record.</td></tr>';
+      '<tr><td colspan="6" class="cedars-empty">No matches. Check spelling or add a verified manual record.</td></tr>';
   }
 
   function renderCart() {
     const tests = chosen();
     $('selectedCount').textContent = String(tests.length);
+    $('cedarsCartCount').textContent = tests.length + ' tests';
     $('mobileCount').textContent = tests.length + ' tests';
     $('cedarsPrint').disabled = $('cedarsCsv').disabled = !tests.length;
+    $('cedarsDetailsToggle').setAttribute('aria-expanded', String(showCartDetails));
+    $('cedarsDetailsToggleText').textContent = showCartDetails ? 'Hide details' : 'Show details';
     $('cedarsCart').innerHTML = tests.length ? tests.map((test) =>
-      '<article class="cedars-cart-item"><div class="cedars-cart-top"><div><strong>' +
-      esc(test.name) + '</strong>' + (test.code ? '<small>' + esc(test.code) + '</small>' : '') +
-      '</div><button type="button" class="mini-button remove" data-remove="' + esc(test.id) +
+      '<article class="cedars-cart-item"><div class="cedars-cart-top">' +
+      '<div class="cedars-cart-heading"><strong>' + esc(test.name) +
+      '</strong>' + (test.code ? '<small>' + esc(test.code) + '</small>' : '') + '</div>' +
+      '<button type="button" class="mini-button remove" data-remove="' + esc(test.id) +
       '" aria-label="Remove ' + esc(test.name) + '">Remove</button></div>' +
-      '<p>' + esc(test.notes || 'Verify requirements in Lexicomp.') + '</p>' +
-      '<span class="cedars-source">' + esc(source(test)) + '</span></article>').join('') :
+      (showCartDetails ? '<div class="cedars-cart-details"><div><b>Collect</b> ' + esc(test.collect) +
+        '</div><div><b>Submit</b> ' + esc(test.submit) + '</div><div><b>Transport</b> ' +
+        esc(test.temp) + '</div><p>' + esc(test.notes || 'Verify current requirements.') +
+        '</p><span class="cedars-source">' + esc(source(test)) + '</span></div>' : '') +
+      '</article>').join('') :
       '<div class="cedars-empty">No tests selected.</div>';
 
     const groups = new Map();
@@ -121,8 +131,9 @@
       row.count += Math.max(1, Number(test.qty) || 1);
       row.tests.push(test.name);
     });
+    $('cedarsDrawCount').textContent = groups.size ?
+      groups.size + ' collection types' : 'No collection types';
     $('cedarsDraw').innerHTML = tests.length ?
-      '<p class="cedars-mini-note">Conservative count, with a separate collection set for each test. Shared specimens are not assumed.</p>' +
       Array.from(groups, ([container, group]) =>
         '<div class="cedars-plan-row"><span class="cedars-count">' + group.count + '×</span>' +
         '<div><strong>' + esc(container) + '</strong><small>' +
@@ -135,8 +146,9 @@
       if (!bags.has(key)) bags.set(key, []);
       bags.get(key).push(test);
     });
+    $('cedarsBagsCount').textContent = bags.size ? bags.size + ' temperature groups' : 'No transport groups';
     $('cedarsBags').innerHTML = tests.length ?
-      '<p class="cedars-mini-note">Group headings are planning categories, not permission to combine specimens into one bag. Keep each specimen in its required container.</p>' +
+      '<p class="cedars-mini-note">Keep containers separate. Temperature grouping is not permission to combine specimens.</p>' +
       Array.from(bags, ([bucket, items]) =>
         '<div class="cedars-bag"><div class="cedars-bag-header"><span class="badge ' +
         bagClass(bucket) + '">' + esc(bucket) + '</span><span>' + items.length + ' tests</span></div>' +
@@ -275,6 +287,26 @@
   });
   $('cedarsSearch').addEventListener('input', makeRows);
   $('cedarsType').addEventListener('change', makeRows);
+  const filterButton = $('cedarsFilterButton');
+  const filterPanel = $('cedarsFilterPanel');
+  const setFilterOpen = (open) => {
+    filterPanel.classList.toggle('hidden', !open);
+    filterButton.setAttribute('aria-expanded', String(open));
+  };
+  filterButton.addEventListener('click', () => setFilterOpen(filterPanel.classList.contains('hidden')));
+  $('cedarsFilterDone').addEventListener('click', () => setFilterOpen(false));
+  $('cedarsFilterReset').addEventListener('click', () => {
+    $('cedarsType').value = '';
+    $('showHolds').checked = true;
+    makeRows();
+    setFilterOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('#cedarsFilterControl')) setFilterOpen(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setFilterOpen(false);
+  });
   $('showHolds').addEventListener('change', makeRows);
   $('batchAdd').addEventListener('click', () => batchAdd(false));
   $('batchReview').addEventListener('click', () => batchAdd(true));
@@ -291,6 +323,8 @@
   $('cedarsPrint').addEventListener('click', printPlan);
   $('cedarsInfoClose').addEventListener('click', () => $('cedarsInfoDialog').close());
   $('cedarsInfoDone').addEventListener('click', () => $('cedarsInfoDialog').close());
+  $('cedarsDetailsToggle').addEventListener('click', () => { showCartDetails = !showCartDetails; renderCart(); });
+  $('manualCartButton').addEventListener('click', openManual);
   $('manualButton').addEventListener('click', openManual);
   $('manualClose').addEventListener('click', closeManual);
   $('manualCancel').addEventListener('click', closeManual);
