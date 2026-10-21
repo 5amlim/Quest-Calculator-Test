@@ -135,3 +135,12 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - The collection and printout continue to use the same drawings with warnings that they are visual references only.
 - Simulated JavaScript/DOM checks passed: 35 selectable records and 5 holds, 16 illustrated container choices, CSF/body-fluid sterile filter, enteric virus ParaPak filter, named test codes, printout inclusion, old cart cleanup, and absence of embedded Lexicomp credentials.
 - Not independently tested in a live browser or real printer. Current Cedars/Lexicomp monographs must still be checked before operational use.
+
+
+## Cedars menu sorting, transport defaults, and drawing refinement (October 21, 2026)
+- Consolidated the Sollis Cedars menu notice and the PowerPoint/Lexicomp links into a single compact Collection references section; did not include any Lexicomp username or password in the repository.
+- Sort the main Cedars test table by specimen group (Swab, Urine, Stool, Blood, Other), then test name, then collection container. Added visible group headers. Search filters and cart selections still function.
+- For **currently selectable** tests, apply room temperature as the Sollis-specified workflow default (33 records). Retain **Refrigerated** for body-fluid culture with Gram stain (1 record), and label **Room Temperature (deliver immediately)** for CSF culture (1 record). Blocked tests continue to display Verify. This is an owner-specified default, not validated assay-specific stability information; confirm against current Cedars monographs before operational use.
+- The delivery grouping keeps CSF separate from ordinary room-temperature submissions. Printouts include the same exception and temperature language.
+- Redrew the inline SVG container art using separate **rounded-bottom** and **pointed-bottom** tube profiles. UA and cobas urine tubes have pointed bottoms and pale yellow urine; gray-top urine culture and eSwab/UTM swab tubes are rounded. ParaPak shows brown stool with yellow/pink/white caps. Blood culture bottles have slimmer necks and darker fluid, retaining the purple/blue adult, pink pediatric, and red fungal bottle labels.
+- Simulated UI verification passed for 35 active and 5 restricted records, all five specimen group headings in order, alphabetic names within each group, 33 room-temperature defaults plus 2 exceptions, source links, illustrated collection/print summaries, and saved-cart persistence.
