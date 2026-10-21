@@ -319,7 +319,7 @@ window.CEDARS_TESTS = [
     "submit": "Sterile specimen cup (urine)",
     "qty": 1,
     "temp": "Room Temperature",
-    "notes": "The Cedars AFB culture monograph includes urine as a specimen type and lists a sterile transport vessel; sterile leak-proof specimen cup is also an accepted local option. Bag individually. Prior Cedars guide recommends first-morning urine. Confirm urine collection volume, number of specimens and current transport instructions in the complete monograph.",
+    "notes": "The Cedars AFB culture monograph includes urine as a specimen type and specifies a sterile transport vessel; a sterile leak-proof specimen cup is the local default, and a 50 mL sterile transport tube is an accepted alternative. Bag each specimen individually. Prior Cedars guide recommends first-morning urine. Confirm urine collection volume, number of specimens and current transport instructions in the complete monograph.",
     "slide": "11",
     "aliases": "AFB urine|urine mycobacteria|urine tuberculosis culture|urine TB culture",
     "hold": false,
