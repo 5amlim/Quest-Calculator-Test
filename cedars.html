@@ -37,8 +37,18 @@
         </div>
         <section class="cedars-source-strip" role="note" aria-label="Source verification status">
           <span class="cedars-reference-pill">Sollis Cedars menu</span>
-          <span class="cedars-source-message">Only approved Sollis Cedars workflows are selectable. Other tests are listed under Do Not Perform. Verify current Lexicomp/Cedars requirements. Container photos are visual references; confirm actual kits.</span>
-          <a class="cedars-reference-link" href="https://ppcny-my.sharepoint.com/:p:/g/personal/sam_hay_sollishealth_com/IQAMbz_xbgCOSIPY9EWOvwPUAfsBirHK38IHyJ9pUVIJmt0" target="_blank" rel="noopener noreferrer" aria-label="Open Cedars specimen collection PowerPoint in SharePoint (opens in a new tab)">View collection PowerPoint ↗</a>
+          <span class="cedars-source-message">Includes Sollis-reported workflows and Cedars reference-guide entries. Confirm each test in the current directory before collection. Container drawings match the reference photos in shape and color but are not manufacturer identification.</span>
+        </section>
+        <section class="cedars-reference-section" aria-labelledby="cedarsReferencesTitle">
+          <div class="cedars-reference-title">
+            <strong id="cedarsReferencesTitle">Collection references</strong>
+            <span>Check the current test monograph before specimen collection</span>
+          </div>
+          <div class="cedars-reference-actions">
+            <a class="cedars-reference-link" href="https://ppcny-my.sharepoint.com/:p:/g/personal/sam_hay_sollishealth_com/IQAMbz_xbgCOSIPY9EWOvwPUAfsBirHK38IHyJ9pUVIJmt0" target="_blank" rel="noopener noreferrer">Open collection PowerPoint ↗</a>
+            <a class="cedars-reference-link" href="https://online.lexi.com/lco/action/login" target="_blank" rel="noopener noreferrer">Open Cedars Lexicomp ↗</a>
+          </div>
+          <p class="cedars-reference-note">Use your authorized outpatient lab login. Credentials are not stored on this public page.</p>
         </section>
         <section class="panel search-panel cedars-batch" id="batchEntry" aria-labelledby="batchEntryTitle">
           <div class="batch-entry-heading">
@@ -47,7 +57,7 @@
           </div>
           <div class="batch-entry-body">
             <label class="sr-only" for="batchInput">Test names or codes, one per line</label>
-            <textarea id="batchInput" rows="3" placeholder="Urine culture&#10;Culture (eSwab)&#10;Vaginitis / vaginosis" aria-describedby="batchEntryDescription"></textarea>
+            <textarea id="batchInput" rows="3" placeholder="Urine culture&#10;Enteric virus stool PCR&#10;Ureaplasma culture" aria-describedby="batchEntryDescription"></textarea>
             <div class="search-actions">
               <button class="button ghost" type="button" id="batchClear">Clear</button>
               <button class="button secondary" type="button" id="batchReview">Review matches</button>
@@ -58,12 +68,14 @@
         </section>
         <div id="batchFeedback" class="panel batch-panel cedars-feedback hidden" aria-live="polite"></div>
         <div class="filter-row cedars-filter">
-          <label class="library-search"><span class="field-label">Search tests</span><input id="cedarsSearch" type="search" placeholder="Name, code, or abbreviation (e.g. QFT)" autocomplete="off"></label>
+          <label class="library-search"><span class="field-label">Search tests</span><input id="cedarsSearch" type="search" placeholder="Name, test code, or abbreviation (e.g. MYCC, LAB268)" autocomplete="off"></label>
           <div class="catalog-filter-control" id="cedarsFilterControl">
             <button class="catalog-filter-toggle" id="cedarsFilterButton" type="button" aria-expanded="false" aria-controls="cedarsFilterPanel"><span class="catalog-filter-icon" aria-hidden="true">☷</span><span>Filters</span><span class="catalog-filter-chevron shared-chevron" aria-hidden="true"></span></button>
             <div class="catalog-filter-panel hidden" id="cedarsFilterPanel">
               <div class="catalog-filter-heading"><strong>Filter tests</strong><button type="button" class="catalog-filter-reset" id="cedarsFilterReset">Clear filters</button></div>
               <label>Specimen type<select id="cedarsType" aria-label="Filter by specimen type"><option value="">All specimens</option><option>Swab</option><option>Urine</option><option>Stool</option><option>Blood</option><option>Other</option></select></label>
+              <div class="cedars-container-filter-heading">Collection container <span>Choose an icon to filter</span></div>
+              <div id="cedarsContainerFilters" class="cedars-container-filter-grid" role="group" aria-label="Filter tests by collection container"></div>
               <label class="catalog-filter-check"><input id="showHolds" type="checkbox"><span>Include Not performed at Sollis</span></label>
               <button class="catalog-filter-done" type="button" id="cedarsFilterDone">Done</button>
             </div>
