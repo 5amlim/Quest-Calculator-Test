@@ -2363,24 +2363,30 @@
   }
 
 
-  // Printed temperature headings are intentionally uppercase and include
-  // redundant pictograms; the words remain legible if an emoji font is missing.
-  function printBagTemperatureLabel(bag, short = false) {
+  // Printed labels put the emoji in its own high-contrast badge after BAG.
+  // The written temperature stays visible even without emoji font support.
+  function printBagTemperatureType(bag) {
     const key = String(bag.key || '').split('|')[0].toLowerCase();
-    const type = ['room','refrigerated','frozen','mixed','verify'].includes(key) ? key :
+    return ['room','refrigerated','frozen','mixed','verify'].includes(key) ? key :
       String(bag.className || '').includes('bag-room') ? 'room' :
       String(bag.className || '').includes('bag-refrigerated') ? 'refrigerated' :
       String(bag.className || '').includes('bag-frozen') ? 'frozen' :
       String(bag.className || '').includes('bag-mixed') ? 'mixed' : 'verify';
+  }
+  function printBagTemperatureLabel(bag, short = false) {
     const labels = {
-      room:['🌡️ ROOM TEMPERATURE','ROOM TEMPERATURE'],
-      refrigerated:['❄️ REFRIGERATED','REFRIGERATED'],
-      frozen:['❄️❄️ FROZEN','FROZEN'],
-      mixed:['⚠️ MIXED / VERIFY','MIXED / VERIFY'],
-      verify:['⚠️ VERIFY TEMPERATURE','VERIFY TEMPERATURE']
+      room:'ROOM TEMPERATURE', refrigerated:'REFRIGERATED',
+      frozen:'FROZEN', mixed:'MIXED / VERIFY', verify:'VERIFY TEMPERATURE'
     };
-    const label = labels[type][0];
+    const label = labels[printBagTemperatureType(bag)];
     return label + (short ? '' : ' BAG');
+  }
+  function printBagTemperatureBadge(bag) {
+    const type = printBagTemperatureType(bag);
+    const icons = {room:'🌡️',refrigerated:'❄️',frozen:'❄️❄️',
+      mixed:'⚠️',verify:'⚠️'};
+    return '<span class="print-temperature-emoji badge-' + type +
+      '" aria-hidden="true">' + icons[type] + '</span>';
   }
 
   function transportBagInfo(test) {
@@ -4316,7 +4322,7 @@
     const bagLabels = [...bags].sort((a, b) =>
       Number(a.isStat) - Number(b.isStat) ||
       transportBagInfo(a.tests[0]).order - transportBagInfo(b.tests[0]).order
-    ).map(bag => `<span class="print-bag-pill ${bag.className}">${bag.isStat ? 'STAT · ' : ''}${escapeHtml(printBagTemperatureLabel(bag, true))}</span>`).join('');
+    ).map(bag => `<span class="print-bag-pill ${bag.className}">${bag.isStat ? 'STAT · ' : ''}${escapeHtml(printBagTemperatureLabel(bag, true))}${printBagTemperatureBadge(bag)}</span>`).join('');
     // Render shipping bags in paired rows. Each pair has matching heights,
     // which keeps the next bag row together during printed page breaks instead
     // of leaving a short isolated bag and a large area of empty purple space.
@@ -4383,7 +4389,7 @@
           <strong>What to submit after processing</strong>
           <div class="print-submit-heading-summary">
             <span class="print-submit-bag-types">${bagDisplayOrder.map(({ bag }) => {
-              return `<span>${escapeHtml(printBagTemperatureLabel(bag, true))}</span>`;
+              return `<span class="print-bag-short-label">${escapeHtml(printBagTemperatureLabel(bag, true))}${printBagTemperatureBadge(bag)}</span>`;
             }).join('')}</span>
             <span class="print-submit-bag-count"><b>${bags.length}</b> ${bags.length === 1 ? 'bag' : 'bags'}</span>
           </div>
@@ -4393,7 +4399,7 @@
           const bagNumber = rowIndex * 2 + columnIndex + 1;
           return `<article class="print-bag-card ${bag.className} ${bag.isStat ? 'bag-stat' : 'bag-routine'}${contents.length > 11 ? ' bag-long' : ''}">
             <div class="print-bag-topbar"><span class="print-bag-topbar-label">Bag</span><span class="print-bag-priority ${bag.isStat ? 'priority-stat' : 'priority-routine'}">${bag.isStat ? 'STAT' : 'Routine'}</span><span class="print-bag-topbar-index" aria-label="Bag ${bagNumber} of ${bags.length}">${bagNumber}/${bags.length}</span></div>
-            <div class="print-bag-card-header"><div><div class="print-bag-title"><strong>${escapeHtml(bagName)}</strong></div><span>${bag.isStat ? 'STAT specimens only · keep separate from routine and other temperatures' : 'Routine only · keep separate from STAT and other temperatures'}</span></div><div class="print-bag-header-right"><div class="print-bag-container-total"><strong>${totalContainers}</strong><span>containers</span></div></div></div>
+            <div class="print-bag-card-header"><div><div class="print-bag-title"><strong>${escapeHtml(bagName)}</strong>${printBagTemperatureBadge(bag)}</div><span>${bag.isStat ? 'STAT specimens only · keep separate from routine and other temperatures' : 'Routine only · keep separate from STAT and other temperatures'}</span></div><div class="print-bag-header-right"><div class="print-bag-container-total"><strong>${totalContainers}</strong><span>containers</span></div></div></div>
             <div class="print-submit-content">${contents.map(item => `<div class="print-submit-item${item.originalTube ? ' original-tube-submit' : ''}">
               <div class="print-submit-item-title"><strong>${item.count}</strong><span class="tube ${item.displayClassName || item.className}"><span class="print-submit-container-name">${escapeHtml(item.originalTube && item.key === 'sst-spun' ? (selectedSstIsTiger() ? 'Tiger SST (Spun)' : 'Gold SST (Spun)') : item.label)}</span></span>${printSstTigerBadge(item)}${printBagSpecimenBadge(item)}</div>
               ${printSubmissionItemDetail(item)}
