@@ -34,6 +34,62 @@
   const containerArt = (container, size) => typeof window.CEDARS_CONTAINER_ART === 'function'
     ? window.CEDARS_CONTAINER_ART(container, size) : '';
 
+  // Cropped source photos uploaded by the workflow owner. The 4×3 atlas is
+  // packaged in this test repo; no third-party image hotlinks or credentials.
+  const photoCatalog = {
+    adult:      {col:0,row:0,label:'BD BACTEC adult aerobic and anaerobic culture bottle set'},
+    peds:       {col:1,row:0,label:'BD BACTEC pediatric culture bottle'},
+    fungal:     {col:2,row:0,label:'BD BACTEC Myco/F Lytic fungal blood culture bottle'},
+    eswab:      {col:3,row:0,label:'White-top BD eSwab culture tube'},
+    utm:        {col:0,row:1,label:'Red-top UTM viral transport medium tube'},
+    cobasUrine: {col:1,row:1,label:'cobas PCR urine collection kit with transfer pipette'},
+    cobasSwab:  {col:2,row:1,label:'cobas PCR Media Dual Swab kit'},
+    affirm:     {col:3,row:1,label:'BD Affirm VPIII / ATTS swab kit'},
+    urine:      {col:0,row:2,label:'Gray-top urine culture preservative tube'},
+    parapak:    {col:1,row:2,label:'ParaPak three-vial stool collection set'},
+    ua:         {col:2,row:2,label:'Red and yellow swirl-top urinalysis preservative tube'},
+    cleanStool: {col:1,row:2,label:'Three-vial ParaPak kit, including clean stool vial'},
+    formalin:   {col:1,row:2,label:'Three-vial ParaPak kit, including 10% formalin vial'}
+  };
+  const photoReference = (container) => {
+    const key = typeof window.CEDARS_CONTAINER_KIND === 'function'
+      ? window.CEDARS_CONTAINER_KIND(container) : 'unknown';
+    return photoCatalog[key] ? {key, ...photoCatalog[key]} : null;
+  };
+  const photoArt = (container, size) => {
+    const illustration = containerArt(container, size);
+    const photo = photoReference(container);
+    if (!photo) return illustration;
+    const camera = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"' +
+      ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"' +
+      ' stroke-linejoin="round"><path d="M4 7h4l2-3h4l2 3h4v12H4z"/>' +
+      '<circle cx="12" cy="13" r="3.3"/></svg>';
+    return '<button type="button" class="cedars-photo-trigger"' +
+      ' data-photo-key="' + esc(photo.key) + '" aria-haspopup="dialog"' +
+      ' aria-label="' + esc('View actual photo: ' + photo.label) + '"' +
+      ' title="' + esc('View actual photo: ' + photo.label) + '">' +
+      illustration + '<span class="cedars-photo-chip" aria-hidden="true">' +
+      camera + '</span></button>';
+  };
+  function openPhoto(key) {
+    const photo = photoCatalog[key];
+    if (!photo) return;
+    const dialog = $('cedarsPhotoDialog');
+    const viewport = $('cedarsPhotoViewport');
+    const offsets = {'--photo-left':(-100 * photo.col) + '%',
+      '--photo-top':(-100 * photo.row) + '%'};
+    Object.entries(offsets).forEach(([name,value]) => viewport.style.setProperty(name,value));
+    viewport.setAttribute('aria-label','Actual reference photo: ' + photo.label);
+    $('cedarsPhotoTitle').textContent = photo.label;
+    $('cedarsPhotoCaption').textContent = photo.label;
+    if (!dialog.open) dialog.showModal();
+  }
+  function closePhoto() {
+    const dialog = $('cedarsPhotoDialog');
+    if (dialog.open) dialog.close();
+  }
+
+
   // The Quest calculator uses its own storage keys. Cedars restores its cart
   // and browser-created test records without ever accessing Quest state.
   function storageMessage(saved) {
@@ -188,7 +244,7 @@
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at Sollis') + '</span>' : '') + '</td>' +
-      '<td><div class="cedars-container-cell">' + containerArt(test.collect, 'table') +
+      '<td><div class="cedars-container-cell">' + photoArt(test.collect, 'table') +
       '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
       '<div class="subtext">' + esc(test.collect) + '</div></div></div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
@@ -219,7 +275,7 @@
       '<button type="button" class="mini-button remove" data-remove="' + esc(test.id) +
       '" aria-label="Remove ' + esc(test.name) + '">Remove</button></div>' +
       (showCartDetails ? '<div class="cedars-cart-details"><div class="cedars-cart-art-row">' +
-        containerArt(test.collect, 'small') + '<div><b>Collect</b> ' + esc(test.collect) + '</div></div>' +
+        photoArt(test.collect, 'small') + '<div><b>Collect</b> ' + esc(test.collect) + '</div></div>' +
         '</div><div><b>Submit</b> ' + esc(test.submit) + '</div><div><b>Transport</b> ' +
         esc(test.temp) + '</div><p>' + esc(test.notes || 'Verify current requirements.') +
         '</p><span class="cedars-source">' + esc(source(test)) + '</span></div>' : '') +
@@ -240,7 +296,7 @@
     $('cedarsDraw').innerHTML = tests.length ?
       Array.from(groups, ([container, group]) =>
         '<div class="cedars-plan-row ' + specimenClass(group.category) + '"><span class="cedars-count">' + group.count + '×</span>' +
-        containerArt(container, 'card') +
+        photoArt(container, 'card') +
         '<div><strong>' + esc(container) + '</strong><small>' +
         esc(group.tests.join('; ')) + '</small></div></div>').join('') :
       '<div class="cedars-empty">Add tests to view collection containers.</div>';
@@ -258,7 +314,7 @@
         '<div class="cedars-bag"><div class="cedars-bag-header"><span class="badge ' +
         bagClass(bucket) + '">' + esc(bucket) + '</span><span>' + items.length + ' tests</span></div>' +
         items.map((test) => '<div class="cedars-bag-line ' + specimenClass(test.category) + '">' +
-          containerArt(test.submit, 'card') +
+          photoArt(test.submit, 'card') +
           '<div><strong>' + esc(test.name) +
           '</strong><small>' + esc(test.submit) + '</small></div></div>').join('') + '</div>').join('') :
       '<div class="cedars-empty">Add tests to view transport groups.</div>';
@@ -313,8 +369,8 @@
     $('cedarsInfoTitle').textContent = test.name;
     $('cedarsInfoBody').innerHTML =
       '<div class="cedars-info-illustrations">' +
-      '<div>' + containerArt(test.collect, 'detail') + '<span>Collection container</span></div>' +
-      '<div>' + containerArt(test.submit, 'detail') + '<span>Submission container</span></div>' +
+      '<div>' + photoArt(test.collect, 'detail') + '<span>Collection container</span></div>' +
+      '<div>' + photoArt(test.submit, 'detail') + '<span>Submission container</span></div>' +
       '</div>' +
       '<p class="cedars-illustration-note">Color-matched illustration based on supplied kit photos. Verify the actual manufacturer container before collecting.</p>' +
       '<div class="cedars-summary-notice"><strong>' +
@@ -574,8 +630,16 @@
     setFilterOpen(false);
   });
   document.addEventListener('click', (event) => {
+    const trigger = event.target.closest('[data-photo-key]');
+    if (trigger) {
+      event.preventDefault();
+      openPhoto(trigger.dataset.photoKey);
+    }
+    if (event.target === $('cedarsPhotoDialog')) closePhoto();
     if (!event.target.closest('#cedarsFilterControl')) setFilterOpen(false);
   });
+  $('cedarsPhotoClose').addEventListener('click', closePhoto);
+  $('cedarsPhotoDone').addEventListener('click', closePhoto);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') setFilterOpen(false);
   });
