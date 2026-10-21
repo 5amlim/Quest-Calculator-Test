@@ -57,3 +57,14 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - Printouts now include two-column What to collect and What to submit cards followed by test-specific instructions, with verification warnings.
 - Still deliberately **not implemented**: Quest-specific pooling, SST/UriSponge toggles, STAT eligibility, standard blood-tube quantities, and any unverified Cedars-specific processing logic.
 - Static and simulated DOM functional tests passed for search, selection, batch addition, held-test blocking, filter opening/closing, cart detail toggling, and print assembly. Not a full live cross-browser validation.
+
+
+## Filter and print usability update
+- Anchored the Filters popover to the **left** edge of its trigger instead of the right edge, fixing the off-screen overflow shown on desktop. Width is limited to the current viewport.
+- Restructured the printout with the Quest-style hierarchy: **1. What to collect**, **2. What to submit**, and **3. Collection precautions & handling**.
+- Each collection card states the conservative container count and associated tests. Submission cards group tests by the transport temperature status and required submission container.
+- Unknown or flexible transport temperatures are plainly marked as pending. They are **not** presented as ready-to-pack bags.
+- Source-specific handling notes remain intact in a compact two-column section, including source attribution and dated-reference warning.
+- Added a conditional page break for large collections; small orders can remain on the same page. No confirmed volume, temperature, centrifugation, pooling, or STAT cutoff was inferred from the guide.
+- Functional test passed with urine culture, enteric bacteria PCR and QuantiFERON: all sections appeared in order, important collection instructions printed, and conflicting C. difficile guidance remained blocked.
+- Live browser screenshot review and physical/mobile printer checks were not performed.
