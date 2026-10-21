@@ -2610,3 +2610,140 @@
     }
   }
 }
+
+
+/* Same specimen color is retained on the fill; increase text contrast on
+   container badges without changing the light category background. */
+@media screen {
+  .cedars-page .cedars-library .cedars-container-name {
+    color:var(--badge-ink,#526473)!important;
+    font-weight:900;
+  }
+  .cedars-page .cedars-library .cedars-container-name.type-swab {--badge-ink:#174f83}
+  .cedars-page .cedars-library .cedars-container-name.type-urine {--badge-ink:#795000}
+  .cedars-page .cedars-library .cedars-container-name.type-stool {--badge-ink:#6e4321}
+  .cedars-page .cedars-library .cedars-container-name.type-blood {--badge-ink:#7e3049}
+  .cedars-page .cedars-library .cedars-container-name.type-other {--badge-ink:#54467e}
+}
+/* Submission container is the primary printed unit. Every card clearly shows
+   specimen, transport temperature, test method and individual test names. */
+@media print {
+  #cedarsPrintSheet .cedars-print-by-container {
+    padding:11px!important;
+    border-left:3px solid #a66e7a;
+    break-inside:avoid;
+  }
+  #cedarsPrintSheet .cedars-print-by-container.type-urine {border-left-color:#d4a03d}
+  #cedarsPrintSheet .cedars-print-by-container.type-stool {border-left-color:#b18c66}
+  #cedarsPrintSheet .cedars-print-by-container.type-swab {border-left-color:#7caed6}
+  #cedarsPrintSheet .cedars-print-by-container.type-blood {border-left-color:#c77b95}
+  #cedarsPrintSheet .cedars-print-by-container.type-other {border-left-color:#a198cc}
+  #cedarsPrintSheet .cedars-print-container-heading {
+    align-items:center;
+    gap:8px;
+    border-bottom:1px solid #e3e9ed;
+    padding-bottom:8px;
+  }
+  #cedarsPrintSheet .cedars-print-container-heading .cedars-container-art {
+    width:53px;
+    height:51px;
+    flex:0 0 53px;
+  }
+  #cedarsPrintSheet .cedars-print-container-heading .cedars-print-card-name {
+    display:flex;
+    align-items:flex-start;
+    flex-direction:column;
+    gap:5px;
+  }
+  #cedarsPrintSheet .cedars-print-container-heading .cedars-print-card-name>strong {
+    color:#213b49!important;
+    font-size:10.3pt!important;
+    line-height:1.26;
+    font-weight:900;
+  }
+  #cedarsPrintSheet .cedars-print-container-heading .cedars-print-test-type {margin-left:0}
+  #cedarsPrintSheet .cedars-print-container-meta {
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:5px;
+    padding:7px 0 3px;
+    font-size:7.4pt;
+    color:#5c737f;
+    font-weight:700;
+  }
+  #cedarsPrintSheet .cedars-print-method-group {
+    margin-top:7px;
+    break-inside:avoid;
+  }
+  #cedarsPrintSheet .cedars-print-method-heading {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    border-bottom:1px solid #e8edf1;
+    padding:4px 0 5px;
+    font-size:7pt;
+    color:#5d6d78;
+    font-weight:650;
+  }
+  #cedarsPrintSheet .cedars-print-method-badge {
+    display:inline-block;
+    padding:3px 7px;
+    border-radius:4px;
+    color:#5b506e!important;
+    background:#eeeaf7!important;
+    border:1px solid #d2c8e3;
+    font-size:8.3pt;
+    line-height:1.2;
+    font-weight:900;
+    letter-spacing:.035em;
+  }
+  #cedarsPrintSheet .cedars-print-method-badge.is-culture {
+    color:#85425a!important;
+    background:#fae8ef!important;
+    border-color:#e3b5c5;
+  }
+  #cedarsPrintSheet .cedars-print-method-badge.is-pcr {
+    color:#1e5f91!important;
+    background:#e6f2ff!important;
+    border-color:#b3d3ee;
+  }
+  #cedarsPrintSheet .cedars-print-method-group .cedars-print-test-list {
+    list-style:none;
+    margin:3px 0 0;
+    padding:0;
+  }
+  #cedarsPrintSheet .cedars-print-organized-test {
+    padding:7px 3px 6px;
+    border-bottom:1px solid #edf0f2;
+    margin:0;
+    break-inside:avoid;
+  }
+  #cedarsPrintSheet .cedars-print-organized-test:last-child {border-bottom:0}
+  #cedarsPrintSheet .cedars-print-test-ident {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:3px 7px;
+  }
+  #cedarsPrintSheet .cedars-print-test-name {
+    display:inline-block;
+    color:#193a4b!important;
+    font-size:9.4pt!important;
+    line-height:1.35;
+    font-weight:900!important;
+  }
+  #cedarsPrintSheet .cedars-print-test-ident .cedars-print-test-type {margin-left:0}
+  #cedarsPrintSheet .cedars-print-test-code {
+    color:#617783;
+    font-size:7.3pt;
+    margin-left:0;
+  }
+  #cedarsPrintSheet .cedars-print-submit-step {
+    margin-top:6px;
+    padding:5px 7px;
+    font-size:7.7pt;
+  }
+}
