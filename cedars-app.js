@@ -331,15 +331,28 @@
       'Sterile container','QuantiFERON 4-tube','Aptima','FIT bottle','SurePath','Other / verify'];
     const sorted = Array.from(counts).sort(([a],[b]) =>
       order.indexOf(a) - order.indexOf(b) || a.localeCompare(b));
-    const entry = (container, count) =>
-      '<button type="button" class="cedars-container-filter-option' +
-      (selectedContainer === container ? ' is-selected' : '') +
-      '" data-container="' + esc(container) + '" aria-pressed="' +
-      (selectedContainer === container ? 'true' : 'false') + '">' +
-      (container ? containerArt(container, 'small') : '<span class="cedars-container-filter-all">All</span>') +
-      '<span class="cedars-container-filter-copy"><strong>' +
-      esc(container || 'All containers') + '</strong><small>' + count +
-      (count === 1 ? ' test' : ' tests') + '</small></span></button>';
+    const entry = (container, count) => {
+      const photo = photoReference(container);
+      const photoButton = photo
+        ? '<button type="button" class="cedars-filter-photo-button" data-photo-key="' +
+          esc(photo.key) + '" aria-haspopup="dialog" aria-label="' +
+          esc('View actual photo: ' + photo.label) + '" title="' +
+          esc('View actual photo: ' + photo.label) +
+          '"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none"' +
+          ' stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M4 7h4l2-3h4l2 3h4v12H4z"/>' +
+          '<circle cx="12" cy="13" r="3.3"/></svg></button>' : '';
+      return '<div class="cedars-container-filter-item' + (photo ? ' has-reference-photo' : '') + '">' +
+        '<button type="button" class="cedars-container-filter-option' +
+        (selectedContainer === container ? ' is-selected' : '') +
+        '" data-container="' + esc(container) + '" aria-pressed="' +
+        (selectedContainer === container ? 'true' : 'false') + '">' +
+        (container ? containerArt(container, 'small') : '<span class="cedars-container-filter-all">All</span>') +
+        '<span class="cedars-container-filter-copy"><strong>' +
+        esc(container || 'All containers') + '</strong><small>' + count +
+        (count === 1 ? ' test' : ' tests') + '</small></span></button>' +
+        photoButton + '</div>';
+    };
     $('cedarsContainerFilters').innerHTML =
       entry('',records().filter(t => !t.hold).length) +
       sorted.map(([key,count]) => entry(key,count)).join('');
