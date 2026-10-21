@@ -224,7 +224,7 @@ window.CEDARS_TESTS = [
   {
     "id": "mrsa-screen",
     "code": "",
-    "name": "MRSA screen",
+    "name": "Methicillin-resistant and methicillin-susceptible Staphylococcus aureus (MRSA/MSSA) screen",
     "category": "Swab",
     "specimen": "Screening swab",
     "collect": "eSwab (white top)",
@@ -241,7 +241,7 @@ window.CEDARS_TESTS = [
   {
     "id": "vre-screen",
     "code": "",
-    "name": "VRE screen",
+    "name": "Vancomycin-resistant Enterococcus (VRE) culture, peri-rectal",
     "category": "Swab",
     "specimen": "Screening swab",
     "collect": "eSwab (white top)",
