@@ -2088,3 +2088,46 @@
  #cedarsPrintSheet .cedars-print-submit-card .cedars-print-submit-line {font-size:9pt;}
  #cedarsPrintSheet .cedars-print-section-note {margin-top:6px!important;}
 }
+
+
+/* Filter and restricted-tests controls share one row, with the latter right aligned. */
+@media screen {
+  .cedars-shell .filter-row.cedars-filter {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 9px 14px;
+    align-items: end;
+  }
+  .cedars-shell .cedars-filter > .library-search,
+  .cedars-shell .cedars-filter > .cedars-search-suggestions {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+  .cedars-shell .cedars-filter > .catalog-filter-control {
+    grid-column: 1;
+    justify-self: start;
+    width: 180px;
+    max-width: 100%;
+  }
+  .cedars-shell .cedars-filter > #cedarsBlockedButton {
+    grid-column: 2;
+    justify-self: end;
+    align-self: end;
+    min-height: 42px;
+    width: auto;
+    white-space: nowrap;
+  }
+  @media (max-width: 540px) {
+    .cedars-shell .cedars-filter > .catalog-filter-control {
+      width: min(150px, 100%);
+    }
+    .cedars-shell .cedars-filter > #cedarsBlockedButton {
+      white-space: normal;
+      min-width: 0;
+      max-width: 200px;
+      padding: 8px 10px;
+      font-size: 11px;
+      text-align: center;
+    }
+  }
+}
