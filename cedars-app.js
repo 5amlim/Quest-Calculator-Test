@@ -220,6 +220,43 @@
     return ['swab','urine','stool','blood','other'].includes(value)
       ? 'type-' + value : 'type-other';
   };
+  // Show the actual test identity, collection and transport instead of
+  // a bare name in search suggestions and bulk-match review.
+  const testCodes = (test) => [test.code, test.secondaryCode].filter(Boolean).join(' · ');
+  function matchChoice(test) {
+    const codes = testCodes(test);
+    return '<div class="cedars-match-choice ' + specimenClass(test.category) + '">' +
+      '<div class="cedars-match-info"><strong class="cedars-match-title">' + esc(test.name) + '</strong>' +
+      '<div class="cedars-match-meta">' +
+      (codes ? '<span class="cedars-match-code">' + esc(codes) + '</span>' : '') +
+      '<span>' + esc(test.category) + ': ' + esc(test.specimen) + '</span>' +
+      '<span>Collect: ' + esc(test.collect) + '</span>' +
+      '<span>Transport: ' + esc(test.temp || 'Verify') + '</span></div></div>' +
+      '<div class="cedars-match-actions"><button type="button" class="mini-button edit" data-info="' +
+      esc(test.id) + '">Details</button>' +
+      (test.hold ? '<span class="cedars-match-held">Verification required</span>' :
+        '<button type="button" class="mini-button" data-add="' + esc(test.id) + '">' +
+        (selected.has(test.id) ? '✓ Added' : 'Add') + '</button>') +
+      '</div></div>';
+  }
+  function renderSearchSuggestions(rows, query) {
+    const panel = $('cedarsSearchSuggestions');
+    if (!clean(query)) {
+      panel.innerHTML = '';
+      panel.classList.add('hidden');
+      return;
+    }
+    const best = rows.filter(({test}) => !test.hold)
+      .sort((a,b) => b.score - a.score || a.test.name.localeCompare(b.test.name))
+      .slice(0,3);
+    panel.innerHTML = '<div class="cedars-match-heading"><strong>Top matches</strong><span>' +
+      esc(String(rows.length)) + ' matching test' + (rows.length===1 ? '' : 's') +
+      ' · More results in the directory below</span></div>' +
+      (best.length ? best.map(({test}) => matchChoice(test)).join('') :
+        '<p class="cedars-no-matches">No selectable matches. Try a code, abbreviation, specimen or collection container.</p>');
+    panel.classList.remove('hidden');
+  }
+
   function makeRows() {
     const q = $('cedarsSearch').value;
     const cat = $('cedarsType').value;
@@ -236,6 +273,7 @@
         if (byTest) return byTest;
         return (a.test.collect || '').localeCompare(b.test.collect || '');
       });
+    renderSearchSuggestions(rows, q);
     $('recordCount').textContent = records().filter((t) => !t.hold).length + ' tests';
     $('libraryStatus').textContent = rows.length + ' matching tests' +
       (selectedContainer ? ' · container: ' + selectedContainer : '') + ' · ' +
@@ -417,19 +455,24 @@
     const feedback = lines.map((line) => {
       const exact = exactMatches(line).filter((t) => !t.hold);
       if (!reviewOnly && exact.length === 1) {
-        selected.add(exact[0].id); added += 1;
-        return '<div><strong>' + esc(line) + '</strong> → Added ' + esc(exact[0].name) + '</div>';
+        selected.add(exact[0].id);
+        added += 1;
+        return '<div class="cedars-match-result"><strong>' + esc(line) + '</strong>' +
+          '<span class="cedars-match-success">Added ' + esc(exact[0].name) + '</span></div>';
       }
-      const suggestions = records().map((t) => ({t, s:rank(t, line)}))
-        .filter(({s}) => s > 0).sort((a,b) => b.s - a.s).slice(0, 3);
-      if (!suggestions.length) return '<div><strong>' + esc(line) + '</strong> → No matches. Contact Sam before adding an unlisted test.</div>';
-      return '<div><strong>' + esc(line) + '</strong> → ' +
-        suggestions.map(({t}) => esc(t.name) + (t.hold ? ' (Not performed at Sollis)' :
-          ' <button type="button" class="mini-button" data-add="' + esc(t.id) + '">Add</button>')).join(' · ') +
-        '</div>';
+      const suggestions = records().map((t) => ({t,score:rank(t,line)}))
+        .filter(({score}) => score > 0).sort((a,b)=>b.score-a.score)
+        .slice(0,4);
+      if (!suggestions.length) return '<div class="cedars-match-result"><strong>' + esc(line) +
+        '</strong><p>No match found. Confirm the test in the current Cedars directory or contact Sam.</p></div>';
+      return '<div class="cedars-match-result"><div class="cedars-match-query">Search: <strong>' +
+        esc(line) + '</strong> <span>Choose the correct test and container</span></div>' +
+        '<div class="cedars-match-list">' + suggestions.map(({t})=>matchChoice(t)).join('') + '</div></div>';
     });
-    $('batchFeedback').innerHTML = (reviewOnly ? 'Review suggested matches:' :
-      added + ' exact matches added. Review unresolved entries:') + feedback.join('');
+    $('batchFeedback').innerHTML = '<div class="cedars-match-heading"><strong>' +
+      (reviewOnly ? 'Review suggested matches' : 'Batch search results') + '</strong>' +
+      '<span>' + lines.length + ' search entr' + (lines.length===1?'y':'ies') +
+      (added ? ' · ' + added + ' added' : '') + '</span></div>' + feedback.join('');
     $('batchFeedback').classList.remove('hidden');
     if (added) saveState();
     render();
@@ -613,10 +656,14 @@
     if (addButton) add(addButton.dataset.add);
     else if (infoButton) detail(infoButton.dataset.info);
   });
-  $('batchFeedback').addEventListener('click', (event) => {
-    const button = event.target.closest('[data-add]');
-    if (button) add(button.dataset.add);
-  });
+  const handleMatchAction = (event) => {
+    const addButton = event.target.closest('[data-add]');
+    const detailButton = event.target.closest('[data-info]');
+    if (addButton) add(addButton.dataset.add);
+    else if (detailButton) detail(detailButton.dataset.info);
+  };
+  $('batchFeedback').addEventListener('click', handleMatchAction);
+  $('cedarsSearchSuggestions').addEventListener('click', handleMatchAction);
   $('cedarsCart').addEventListener('click', (event) => {
     const button = event.target.closest('[data-remove]');
     if (!button) return;
