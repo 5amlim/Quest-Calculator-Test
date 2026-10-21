@@ -13,7 +13,7 @@
     --lab-light: #eaf7f0;
     position: relative;
     display: block;
-    width: 210px;
+    width: 172px;
     max-width: 100%;
     flex: 0 0 auto;
     color: #213947;
@@ -181,7 +181,7 @@
       justify-content: flex-start;
       flex-wrap: wrap;
     }
-    .lab-select { width: min(100%, 210px); }
+    .lab-select { width: min(100%, 172px); }
     .lab-select > summary { min-height: 61px; }
     .lab-select-menu { right: auto; left: 0; width: 100%; max-width: 100%; }
   }
