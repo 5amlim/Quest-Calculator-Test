@@ -520,12 +520,12 @@
     });
     const testTag = (test) =>
       '<strong>' + esc(test.name) + '</strong>' +
-      '<span class="cedars-print-test-type">' + esc(test.category || 'Other') + '</span>' +
+      '<span class="cedars-print-test-type ' + specimenClass(test.category) + '">' + esc(test.category || 'Other') + '</span>' +
       ((test.code || test.secondaryCode) ? '<span class="cedars-print-test-code">' + esc([test.code, test.secondaryCode].filter(Boolean).join(' / ')) + '</span>' : '');
     const collectionCards = Array.from(collection, ([container, group]) => {
       const quantity = group.reduce((sum, test) => sum + initialCountFor(test), 0);
       const cupCollection = group.some(test => test.category === 'Urine' || test.category === 'Stool');
-      const cupBadge = cupCollection ? '<span class="cedars-print-collector-pill">' +
+      const cupBadge = cupCollection ? '<span class="cedars-print-collector-pill ' + specimenClass(group[0].category) + '">' +
         esc(group[0].category) + '</span>' : '';
       return '<article class="cedars-print-card cedars-print-collection-card">' +
         '<div class="cedars-print-card-heading"><span class="cedars-print-total">' + quantity +
