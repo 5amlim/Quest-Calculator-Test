@@ -36,22 +36,22 @@
   const containerArt = (container, size) => typeof window.CEDARS_CONTAINER_ART === 'function'
     ? window.CEDARS_CONTAINER_ART(container, size) : '';
 
-  // Cropped source photos uploaded by the workflow owner. The 4×3 atlas is
-  // packaged in this test repo; no third-party image hotlinks or credentials.
+  // Actual individual high-resolution reference photos supplied for the guide.
+  // cleanStool/formalin use the full three-vial ParaPak reference photo.
   const photoCatalog = {
-    adult:      {col:0,row:0,label:'BD BACTEC adult aerobic and anaerobic culture bottle set'},
-    peds:       {col:1,row:0,label:'BD BACTEC pediatric culture bottle'},
-    fungal:     {col:2,row:0,label:'BD BACTEC Myco/F Lytic fungal blood culture bottle'},
-    eswab:      {col:3,row:0,label:'White-top BD eSwab culture tube'},
-    utm:        {col:0,row:1,label:'Red-top UTM viral transport medium tube'},
-    cobasUrine: {col:1,row:1,label:'cobas PCR urine collection kit with transfer pipette'},
-    cobasSwab:  {col:2,row:1,label:'cobas PCR Media Dual Swab kit'},
-    affirm:     {col:3,row:1,label:'BD Affirm VPIII / ATTS swab kit'},
-    urine:      {col:0,row:2,label:'Gray-top urine culture preservative tube'},
-    parapak:    {col:1,row:2,label:'ParaPak three-vial stool collection set'},
-    ua:         {col:2,row:2,label:'Red and yellow swirl-top urinalysis preservative tube'},
-    cleanStool: {col:1,row:2,label:'Three-vial ParaPak kit, including clean stool vial'},
-    formalin:   {col:1,row:2,label:'Three-vial ParaPak kit, including 10% formalin vial'}
+    adult:{label:'BD BACTEC adult aerobic and anaerobic culture bottle set'},
+    peds:{label:'BD BACTEC pediatric culture bottle'},
+    fungal:{label:'BD BACTEC Myco/F Lytic fungal blood culture bottle'},
+    eswab:{label:'White-top BD eSwab culture tube'},
+    utm:{label:'Red-top UTM viral transport medium tube'},
+    cobasUrine:{label:'cobas PCR urine collection kit with transfer pipette'},
+    cobasSwab:{label:'cobas PCR Media Dual Swab kit'},
+    affirm:{label:'BD Affirm VPIII / ATTS swab kit'},
+    urine:{label:'Gray-top urine culture preservative tube'},
+    parapak:{label:'ParaPak three-vial stool collection set'},
+    ua:{label:'Red and yellow swirl-top urinalysis preservative tube'},
+    cleanStool:{label:'ParaPak three-vial set, including clean stool vial', imageKey:'parapak'},
+    formalin:{label:'ParaPak three-vial set, including formalin vial', imageKey:'parapak'}
   };
   const photoReference = (container) => {
     const key = typeof window.CEDARS_CONTAINER_KIND === 'function'
@@ -75,13 +75,13 @@
   };
   function openPhoto(key) {
     const photo = photoCatalog[key];
-    if (!photo) return;
+    const sourceKey = photo && (photo.imageKey || key);
+    const src = sourceKey && window.CEDARS_CONTAINER_PHOTOS && window.CEDARS_CONTAINER_PHOTOS[sourceKey];
+    if (!photo || !src) return;
     const dialog = $('cedarsPhotoDialog');
-    const viewport = $('cedarsPhotoViewport');
-    const offsets = {'--photo-left':(-100 * photo.col) + '%',
-      '--photo-top':(-100 * photo.row) + '%'};
-    Object.entries(offsets).forEach(([name,value]) => viewport.style.setProperty(name,value));
-    viewport.setAttribute('aria-label','Actual reference photo: ' + photo.label);
+    const image = $('cedarsPhotoImage');
+    image.src = src;
+    image.alt = photo.label;
     $('cedarsPhotoTitle').textContent = photo.label;
     $('cedarsPhotoCaption').textContent = photo.label;
     if (!dialog.open) dialog.showModal();
