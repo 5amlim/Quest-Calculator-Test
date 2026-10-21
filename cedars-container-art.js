@@ -127,6 +127,8 @@
         roundBottomTube(90,20,28,68,'#eef1ee','CLEAN','#906b49');
       case 'cleanStool': return roundBottomTube(47,7,34,82,'#eef1ee','CLEAN','#956b48');
       case 'formalin': return roundBottomTube(47,7,34,82,'#c987a1','10%','#b38558');
+      case 'sterile50': return roundBottomTube(44,5,40,84,'#edf0f0','50mL','#f1f6f7')+
+        line(47,64,79,64,'#bdc8cc',1)+txt(64,74,'TUBE','#637984',6);
       case 'sterile': return cup();
       case 'qft': return qft();
       case 'aptima': return roundBottomTube(48,6,30,83,'#eac0c6','APTIMA','#f0f5f6');
@@ -150,6 +152,7 @@
     parapak:'Three ParaPak stool vials with yellow, pink and white caps',
     cleanStool:'White-cap clean stool collection vial',
     formalin:'Pink-cap 10 percent Formalin stool vial',
+    sterile50:'50 mL sterile, leak-proof specimen transport tube',
     sterile:'Clear specimen cup with white lid',
     qft:'Four QuantiFERON tubes',
     aptima:'Aptima swab transport tube, provisional illustration',
@@ -174,6 +177,7 @@
     if (/utm|universal transport|viral transport/.test(s))return 'utm';
     if (/eswab|e.?swab/.test(s))return 'eswab';
     if (/aptima/.test(s))return 'aptima';
+    if (/50\s*ml.*sterile|sterile.*50\s*ml/.test(s))return 'sterile50';
     if (/sterile cup|sterile container|sterile specimen cup/.test(s))return 'sterile';
     if (/fit|fobt.chek/.test(s))return 'fit';
     if (/surepath/.test(s))return 'surepath';
