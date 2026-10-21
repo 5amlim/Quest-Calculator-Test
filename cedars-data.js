@@ -401,7 +401,8 @@ window.CEDARS_TESTS = [
     "sourceNote": "Cedars Lexicomp screenshot: Occult Blood, Fecal OCLT (Outreach), CS-Link LAB694",
     "containerType": "3-vial ParaPak",
     "secondaryCode": "LAB694",
-    "volumeDisplay": "Verify sample quantity"
+    "volumeDisplay": "Verify sample quantity",
+    "singleVialOption": "White-cap clean, unpreserved stool vial alone is also acceptable for this test."
   },
   {
     "id": "blood-afb",
@@ -678,7 +679,8 @@ window.CEDARS_TESTS = [
     "notes": "Standard stool workflow: submit all three separate ParaPak vials (yellow C & S, pink 10% formalin, white clean). Three-vial submission is the preferred planning default, but the white-cap clean unpreserved vial alone is an accepted single-vial collection option for this test. The test itself uses the unpreserved specimen; do not substitute preserved material. Collect stool in the clean white-cap unpreserved vial, as shown in the provided guide. Confirm current sample volume, stability and accepted assay.",
     "hold": false,
     "blockReason": "",
-    "containerType": "3-vial ParaPak"
+    "containerType": "3-vial ParaPak",
+    "singleVialOption": "White-cap clean, unpreserved stool vial alone is also acceptable for this test."
   },
   {
     "id": "stool-wbc",
@@ -694,7 +696,8 @@ window.CEDARS_TESTS = [
     "notes": "Standard stool workflow: submit all three separate ParaPak vials (yellow C & S, pink 10% formalin, white clean). Three-vial submission is the preferred planning default, but the white-cap clean unpreserved vial alone is an accepted single-vial collection option for this test. The test itself uses the unpreserved specimen; do not substitute preserved material. Collect stool in clean white-cap vial per the poster. Confirm current test availability and transport instructions.",
     "hold": false,
     "blockReason": "",
-    "containerType": "3-vial ParaPak"
+    "containerType": "3-vial ParaPak",
+    "singleVialOption": "White-cap clean, unpreserved stool vial alone is also acceptable for this test."
   },
   {
     "id": "atypical-pneumonia-pcr-panel",
