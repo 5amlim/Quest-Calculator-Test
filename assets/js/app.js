@@ -2363,6 +2363,26 @@
   }
 
 
+  // Printed temperature headings are intentionally uppercase and include
+  // redundant pictograms; the words remain legible if an emoji font is missing.
+  function printBagTemperatureLabel(bag, short = false) {
+    const key = String(bag.key || '').split('|')[0].toLowerCase();
+    const type = ['room','refrigerated','frozen','mixed','verify'].includes(key) ? key :
+      String(bag.className || '').includes('bag-room') ? 'room' :
+      String(bag.className || '').includes('bag-refrigerated') ? 'refrigerated' :
+      String(bag.className || '').includes('bag-frozen') ? 'frozen' :
+      String(bag.className || '').includes('bag-mixed') ? 'mixed' : 'verify';
+    const labels = {
+      room:['🌡️ ROOM TEMPERATURE','ROOM TEMPERATURE'],
+      refrigerated:['❄️ REFRIGERATED','REFRIGERATED'],
+      frozen:['🧊 FROZEN','FROZEN'],
+      mixed:['⚠️ MIXED / VERIFY','MIXED / VERIFY'],
+      verify:['⚠️ VERIFY TEMPERATURE','VERIFY TEMPERATURE']
+    };
+    const label = labels[type][0];
+    return label + (short ? '' : ' BAG');
+  }
+
   function transportBagInfo(test) {
     const normalized = String(test.transportTemperature || '').trim();
     const value = (normalized && normalized !== 'Not specified'
@@ -4296,7 +4316,7 @@
     const bagLabels = [...bags].sort((a, b) =>
       Number(a.isStat) - Number(b.isStat) ||
       transportBagInfo(a.tests[0]).order - transportBagInfo(b.tests[0]).order
-    ).map(bag => `<span class="print-bag-pill ${bag.className}">${escapeHtml(bag.label)}</span>`).join('');
+    ).map(bag => `<span class="print-bag-pill ${bag.className}">${bag.isStat ? 'STAT · ' : ''}${escapeHtml(printBagTemperatureLabel(bag, true))}</span>`).join('');
     // Render shipping bags in paired rows. Each pair has matching heights,
     // which keeps the next bag row together during printed page breaks instead
     // of leaving a short isolated bag and a large area of empty purple space.
@@ -4363,14 +4383,13 @@
           <strong>What to submit after processing</strong>
           <div class="print-submit-heading-summary">
             <span class="print-submit-bag-types">${bagDisplayOrder.map(({ bag }) => {
-              const shortLabel = bag.label.replace(/\s+bag$/i, '').replace('Room-temperature', 'Room temp');
-              return `<span>${escapeHtml(shortLabel)}</span>`;
+              return `<span>${escapeHtml(printBagTemperatureLabel(bag, true))}</span>`;
             }).join('')}</span>
             <span class="print-submit-bag-count"><b>${bags.length}</b> ${bags.length === 1 ? 'bag' : 'bags'}</span>
           </div>
         </div>
         <div class="print-bag-grid${bags.length === 1 ? ' single-bag' : ''}">${bagRows.map((row, rowIndex) => `<div class="print-bag-row${row.length === 1 ? ' single-row' : ''}">${row.map(({ bag, contents, totalContainers }, columnIndex) => {
-          const bagName = bag.isStat ? bag.label.replace(/^STAT\s*·\s*/i, '') : bag.label;
+          const bagName = printBagTemperatureLabel(bag);
           const bagNumber = rowIndex * 2 + columnIndex + 1;
           return `<article class="print-bag-card ${bag.className} ${bag.isStat ? 'bag-stat' : 'bag-routine'}${contents.length > 11 ? ' bag-long' : ''}">
             <div class="print-bag-topbar"><span class="print-bag-topbar-label">Bag</span><span class="print-bag-priority ${bag.isStat ? 'priority-stat' : 'priority-routine'}">${bag.isStat ? 'STAT' : 'Routine'}</span><span class="print-bag-topbar-index" aria-label="Bag ${bagNumber} of ${bags.length}">${bagNumber}/${bags.length}</span></div>
