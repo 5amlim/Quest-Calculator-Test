@@ -481,33 +481,65 @@
 
     // The Cedars 2023 reference often lacks verified tube volumes or shipping
     // temperatures. Counts are additive per test; never silently pool specimens.
+    // The sterile cup is the INITIAL collection vessel for stool and urine.
+    // Final transport requirements remain assay-specific. Do not pool patients,
+    // different requested tests, first-catch and clean-catch specimens.
+    const initialCollection = (test) => test.category === 'Urine' ?
+      'Sterile specimen cup (urine)' : test.category === 'Stool' ?
+      'Sterile specimen cup (stool)' : test.collect;
+    const mustTransfer = (test) => (test.category === 'Urine' || test.category === 'Stool') &&
+      !/sterile (specimen )?cup|sterile container/i.test(test.submit);
+    const initialCountFor = (test) => (test.category === 'Urine' || test.category === 'Stool') ?
+      1 : Math.max(1, Number(test.qty) || 1);
+    const countFor = (test) => Math.max(1, Number(test.qty) || 1);
+    const initialDirections = (test) => {
+      if (test.id === 'gc-ct-urine') return 'Collect first-stream urine; transfer with the cobas kit pipette as instructed.';
+      if (test.id === 'urine-culture') return 'Collect clean-catch urine; transfer to gray-top tube to its fill line.';
+      if (test.category === 'Urine') return 'Follow the ordered urine collection method and test-specific transfer requirements.';
+      if (test.category === 'Stool') return 'Collect stool in a clean, dry sterile cup; transfer to kit vials according to their instructions.';
+      return '';
+    };
+    const transferDirections = (test) => {
+      if (!mustTransfer(test)) return '<span class="cedars-print-submit-step is-original">Submit original sterile cup. No transfer required.</span>';
+      const special = test.id === 'gc-ct-urine' ? ' Use the kit transfer pipette and follow its fill marks.' :
+        test.id === 'urine-culture' ? ' Fill to the indicated line.' :
+        test.category === 'Stool' ? ' Standard: transfer into three separate ParaPak vials, following the correct preservative/fill instructions.' : '';
+      return '<span class="cedars-print-submit-step"><strong>TRANSFER:</strong> Sterile ' +
+        esc(test.category.toLowerCase()) + ' cup <span aria-hidden="true">→</span> ' +
+        esc(test.submit) + '.' + esc(special) + '</span>';
+    };
     const collection = new Map();
     const transport = new Map();
     tests.forEach((test) => {
-      if (!collection.has(test.collect)) collection.set(test.collect, []);
-      collection.get(test.collect).push(test);
+      const initial = initialCollection(test);
+      if (!collection.has(initial)) collection.set(initial, []);
+      collection.get(initial).push(test);
       const bucket = transportBucket(test);
       if (!transport.has(bucket)) transport.set(bucket, []);
       transport.get(bucket).push(test);
     });
-    const countFor = (test) => Math.max(1, Number(test.qty) || 1);
     const testTag = (test) =>
       '<strong>' + esc(test.name) + '</strong>' +
       '<span class="cedars-print-test-type">' + esc(test.category || 'Other') + '</span>' +
       ((test.code || test.secondaryCode) ? '<span class="cedars-print-test-code">' + esc([test.code, test.secondaryCode].filter(Boolean).join(' / ')) + '</span>' : '');
     const collectionCards = Array.from(collection, ([container, group]) => {
-      const quantity = group.reduce((sum, test) => sum + countFor(test), 0);
+      const quantity = group.reduce((sum, test) => sum + initialCountFor(test), 0);
+      const cupCollection = group.some(test => test.category === 'Urine' || test.category === 'Stool');
+      const cupBadge = cupCollection ? '<span class="cedars-print-collector-pill">' +
+        esc(group[0].category) + '</span>' : '';
       return '<article class="cedars-print-card cedars-print-collection-card">' +
         '<div class="cedars-print-card-heading"><span class="cedars-print-total">' + quantity +
         '</span>' + containerArt(container, 'print') +
         '<div class="cedars-print-card-name"><strong>' + esc(container) +
-        '</strong><small>Keep specimens separate</small></div></div>' +
+        '</strong>' + cupBadge +
+        '<small>' + (cupCollection ? 'One original cup per test; do not pool specimens' :
+          'Keep specimens separate') + '</small></div></div>' +
         '<div class="cedars-print-for-tests">For ' + group.length +
         (group.length === 1 ? ' test' : ' tests') + '</div>' +
         '<ul class="cedars-print-test-list">' +
         group.map((test) => '<li>' + testTag(test) +
-          (countFor(test)>1 ? '<span class="cedars-print-count-note">' + countFor(test) + ' containers (standard)</span>' : '') +
-          (test.singleVialOption ? '<small class="cedars-print-single-vial">' + esc(test.singleVialOption) + '</small>' : '') +
+          (cupCollection ? '<small class="cedars-print-source-cup">' + esc(initialDirections(test)) + '</small>' :
+            (countFor(test)>1 ? '<span class="cedars-print-count-note">' + countFor(test) + ' containers (standard)</span>' : '')) +
           '</li>').join('') + '</ul></article>';
     }).join('');
 
@@ -548,6 +580,9 @@
           containerArt(container, 'print') + '<strong>' + esc(container) + '</strong></div>' +
           '<ul class="cedars-print-test-list">' +
           items.map(test => '<li>' + testTag(test) +
+            ((test.category === 'Stool' || test.category === 'Urine') ? transferDirections(test) : '') +
+            (test.category === 'Stool' ? '<span class="cedars-print-count-note">' +
+              countFor(test) + ' kit vials (standard)</span>' : '') +
             (test.singleVialOption ? '<small class="cedars-print-single-vial">' + esc(test.singleVialOption) + '</small>' : '') +
             '</li>').join('') +
           '</ul></div>').join('') +
@@ -567,7 +602,7 @@
     const handlingCards = tests.filter(test => clean(test.notes) && !isPrecaution(test))
       .map(noteCard).join('');
 
-    const totalContainers = tests.reduce((sum,test) => sum + countFor(test), 0);
+    const totalContainers = tests.reduce((sum,test) => sum + initialCountFor(test), 0);
     $('cedarsPrintSheet').innerHTML =
       '<header class="cedars-print-header"><div><h1>Cedars Collection Summary</h1>' +
         '<p>What to collect · What to submit · Transport instructions</p></div>' +
@@ -578,13 +613,13 @@
         '<span>Source-specific requirements that can affect specimen acceptance</span></div>' +
         '<div class="cedars-print-handling-grid">' + precautionCards + '</div></section>' : '') +
       '<section class="cedars-print-section"><div class="cedars-print-section-heading">' +
-        '<div><strong>1. What to collect</strong><small>Collection containers, grouped by type</small></div>' +
+        '<div><strong>1. What to collect</strong><small>Original collection vessel, by specimen type</small></div>' +
         '<span>' + totalContainers + ' total containers</span></div>' +
         '<div class="cedars-print-grid">' + collectionCards + '</div></section>' +
       '<section class="cedars-print-section' +
         (collection.size > 4 ? ' cedars-print-start-page' : '') + '">' +
         '<div class="cedars-print-section-heading"><div><strong>2. What to submit</strong>' +
-          '<small>Transport containers, organized by temperature status</small></div>' +
+          '<small>Transfer from original cup when required; organize by temperature</small></div>' +
           '<span>' + transport.size + ' groups' +
           (pendingCount ? ' · ' + pendingCount + ' pending' : '') + '</span></div>' +
         '<div class="cedars-print-grid">' + transportCards + '</div>' +
@@ -595,7 +630,8 @@
         '<small>Test-specific instructions from the listed source</small></div></div>' +
         '<div class="cedars-print-handling-grid">' + handlingCards + '</div></section>' : '') +
       '<footer class="cedars-print-footer">Verify current Cedars/Lexicomp instructions before collecting. ' +
-        'Do not pool specimens or substitute collection containers. No patient identifiers are required.</footer>';
+        'Do not pool specimens, combine collection types, or substitute required transport containers. ' +
+        'Confirm the original collection method and transfer process for each assay. No patient identifiers are required.</footer>';
     window.print();
   }
   // Manual entry cannot bypass the published approved menu.
