@@ -1392,3 +1392,27 @@
     color:#fff !important;
   }
 }
+
+/* Make the Cedars Print / Save PDF control prominent without changing
+   the teal Quest-equivalent color or the printout itself. */
+@media screen {
+  .cedars-page .cedars-cart-header #cedarsPrint.cart-header-print {
+    min-width: 170px;
+    min-height: 46px;
+    padding: 11px 19px;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.25;
+    border-radius: 9px;
+    white-space: nowrap;
+    justify-self: end;
+  }
+  @media (max-width: 440px) {
+    .cedars-page .cedars-cart-header #cedarsPrint.cart-header-print {
+      min-width: 145px;
+      min-height: 44px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  }
+}
