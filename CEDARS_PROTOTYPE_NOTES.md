@@ -7,7 +7,7 @@ Open `cedars.html` from the test repository's GitHub Pages site (if Pages is ena
 - Added `cedars.html`, `cedars.css`, `cedars-data.js`, `cedars-app.js`.
 - Added a single navigation link in `index.html`.
 - Did **not** modify Quest `app.js`, `data.js`, or its calculations, storage, print layouts, or styling.
-- Kept Cedars selections in memory for the open page only; no patient identifiers or patient-specific data are solicited.
+- Kept Cedars selections separate from Quest; no patient identifiers or patient-specific data are solicited.
 
 ## Data source and limitations
 Source supplied by the app owner: **Cedars Specimen Collection and Transport Guide (2023)**, a 30-slide PowerPoint. Each starter record identifies the relevant slide. This is a limited **historical reference**, not the current Cedars/Lexicomp test catalog.
@@ -19,7 +19,7 @@ All built-in rows are treated as requiring re-verification. The app does not cla
 - Where a source explicitly offers a room/refrigerated stability range, the app shows a separate choice-pending-confirmation category, not an assumed bag.
 - **No automatic pooling or shared tubes.** Collection quantities are conservative, separate per test. Pooling requires current, test-specific validation.
 - Searches suggest matches. Batch additions happen automatically only for unambiguous exact code or name matches. Suggestions require user action.
-- Manual entries exist only in the current page session and are labeled as unverified.
+- Manual entries and cart selections are saved in this browser using the dedicated `cedarsCollectionCalculator.state.v1` localStorage key, separate from Quest. They are labeled as unverified and are not synchronized across browsers or devices.
 - All printable summaries repeat the current-directory verification warning.
 
 ## Records held from automated collection instructions
@@ -75,3 +75,13 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - These notes are not duplicated in the final additional handling section. Staff see handling alerts before the collection and submission cards.
 - Unknown transport temperatures are never treated as confirmed shipping bags.
 - Verified in a simulated UI workflow using urine culture, stool bacterial PCR, QuantiFERON, and an intentionally blocked C. difficile record. Browser and printer-specific page-break behavior still needs end-user review.
+
+
+## Cart refresh persistence (October 21, 2026)
+- Cedars now saves selected test IDs and browser-created manual test records in a dedicated localStorage key: `cedarsCollectionCalculator.state.v1`. Quest's existing data keys are not modified.
+- State is restored before the first render, so refreshing or reopening Cedars on the same browser retains the cart.
+- Adding, removing, batch-adding, and clearing selections updates saved state immediately. Manual test records remain in the local browser catalog after Clear all, but they are removed from the selected cart.
+- Missing IDs and built-in tests marked as verification-only are ignored during restore. Restored manual records are restricted to the expected fields and length limits.
+- If browser storage is unavailable, a small message warns that the cart may reset, but collection planning still works during the current page session.
+- Browser state does not follow the user between devices or private/incognito browser sessions. Clearing browser site data removes the saved cart.
+- Simulated reload checks confirmed additions, removals, Clear all, manual record restoration, held-test blocking, and the storage-denied fallback.
