@@ -1,5 +1,0 @@
-Lab Collection Calculator v10.38
-
-Open index.html locally for a quick check, then publish the full folder to GitHub Pages.
-
-v10.38 adds Quest codes 19833 and 763 and makes non-exact batch search matches visibly require confirmation before adding. Exact code/name matches continue to add normally.
