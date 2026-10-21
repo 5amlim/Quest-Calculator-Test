@@ -718,3 +718,92 @@
   font-size: 10.5px;
   line-height: 1.4;
 }
+
+
+/* Original container illustrations: small enough for the Quest-style cards,
+   with no external image requests and legible on printouts. */
+.cedars-container-art {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 54px;
+  padding: 2px;
+  border: 1px solid #e3edf0;
+  border-radius: 9px;
+  background: #f8fbfc;
+  vertical-align: middle;
+}
+.cedars-container-art svg { display: block; width: 100%; height: 100%; }
+.cedars-container-art-table { width: 49px; height: 48px; border-radius: 7px; }
+.cedars-container-art-card { width: 61px; height: 57px; }
+.cedars-container-art-small { width: 53px; height: 49px; }
+.cedars-container-art-detail { width: 112px; height: 92px; padding: 5px; }
+.cedars-container-cell {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.cedars-container-copy { min-width: 0; overflow-wrap: anywhere; }
+.cedars-shell .cedars-library td:has(.cedars-container-cell) { min-width: 205px; }
+.cedars-shell .cedars-library td .cedars-container-art { background: #fafcfd; }
+.cedars-shell .cedars-plan-row,
+.cedars-shell .cedars-bag-line { align-items: center; }
+.cedars-shell .cedars-plan-row > div:last-child,
+.cedars-shell .cedars-bag-line > div:last-child { flex: 1 1 0; min-width: 0; }
+.cedars-shell .cedars-bag-line { display: flex; align-items: center; gap: 9px; }
+.cedars-shell .cedars-bag-line .cedars-container-art { width: 49px; height: 45px; }
+.cedars-cart-art-row { display: flex; align-items: center; gap: 8px; }
+.cedars-info-illustrations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  margin-bottom: 9px;
+}
+.cedars-info-illustrations > div {
+  display: grid;
+  gap: 7px;
+  justify-items: center;
+  align-content: center;
+  background: #f8fbfc;
+  border: 1px solid #e4edf0;
+  border-radius: 10px;
+  padding: 10px 7px;
+  min-width: 0;
+}
+.cedars-info-illustrations > div > span:last-child {
+  text-align: center;
+  color: #496774;
+  font-size: 11px;
+  font-weight: 800;
+}
+.cedars-illustration-note { color: #617882; font-size: 11px; margin: 0 0 12px; line-height: 1.45; }
+@media (max-width: 520px) {
+  .cedars-shell .cedars-bag-line .cedars-container-art { width: 43px; height: 43px; }
+  .cedars-shell .cedars-plan-row .cedars-container-art { width: 48px; height: 48px; }
+}
+@media print {
+  .cedars-print-sheet .cedars-container-art {
+    width: 57px;
+    height: 53px;
+    padding: 2px;
+    border-radius: 6px;
+    border: 1px solid #e1e9ed;
+    background: #f9fbfc !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .cedars-print-sheet .cedars-container-art svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .cedars-print-card-heading { min-width: 0; }
+  .cedars-print-card-heading .cedars-container-art { flex: 0 0 57px; }
+  .cedars-print-card-name { flex: 1 1 0; }
+  .cedars-print-submit-line { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .cedars-print-submit-line strong { flex: 1 1 0; min-width: 0; font-size: 8.7pt; line-height: 1.4; overflow-wrap: anywhere; }
+  .cedars-print-submit-line .cedars-container-art { width: 49px; height: 46px; }
+}
