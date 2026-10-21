@@ -17,7 +17,7 @@
   const compact = (value) => norm(value).replace(/\s/g, '');
   const records = () => published.concat(manual);
   const chosen = () => Array.from(selected).map(byId).filter(Boolean);
-  const source = (test) => test.manual ? 'Manual entry (saved in this browser)' : 'Cedars 2023 guide, slide ' + test.slide;
+  const source = (test) => test.sourceNote || (test.manual ? 'Previously added manual entry (not approved)' : 'Cedars 2023 guide, slide ' + test.slide);
   const isUnknown = (t) => !t.temp || t.temp === 'Verify' || t.temp === 'Room / Refrigerated';
   const transportBucket = (test) => {
     if (test.temp === 'Room Temperature') return 'Room temperature';
@@ -84,7 +84,7 @@
       manualIndex = Math.max(manualIndex, number);
       knownManual.add(id);
       manual.push({
-        id, name, collect, submit, manual: true,
+        id, name, collect, submit, manual: true, hold: true, blockReason: 'Not performed at Sollis',
         code: field(record.code,40),
         category: types.includes(record.category) ? record.category : 'Other',
         specimen: field(record.specimen,120) || 'Verify',
@@ -96,11 +96,15 @@
     }
 
     const validIds = new Set(published.filter(test => !test.hold).map(test => test.id));
-    manual.forEach(test => validIds.add(test.id));
-    const ids = Array.isArray(state.selectedIds) ? state.selectedIds : [];
+    // Previous manual records remain in the Do Not Perform reference list.
+    // Neither legacy manual records nor former selectable built-ins can be restored.
+    const savedIds = Array.isArray(state.selectedIds) ? state.selectedIds : [];
+    const hasDisallowed = savedIds.some(id => typeof id === 'string' && !validIds.has(id));
+    const ids = savedIds;
     for (const id of ids.slice(0, 2000)) {
       if (typeof id === 'string' && validIds.has(id)) selected.add(id);
     }
+    if (hasDisallowed) saveState();
   }
 
   function editDistance(a, b) {
@@ -157,12 +161,12 @@
         a.test.name.localeCompare(b.test.name));
     $('recordCount').textContent = records().filter((t) => !t.hold).length + ' tests';
     $('libraryStatus').textContent = rows.length + ' matching tests · ' +
-      records().filter((t) => t.hold).length + ' records requiring verification';
+      records().filter((t) => t.hold).length + ' not performed at Sollis';
     $('cedarsLibraryBody').innerHTML = rows.map(({test}) =>
       '<tr><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
-      (test.hold ? '<span class="cedars-hold">Verify-only</span>' : '') + '</td>' +
+      (test.hold ? '<span class="cedars-hold">Not performed at Sollis</span>' : '') + '</td>' +
       '<td><div class="cedars-container-cell">' + containerArt(test.collect, 'table') +
       '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
       '<div class="subtext">' + esc(test.collect) + '</div></div></div></td>' +
@@ -175,7 +179,7 @@
       (selected.has(test.id) ? '✓ Added' : 'Add') + '</button>' : '') +
       '</td></tr>').join('');
     if (!rows.length) $('cedarsLibraryBody').innerHTML =
-      '<tr><td colspan="6" class="cedars-empty">No matches. Check spelling or add a verified manual record.</td></tr>';
+      '<tr><td colspan="6" class="cedars-empty">No matching tests. See Do Not Perform or contact Sam about new workflows.</td></tr>';
   }
 
   function renderCart() {
@@ -236,7 +240,17 @@
           '</strong><small>' + esc(test.submit) + '</small></div></div>').join('') + '</div>').join('') :
       '<div class="cedars-empty">Add tests to view transport groups.</div>';
   }
-  function render() { makeRows(); renderCart(); }
+  function renderBlockedList() {
+    const items = records().filter(test => test.hold).sort((a,b) => a.name.localeCompare(b.name));
+    $('cedarsBlockedButton').textContent = 'Do Not Perform list (' + items.length + ')';
+    $('cedarsBlockedList').innerHTML = items.map(test =>
+      '<div class="cedars-blocked-item"><div class="cedars-blocked-item-info"><strong>' +
+      esc(test.name) + '</strong><small>' + esc(test.code || 'Code not listed') +
+      ' · Not performed at Sollis</small></div>' +
+      '<button type="button" class="mini-button edit" data-info="' + esc(test.id) +
+      '">Details</button></div>').join('');
+  }
+  function render() { makeRows(); renderBlockedList(); renderCart(); }
 
   function add(id) {
     const test = byId(id);
@@ -256,7 +270,7 @@
       '</div>' +
       '<p class="cedars-illustration-note">Illustrations are approximate. Confirm the exact kit before collection.</p>' +
       '<div class="cedars-summary-notice"><strong>' +
-      (test.hold ? 'Verification required: do not use this record to plan collection.' :
+      (test.hold ? 'Not performed at Sollis. Do not collect or submit under this workflow.' :
         '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
       '</strong></div>' +
       '<dl>' +
@@ -284,9 +298,9 @@
       }
       const suggestions = records().map((t) => ({t, s:rank(t, line)}))
         .filter(({s}) => s > 0).sort((a,b) => b.s - a.s).slice(0, 3);
-      if (!suggestions.length) return '<div><strong>' + esc(line) + '</strong> → No matches. Verify before manual entry.</div>';
+      if (!suggestions.length) return '<div><strong>' + esc(line) + '</strong> → No matches. Contact Sam before adding an unlisted test.</div>';
       return '<div><strong>' + esc(line) + '</strong> → ' +
-        suggestions.map(({t}) => esc(t.name) + (t.hold ? ' (verify-only)' :
+        suggestions.map(({t}) => esc(t.name) + (t.hold ? ' (Not performed at Sollis)' :
           ' <button type="button" class="mini-button" data-add="' + esc(t.id) + '">Add</button>')).join(' · ') +
         '</div>';
     });
@@ -408,7 +422,7 @@
         '<div class="cedars-print-meta"><span>' + esc(new Date().toLocaleString()) + '</span>' +
         '<strong>' + tests.length + (tests.length===1 ? ' test' : ' tests') + '</strong></div></header>' +
       '<div class="cedars-print-warning"><strong>Verify before collecting or sending.</strong> ' +
-        'The built-in catalog is based on a 2023 Cedars guide, not current Lexicomp. ' +
+        'The Sollis menu uses local workflow selections and a historical 2023 Cedars guide, not current Lexicomp. ' +
         'Confirm volume, kit, patient preparation, processing, stability, temperature and courier requirements. ' +
         'No specimens are pooled automatically. Container illustrations are examples, not kit identification.</div>' +
       (precautionCards ? '<section class="cedars-print-precautions">' +
@@ -436,10 +450,12 @@
         'Unknown volumes and temperatures are intentionally not filled in. No patient identifiers required.</footer>';
     window.print();
   }
-  function openManual() { $('cedarsManualDialog').showModal(); }
+  // Manual entry cannot bypass the published Sollis-performed menu.
+  function openManual() { return; }
   function closeManual() { $('cedarsManualDialog').close(); }
   function submitManual(event) {
     event.preventDefault();
+    return; // Manual additions require an approved catalog update.
     const name = clean($('manualName').value);
     const collect = clean($('manualCollect').value);
     const submit = clean($('manualSubmit').value);
@@ -459,6 +475,16 @@
     closeManual();
     render();
   }
+  $('cedarsBlockedButton').addEventListener('click', () => {
+    const panel = $('cedarsBlockedPanel');
+    const open = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !open);
+    $('cedarsBlockedButton').setAttribute('aria-expanded', String(open));
+  });
+  $('cedarsBlockedList').addEventListener('click', (event) => {
+    const button = event.target.closest('[data-info]');
+    if (button) detail(button.dataset.info);
+  });
   $('cedarsLibraryBody').addEventListener('click', (event) => {
     const addButton = event.target.closest('[data-add]');
     const infoButton = event.target.closest('[data-info]');
@@ -488,7 +514,7 @@
   $('cedarsFilterDone').addEventListener('click', () => setFilterOpen(false));
   $('cedarsFilterReset').addEventListener('click', () => {
     $('cedarsType').value = '';
-    $('showHolds').checked = true;
+    $('showHolds').checked = false;
     makeRows();
     setFilterOpen(false);
   });
@@ -515,8 +541,6 @@
   $('cedarsInfoClose').addEventListener('click', () => $('cedarsInfoDialog').close());
   $('cedarsInfoDone').addEventListener('click', () => $('cedarsInfoDialog').close());
   $('cedarsDetailsToggle').addEventListener('click', () => { showCartDetails = !showCartDetails; renderCart(); });
-  $('manualCartButton').addEventListener('click', openManual);
-  $('manualButton').addEventListener('click', openManual);
   $('manualClose').addEventListener('click', closeManual);
   $('manualCancel').addEventListener('click', closeManual);
   $('cedarsManualForm').addEventListener('submit', submitManual);
