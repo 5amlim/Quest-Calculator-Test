@@ -155,18 +155,21 @@
   function detail(id) {
     const test = byId(id);
     if (!test) return;
-    const text = [
-      test.name + (test.code ? ' (' + test.code + ')' : ''),
-      'Specimen: ' + test.specimen,
-      'Collect: ' + test.collect,
-      'Submit: ' + test.submit,
-      'Transport: ' + test.temp,
-      'Notes: ' + test.notes,
-      'Source: ' + source(test),
-      test.hold ? 'HOLD: Conflicting/outdated instructions. Do not use without verification.' :
-        'Reference only: verify against current Cedars/Lexicomp directory.'
-    ].join('\n');
-    window.alert(text);
+    $('cedarsInfoTitle').textContent = test.name;
+    $('cedarsInfoBody').innerHTML =
+      '<div class="cedars-summary-notice"><strong>' +
+      (test.hold ? 'Verification required: do not use this record to plan collection.' :
+        '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
+      '</strong></div>' +
+      '<dl>' +
+      '<dt>Test code</dt><dd>' + esc(test.code || 'Not supplied') + '</dd>' +
+      '<dt>Specimen</dt><dd>' + esc(test.specimen) + '</dd>' +
+      '<dt>What to collect</dt><dd>' + esc(test.collect) + '</dd>' +
+      '<dt>What to submit</dt><dd>' + esc(test.submit) + '</dd>' +
+      '<dt>Transport</dt><dd>' + esc(test.temp) + '</dd>' +
+      '<dt>Handling notes</dt><dd>' + esc(test.notes || 'Verify current requirements.') + '</dd>' +
+      '<dt>Source</dt><dd>' + esc(source(test)) + '</dd></dl>';
+    $('cedarsInfoDialog').showModal();
   }
   function batchLines() {
     return $('batchInput').value.split(/[\n\r]+/).map(clean).filter(Boolean).slice(0, 150);
@@ -286,6 +289,8 @@
   $('clearCart').addEventListener('click', () => { selected.clear(); render(); });
   $('cedarsCsv').addEventListener('click', saveCsv);
   $('cedarsPrint').addEventListener('click', printPlan);
+  $('cedarsInfoClose').addEventListener('click', () => $('cedarsInfoDialog').close());
+  $('cedarsInfoDone').addEventListener('click', () => $('cedarsInfoDialog').close());
   $('manualButton').addEventListener('click', openManual);
   $('manualClose').addEventListener('click', closeManual);
   $('manualCancel').addEventListener('click', closeManual);
