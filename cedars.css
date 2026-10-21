@@ -96,7 +96,7 @@
      off-screen because the v11.92 filter button is only 175px wide. */
   left: 0;
   right: auto;
-  width: min(340px, calc(100vw - 32px));
+  width: min(430px, calc(100vw - 32px));
   max-width: calc(100vw - 32px);
   max-height: min(500px, 68vh);
   overflow-y: auto;
@@ -953,5 +953,157 @@
     max-height: none !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+}
+
+
+/* Container pictogram filters: each option uses the same SVG as the test
+   directory, details, and printed collection plan. */
+.cedars-shell .cedars-container-filter-heading {
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:6px;
+  margin:13px 0 7px;
+  color:#263f4a;
+  font-size:12px;
+  font-weight:850;
+}
+.cedars-shell .cedars-container-filter-heading span {
+  color:#6b8089;
+  font-size:10px;
+  font-weight:500;
+  text-align:right;
+}
+.cedars-shell .cedars-container-filter-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+}
+.cedars-shell .cedars-container-filter-option {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  padding:6px;
+  border:1px solid #dce7e9;
+  border-radius:9px;
+  background:#fff;
+  color:#2c4350;
+  cursor:pointer;
+  font:inherit;
+  text-align:left;
+}
+.cedars-shell .cedars-container-filter-option:hover,
+.cedars-shell .cedars-container-filter-option:focus-visible {
+  border-color:#8bb4be;
+  background:#f0f8f9;
+}
+.cedars-shell .cedars-container-filter-option.is-selected {
+  color:#125667;
+  border:2px solid #248194;
+  background:#e9f5f6;
+  padding:5px;
+}
+.cedars-shell .cedars-container-filter-option .cedars-container-art {
+  width:49px !important;
+  height:42px !important;
+  flex:0 0 49px;
+  background:#fbfcfc;
+}
+.cedars-shell .cedars-container-filter-copy {display:block;min-width:0}
+.cedars-shell .cedars-container-filter-copy strong {
+  display:block;
+  font-size:10.5px;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+.cedars-shell .cedars-container-filter-copy small {
+  display:block;
+  color:#68828a;
+  font-size:9.5px;
+  margin-top:2px;
+}
+.cedars-shell .cedars-container-filter-all {
+  flex:0 0 49px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:42px;
+  border-radius:6px;
+  color:#427985;
+  background:#e1eff1;
+  font-size:10px;
+  font-weight:900;
+}
+.cedars-reference-section {
+  background:#fafcfc;
+  border:1px solid #dae8ec;
+  border-radius:11px;
+  padding:12px 14px;
+  margin:0 0 15px;
+}
+.cedars-reference-title {
+  display:flex;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:8px;
+  color:#284b56;
+  margin-bottom:9px;
+}
+.cedars-reference-title strong {font-size:13px}
+.cedars-reference-title span {font-size:11px;color:#6b8088}
+.cedars-reference-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.cedars-reference-actions a.cedars-reference-link {
+  display:inline-flex;
+  padding:9px 12px;
+  text-decoration:none;
+  color:#14586b;
+  background:#fff;
+  border:1px solid #c8dfe5;
+  border-radius:8px;
+  font-size:11px;
+  font-weight:850;
+}
+.cedars-reference-actions a.cedars-reference-link:hover,
+.cedars-reference-actions a.cedars-reference-link:focus-visible {
+  background:#eaf5f7;
+  border-color:#83b5c3;
+}
+.cedars-reference-note {
+  margin:8px 0 0;
+  font-size:10.5px;
+  line-height:1.45;
+  color:#6d7e85;
+}
+.cedars-container-art.cedars-container-drawing {
+  background:#fff;
+  overflow:hidden;
+}
+.cedars-container-art.cedars-container-drawing svg {
+  display:block;
+  width:100%;
+  height:100%;
+}
+@media(max-width:560px) {
+  .cedars-shell .cedars-container-filter-grid {grid-template-columns:1fr}
+  .cedars-shell .cedars-container-filter-option .cedars-container-art,
+  .cedars-shell .cedars-container-filter-all {width:44px!important;flex-basis:44px}
+}
+@media print {
+  .cedars-print-sheet .cedars-container-art.cedars-container-drawing {
+    background:#fff !important;
+    overflow:hidden !important;
+    print-color-adjust:exact;
+    -webkit-print-color-adjust:exact;
+  }
+  .cedars-print-sheet .cedars-container-art.cedars-container-drawing svg {
+    width:100% !important;
+    height:100% !important;
+    display:block !important;
   }
 }
