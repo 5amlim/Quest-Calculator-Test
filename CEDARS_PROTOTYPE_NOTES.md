@@ -93,3 +93,14 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - The app includes explicit notes that illustrations are representative only, not actual kit photographs. Do not rely on cap colors, vial size, label art or these renderings to select supplies. Always confirm current Cedars/Lexicomp instructions and the exact manufacturer kit.
 - Unknown or ambiguous specimen types display a neutral "VERIFY" illustration rather than a guessed kit. No clinical processing, pooling, storage, or transport rules were changed.
 - Functional checks: 29 library thumbnails rendered, six collection and six submission illustrations appeared for a six-test cart, 12 SVG visuals appeared in the generated print HTML, and the cart/illustrations survived a refresh in a simulated browser environment.
+
+
+## Sollis-performed Cedars menu restriction (October 21, 2026)
+- Workflow owner confirmed **Affirm / ATTS** for vaginitis/vaginosis.
+- Approved collection workflows now include: culture with eSwab; gray-top urine culture; red/yellow swirl-top urinalysis; three-vial ParaPak stool PCR (bacterial and parasite entries); cobas GC/CT (swab or urine); Affirm/ATTS vaginitis/vaginosis; adult and pediatric blood culture options. These are **workflow selections**, not independent verification that Cedars currently accepts each kit.
+- All other historical catalog entries have `hold: true` and are labeled **"Not performed at Sollis."** They are listed behind a dedicated Do Not Perform button and cannot enter the cart or printout.
+- Previously saved unsupported cart selections are purged on reload. Older browser-created manual records remain viewable in Do Not Perform but cannot bypass the approved list. The manual-add buttons are hidden and form submissions are inert until the approved catalog is updated.
+- New diagrams illustrate gray-top urine culture, red/yellow swirl-top UA and pediatric blood culture collection containers.
+- The source notice includes the user's SharePoint PowerPoint reference link, intended for staff with appropriate SharePoint permissions.
+- The pediatric culture set count, accepted kit/bottle types, specimen volume and temperature still require current Cedars/Lexicomp and age-appropriate SOP confirmation before clinical use.
+- UI/unit checks passed: only the 10 approved workflows appear in default search, 22 historical records are blocked, formerly saved prohibited tests are purged, allowed tests can be added/printed, and PowerPoint reference is preserved.
