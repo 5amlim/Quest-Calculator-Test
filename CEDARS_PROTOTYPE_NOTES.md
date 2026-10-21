@@ -112,3 +112,13 @@ This is a prototype, not clinical validation or a live-browser cross-device test
 - MRSA/VRE **screening** entries remain in Do Not Perform because the assay method and approval are not established by a statement about culture swabs; confirm separately before allowing them.
 - The default performed menu now lists 14 tests and the Do Not Perform list has 18 historical entries. Existing saved carts and source-PowerPoint reference remain intact.
 - Simulated UI QA confirmed collection cartoons, search/selection, preserved transport restrictions, blocked PCR entries, cart persistence and print inclusion for the newly allowed swab cultures.
+
+
+## Actual container photos (October 21, 2026)
+- Replaced schematic container illustrations with a small locally hosted WebP photo atlas assembled from the user's 11 supplied container photos. Stored at `assets/images/cedars/container-photo-atlas.webp`.
+- Photos are mapped to: adult BACTEC bottle pair, pediatric BACTEC bottle, Myco/F Lytic fungal bottle (Do Not Perform), white-top eSwab, UTM (Do Not Perform), cobas urine, cobas swab, BD Affirm/ATTS, gray urine culture, 3-vial ParaPak stool collection kit, and red/yellow swirl-top UA preservative tube. Unknown containers keep a neutral Verify placeholder rather than a misleading photo.
+- Both performed and Do Not Perform test details use the appropriate photo when available; blocked tests are still unselectable.
+- Print summaries use the same photo source as the app. The image sheet is hosted within GitHub Pages and does not require a third-party image URL.
+- Stool PCR records now spell out the three vial types and caps shown: C & S Medium (yellow), 10% Formalin (pink), and Clean Vial (white).
+- Uploaded photos are illustrative reference assets, **not** verified substitutes for the current manufacturer/Cedars kit. Other lab-specific specimen rules, approved scope, and Quest production files are unchanged.
+- Simulated UI checks passed: performed-test list (14 rows), correct photo labels and sprite offsets, cart, collection/submission cards, 18 images in the sample printout, blocked fungal blood culture, and retained SharePoint PowerPoint reference.
