@@ -8,6 +8,7 @@
   const selected = new Set();
   let manualIndex = 0;
   let showCartDetails = false;
+  let selectedContainer = '';
   const byId = (id) => published.concat(manual).find((t) => t.id === id);
   const clean = (value) => String(value == null ? '' : value).trim();
   const esc = (value) => clean(value).replace(/[&<>"']/g, (ch) =>
@@ -156,12 +157,14 @@
     const cat = $('cedarsType').value;
     const showHolds = $('showHolds').checked;
     const rows = records().map((test) => ({test, score: rank(test, q)}))
-      .filter(({test, score}) => score && (!cat || test.category === cat) && (showHolds || !test.hold))
+      .filter(({test, score}) => score && (!cat || test.category === cat) &&
+        (!selectedContainer || test.containerType === selectedContainer) && (showHolds || !test.hold))
       .sort((a, b) => q ? b.score - a.score || a.test.name.localeCompare(b.test.name) :
         a.test.name.localeCompare(b.test.name));
     $('recordCount').textContent = records().filter((t) => !t.hold).length + ' tests';
-    $('libraryStatus').textContent = rows.length + ' matching tests · ' +
-      records().filter((t) => t.hold).length + ' not performed at Sollis';
+    $('libraryStatus').textContent = rows.length + ' matching tests' +
+      (selectedContainer ? ' · container: ' + selectedContainer : '') + ' · ' +
+      records().filter((t) => t.hold).length + ' restricted / needs verification';
     $('cedarsLibraryBody').innerHTML = rows.map(({test}) =>
       '<tr><td class="code-cell">' + esc(test.code || '—') + '</td>' +
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
@@ -240,6 +243,31 @@
           '</strong><small>' + esc(test.submit) + '</small></div></div>').join('') + '</div>').join('') :
       '<div class="cedars-empty">Add tests to view transport groups.</div>';
   }
+  function renderContainerFilters() {
+    const counts = new Map();
+    records().filter(test => !test.hold).forEach(test => {
+      const container = test.containerType || 'Other / verify';
+      counts.set(container, (counts.get(container) || 0) + 1);
+    });
+    const order = ['eSwab','UTM','cobas urine','cobas swab','Affirm / ATTS',
+      'Gray-top urine culture','UA swirl-top','3-vial ParaPak','Clean stool vial',
+      'Adult blood culture','Pediatric blood culture','Myco/F Lytic',
+      'Sterile container','QuantiFERON 4-tube','Aptima','FIT bottle','SurePath','Other / verify'];
+    const sorted = Array.from(counts).sort(([a],[b]) =>
+      order.indexOf(a) - order.indexOf(b) || a.localeCompare(b));
+    const entry = (container, count) =>
+      '<button type="button" class="cedars-container-filter-option' +
+      (selectedContainer === container ? ' is-selected' : '') +
+      '" data-container="' + esc(container) + '" aria-pressed="' +
+      (selectedContainer === container ? 'true' : 'false') + '">' +
+      (container ? containerArt(container, 'small') : '<span class="cedars-container-filter-all">All</span>') +
+      '<span class="cedars-container-filter-copy"><strong>' +
+      esc(container || 'All containers') + '</strong><small>' + count +
+      (count === 1 ? ' test' : ' tests') + '</small></span></button>';
+    $('cedarsContainerFilters').innerHTML =
+      entry('',records().filter(t => !t.hold).length) +
+      sorted.map(([key,count]) => entry(key,count)).join('');
+  }
   function renderBlockedList() {
     const items = records().filter(test => test.hold).sort((a,b) => a.name.localeCompare(b.name));
     $('cedarsBlockedButton').textContent = 'Do Not Perform list (' + items.length + ')';
@@ -250,7 +278,7 @@
       '<button type="button" class="mini-button edit" data-info="' + esc(test.id) +
       '">Details</button></div>').join('');
   }
-  function render() { makeRows(); renderBlockedList(); renderCart(); }
+  function render() { makeRows(); renderContainerFilters(); renderBlockedList(); renderCart(); }
 
   function add(id) {
     const test = byId(id);
@@ -268,7 +296,7 @@
       '<div>' + containerArt(test.collect, 'detail') + '<span>Collection container</span></div>' +
       '<div>' + containerArt(test.submit, 'detail') + '<span>Submission container</span></div>' +
       '</div>' +
-      '<p class="cedars-illustration-note">Photographs supplied as visual references. Confirm the exact kit before collection.</p>' +
+      '<p class="cedars-illustration-note">Color-matched illustration based on supplied kit photos. Verify the actual manufacturer container before collecting.</p>' +
       '<div class="cedars-summary-notice"><strong>' +
       (test.hold ? 'Not performed at Sollis. Do not collect or submit under this workflow.' :
         '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
@@ -277,6 +305,7 @@
       '<dt>Test code</dt><dd>' + esc(test.code || 'Not supplied') + '</dd>' +
       '<dt>Specimen</dt><dd>' + esc(test.specimen) + '</dd>' +
       '<dt>What to collect</dt><dd>' + esc(test.collect) + '</dd>' +
+      '<dt>Container filter</dt><dd>' + esc(test.containerType || 'Verify') + '</dd>' +
       '<dt>What to submit</dt><dd>' + esc(test.submit) + '</dd>' +
       '<dt>Transport</dt><dd>' + esc(test.temp) + '</dd>' +
       '<dt>Handling notes</dt><dd>' + esc(test.notes || 'Verify current requirements.') + '</dd>' +
@@ -424,7 +453,7 @@
       '<div class="cedars-print-warning"><strong>Verify before collecting or sending.</strong> ' +
         'The Sollis menu uses local workflow selections and a historical 2023 Cedars guide, not current Lexicomp. ' +
         'Confirm volume, kit, patient preparation, processing, stability, temperature and courier requirements. ' +
-        'No specimens are pooled automatically. Container photos are reference examples, not permission to substitute collection kits.</div>' +
+        'No specimens are pooled automatically. Container illustrations show shape and color for reference, not permission to substitute collection kits.</div>' +
       (precautionCards ? '<section class="cedars-print-precautions">' +
         '<div class="cedars-print-precautions-title"><strong>Check before collection</strong>' +
         '<span>Source-specific requirements that can affect specimen acceptance</span></div>' +
@@ -504,6 +533,13 @@
   });
   $('cedarsSearch').addEventListener('input', makeRows);
   $('cedarsType').addEventListener('change', makeRows);
+  $('cedarsContainerFilters').addEventListener('click', (event) => {
+    const choice = event.target.closest('[data-container]');
+    if (!choice) return;
+    selectedContainer = choice.dataset.container || '';
+    makeRows();
+    renderContainerFilters();
+  });
   const filterButton = $('cedarsFilterButton');
   const filterPanel = $('cedarsFilterPanel');
   const setFilterOpen = (open) => {
@@ -515,7 +551,8 @@
   $('cedarsFilterReset').addEventListener('click', () => {
     $('cedarsType').value = '';
     $('showHolds').checked = false;
-    makeRows();
+    selectedContainer = '';
+    render();
     setFilterOpen(false);
   });
   document.addEventListener('click', (event) => {
