@@ -7,7 +7,7 @@
   <title>Cedars Lab Guide</title>
   <link rel="stylesheet" href="assets/css/styles.css?v=11.91">
   <link rel="stylesheet" href="assets/css/experience.css?v=11.80">
-  <link rel="stylesheet" href="market-switch.css?v=2">
+  <link rel="stylesheet" href="market-switch.css?v=3">
   <link rel="stylesheet" href="cedars.css?v=22">
 </head>
 <body class="cedars-page">
@@ -19,10 +19,28 @@
     </div>
     <div class="header-actions">
       <span class="privacy-pill">No patient information required</span>
-      <nav class="market-switch" aria-label="Receiving laboratory">
-        <a class="market-switch-option quest" href="index.html">Quest</a>
-        <a class="market-switch-option cedars" href="cedars.html" aria-current="page">Cedars</a>
-      </nav>
+      <details class="lab-select lab-select--cedars">
+        <summary aria-label="Select Lab, currently Cedars">
+          <span class="lab-select-indicator" aria-hidden="true"></span>
+          <span class="lab-select-summary-text">
+            <span class="lab-select-label">Select Lab</span>
+            <strong class="lab-select-current">Cedars</strong>
+          </span>
+          <svg class="lab-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <nav class="lab-select-menu" aria-label="Choose receiving laboratory">
+          <a class="lab-select-choice quest" href="index.html">
+            <span class="lab-select-choice-marker" aria-hidden="true"></span>
+            <span class="lab-select-choice-copy"><strong>Quest</strong><small>Default lab</small></span>
+            
+          </a>
+          <a class="lab-select-choice cedars" href="cedars.html" aria-current="page">
+            <span class="lab-select-choice-marker" aria-hidden="true"></span>
+            <span class="lab-select-choice-copy"><strong>Cedars</strong><small>Cedars-Sinai Lab</small></span>
+            <span class="lab-select-choice-state">Selected</span>
+          </a>
+        </nav>
+      </details>
     </div>
   </header>
   <main class="app-shell cedars-shell no-print">
@@ -187,5 +205,6 @@
   <script src="assets/js/cedars-reference-photos.js?v=1"></script>
   <script src="assets/js/cedars-photo-updates.js?v=1"></script>
   <script src="cedars-app.js?v=25"></script>
+  <script src="assets/js/lab-select.js?v=1"></script>
 </body>
 </html>
