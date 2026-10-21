@@ -1,8 +1,9 @@
-/* Cedars test-site prototype. Do not mix with Quest data or localStorage. */
+/* Cedars test-site prototype. Browser state uses a separate key from Quest. */
 (function () {
   'use strict';
   const $ = (id) => document.getElementById(id);
   const published = Array.isArray(window.CEDARS_TESTS) ? window.CEDARS_TESTS : [];
+  const STORAGE_KEY = 'cedarsCollectionCalculator.state.v1';
   const manual = [];
   const selected = new Set();
   let manualIndex = 0;
@@ -16,7 +17,7 @@
   const compact = (value) => norm(value).replace(/\s/g, '');
   const records = () => published.concat(manual);
   const chosen = () => Array.from(selected).map(byId).filter(Boolean);
-  const source = (test) => test.manual ? 'Manual entry (this session)' : 'Cedars 2023 guide, slide ' + test.slide;
+  const source = (test) => test.manual ? 'Manual entry (saved in this browser)' : 'Cedars 2023 guide, slide ' + test.slide;
   const isUnknown = (t) => !t.temp || t.temp === 'Verify' || t.temp === 'Room / Refrigerated';
   const transportBucket = (test) => {
     if (test.temp === 'Room Temperature') return 'Room temperature';
@@ -27,6 +28,78 @@
   };
   const bagClass = (bucket) => bucket === 'Refrigerated' ? 'temp-refrigerated' :
     bucket === 'Frozen' ? 'temp-frozen' : bucket === 'Room temperature' ? 'temp-room' : 'temp-unknown';
+
+  // The Quest calculator uses its own storage keys. Cedars restores its cart
+  // and browser-created test records without ever accessing Quest state.
+  function storageMessage(saved) {
+    const status = $('cedarsStorageStatus');
+    if (status) status.textContent = saved
+      ? 'Cart and manually added tests are saved in this browser.'
+      : 'Browser storage is unavailable. Your cart may clear after refreshing.';
+  }
+  function saveState() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        version: 1,
+        customTests: manual,
+        selectedIds: Array.from(selected)
+      }));
+      storageMessage(true);
+      return true;
+    } catch (error) {
+      console.warn('Cedars cart could not be saved in this browser.', error);
+      storageMessage(false);
+      return false;
+    }
+  }
+  function restoreState() {
+    let state;
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      state = raw ? JSON.parse(raw) : null;
+      storageMessage(true);
+    } catch (error) {
+      console.warn('Cedars saved cart could not be read.', error);
+      storageMessage(false);
+      return;
+    }
+    if (!state || state.version !== 1 || typeof state !== 'object') return;
+
+    const knownManual = new Set();
+    const types = ['Blood','Urine','Stool','Swab','Other'];
+    const temperatures = ['Verify','Room Temperature','Refrigerated','Frozen','Room / Refrigerated'];
+    const field = (value, max) => clean(typeof value === 'string' ? value : '').slice(0, max);
+    const storedManual = Array.isArray(state.customTests) ? state.customTests : [];
+    for (const record of storedManual.slice(0, 250)) {
+      if (!record || typeof record !== 'object' || record.manual !== true) continue;
+      const id = field(record.id, 40);
+      if (!/^cedars-manual-[1-9][0-9]{0,8}$/.test(id) || knownManual.has(id)) continue;
+      const name = field(record.name,150);
+      const collect = field(record.collect,180);
+      const submit = field(record.submit,180);
+      if (!name || !collect || !submit) continue;
+      const number = Number(id.slice('cedars-manual-'.length));
+      manualIndex = Math.max(manualIndex, number);
+      knownManual.add(id);
+      manual.push({
+        id, name, collect, submit, manual: true,
+        code: field(record.code,40),
+        category: types.includes(record.category) ? record.category : 'Other',
+        specimen: field(record.specimen,120) || 'Verify',
+        qty: Math.min(20, Math.max(1, Number(record.qty) || 1)),
+        temp: temperatures.includes(record.temp) ? record.temp : 'Verify',
+        notes: field(record.notes,1200) || 'Manual record. Confirm requirements in current Cedars/Lexicomp directory.',
+        aliases: ''
+      });
+    }
+
+    const validIds = new Set(published.filter(test => !test.hold).map(test => test.id));
+    manual.forEach(test => validIds.add(test.id));
+    const ids = Array.isArray(state.selectedIds) ? state.selectedIds : [];
+    for (const id of ids.slice(0, 2000)) {
+      if (typeof id === 'string' && validIds.has(id)) selected.add(id);
+    }
+  }
 
   function editDistance(a, b) {
     if (!a || !b || Math.abs(a.length - b.length) > 2 || a.length > 55 || b.length > 55) return 99;
@@ -162,6 +235,7 @@
     const test = byId(id);
     if (!test || test.hold) return;
     selected.add(id);
+    saveState();
     render();
   }
   function detail(id) {
@@ -207,6 +281,7 @@
     $('batchFeedback').innerHTML = (reviewOnly ? 'Review suggested matches:' :
       added + ' exact matches added. Review unresolved entries:') + feedback.join('');
     $('batchFeedback').classList.remove('hidden');
+    if (added) saveState();
     render();
   }
 
@@ -365,6 +440,7 @@
     };
     manual.push(test);
     selected.add(test.id);
+    saveState();
     $('cedarsManualForm').reset();
     closeManual();
     render();
@@ -383,6 +459,7 @@
     const button = event.target.closest('[data-remove]');
     if (!button) return;
     selected.delete(button.dataset.remove);
+    saveState();
     render();
   });
   $('cedarsSearch').addEventListener('input', makeRows);
@@ -418,7 +495,7 @@
   $('batchInput').addEventListener('keydown', (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') batchAdd(false);
   });
-  $('clearCart').addEventListener('click', () => { selected.clear(); render(); });
+  $('clearCart').addEventListener('click', () => { selected.clear(); saveState(); render(); });
   $('cedarsCsv').addEventListener('click', saveCsv);
   $('cedarsPrint').addEventListener('click', printPlan);
   $('cedarsInfoClose').addEventListener('click', () => $('cedarsInfoDialog').close());
@@ -429,5 +506,6 @@
   $('manualClose').addEventListener('click', closeManual);
   $('manualCancel').addEventListener('click', closeManual);
   $('cedarsManualForm').addEventListener('submit', submitManual);
+  restoreState();
   render();
 })();
