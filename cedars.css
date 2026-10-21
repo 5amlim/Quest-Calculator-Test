@@ -2161,3 +2161,51 @@
    font-weight:750;
  }
 }
+
+
+/* Photo viewer v2: use each source image at native quality and aspect ratio,
+   without raster-atlas cropping or artificial upscaling. */
+@media screen {
+  .cedars-photo-dialog {
+    width:min(95vw,740px);
+    max-width:740px;
+  }
+  .cedars-photo-dialog .cedars-photo-viewport {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    max-width:690px;
+    height:auto;
+    min-height:200px;
+    max-height:72vh;
+    aspect-ratio:auto;
+    margin:0 auto;
+    padding:10px;
+    overflow:auto;
+    background:#fff;
+    border-radius:12px;
+  }
+  .cedars-photo-dialog .cedars-photo-image {
+    display:block;
+    width:auto;
+    height:auto;
+    max-width:100%;
+    max-height:calc(72vh - 20px);
+    margin:0 auto;
+    padding:0;
+    object-fit:contain;
+    image-rendering:auto;
+    border:0;
+  }
+  @media (max-width:520px) {
+    .cedars-photo-dialog {width:min(95vw,740px);}
+    .cedars-photo-dialog .cedars-photo-viewport {
+      width:100%;
+      min-height:170px;
+      max-width:100%;
+      max-height:65vh;
+    }
+    .cedars-photo-dialog .cedars-photo-image {max-height:calc(65vh - 20px);}
+  }
+}
