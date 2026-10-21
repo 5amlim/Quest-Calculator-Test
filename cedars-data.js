@@ -714,15 +714,15 @@ window.CEDARS_TESTS = [
     "category": "Blood",
     "specimen": "Serum or plasma (lithium heparin or K2EDTA)",
     "collect": "Gold-top SST (5 mL, preferred)",
-    "submit": "Gold-top SST (5 mL, serum)",
+    "submit": "Spun gold-top SST (5 mL, serum)",
     "qty": 1,
     "temp": "Room Temperature",
     "containerType": "Gold SST",
     "testMethod": "Immunoassay",
     "submissionOptions": [
       {
-        "name": "Preferred: Gold-top SST",
-        "requirements": "5 mL; serum. On gel at room temperature, stability 8 hours."
+        "name": "Preferred: Spun gold-top SST",
+        "requirements": "Collect 5 mL gold-top SST and centrifuge to prepare serum. On separator gel at room temperature, stability is 8 hours."
       },
       {
         "name": "Alternative: Light green PST",
@@ -733,7 +733,7 @@ window.CEDARS_TESTS = [
         "requirements": "K2EDTA tube; confirm required volume."
       }
     ],
-    "notes": "Cedars accepts 5 mL gold SST (preferred), 3 mL light green lithium-heparin PST or K2EDTA. At room temperature, specimens on clot/RBCs/gel are stable 8 hours; separated serum/plasma is stable 24 hours. Removed serum/plasma is stable 48 hours refrigerated or 15 days frozen. Confirm current handling and transport in Cedars Lexicomp.",
+    "notes": "Cedars accepts 5 mL gold SST (preferred), 3 mL light green lithium-heparin PST or K2EDTA. Spin the gold-top SST to obtain serum; collection occurs in the original gold SST. At room temperature, specimens on clot/RBCs/gel are stable 8 hours; separated serum/plasma is stable 24 hours. Removed serum/plasma is stable 48 hours refrigerated or 15 days frozen. Confirm current handling and transport in Cedars Lexicomp.",
     "sourceNote": "Cedars Lexicomp screenshot: Procalcitonin, Serum or Plasma (CMIA)",
     "aliases": "procalcitonin|PCT|sepsis",
     "hold": false,
@@ -765,7 +765,7 @@ window.CEDARS_TESTS = [
     "secondaryCode": "LAB40",
     "name": "Vancomycin level",
     "category": "Blood",
-    "specimen": "Heparinized plasma or serum",
+    "specimen": "Heparinized plasma (green top) or serum (red top)",
     "collect": "Green-top heparin (5 mL)",
     "submit": "Green-top heparin (5 mL)",
     "qty": 1,
@@ -782,7 +782,7 @@ window.CEDARS_TESTS = [
         "requirements": "Allow serum to clot for 20–30 minutes; centrifuge per validated protocol. Cedars screenshot cites a minimum 2000 rpm for 10–15 minutes."
       }
     ],
-    "notes": "Cedars accepts a green-top 5 mL heparinized tube or red-top serum tube. Reference states the test is ordered as random; document dose and collection timing. When clinically requested, reference timing is peak 0.5–2 hours after infusion, trough immediately before next dose (within 30 minutes). For red-top serum, clot 20–30 minutes and centrifuge per local validated centrifuge protocol. Refrigerate for transport per local Cedars workflow; confirm current stability requirements in Cedars Lexicomp.",
+    "notes": "Cedars accepts a green-top 5 mL heparinized tube for plasma testing or a red-top serum tube. Confirm local plasma processing and whether the green tube is submitted as drawn. Reference states the test is ordered as random; document dose and collection timing. When clinically requested, reference timing is peak 0.5–2 hours after infusion, trough immediately before next dose (within 30 minutes). For red-top serum, clot 20–30 minutes and centrifuge per local validated centrifuge protocol. Refrigerate for transport per local Cedars workflow; confirm current stability requirements in Cedars Lexicomp.",
     "sourceNote": "Cedars Lexicomp screenshot: Vancomycin VANC, CS-Link LAB40",
     "aliases": "vancomycin|vanc|vanco|vancomycin trough|vancomycin peak|LAB40",
     "hold": false,
