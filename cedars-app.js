@@ -345,6 +345,42 @@
       '<tr><td colspan="5" class="cedars-empty">No matching tests. See Do Not Perform or contact Sam about new workflows.</td></tr>';
   }
 
+  // Pool only the ORIGINAL urine collection CUP when collection methods are
+  // compatible. The separate transport tubes and specimen-specific fill
+  // requirements remain unchanged. First-stream PCR and first-morning AFB
+  // are deliberately kept distinct from a routine clean-catch cup.
+  const urineCupCategory = (test) => {
+    if (test.category !== 'Urine') return '';
+    if (test.id === 'gc-ct-urine' || /first[- ]stream/i.test(test.specimen || ''))
+      return 'First-stream urine';
+    if (test.id === 'urine-afb' || /first[- ]morning/i.test(test.specimen || ''))
+      return 'First-morning urine (AFB)';
+    return 'Clean-catch / routine urine';
+  };
+  const originalCollectionGroup = (test) => {
+    const type = urineCupCategory(test);
+    if (type) return {
+      key:'urine-cup|' + type,
+      container:'Sterile specimen cup (urine)',
+      category:'Urine',
+      subtitle:type,
+      shared:true
+    };
+    return {
+      key:'other|' + test.collect,
+      container:test.collect,
+      category:test.category,
+      subtitle:'',
+      shared:false
+    };
+  };
+  const originalCupNote = (category, groupSize, subtitle) => {
+    if (category !== 'Urine') return 'Keep specimens separate';
+    if (subtitle === 'Clean-catch / routine urine' && groupSize > 1)
+      return '1 shared cup for compatible tests; sufficient urine must be collected to fill each separate transport tube';
+    return subtitle + ' · use a separate cup when collection methods differ';
+  };
+
   function renderCart() {
     const tests = chosen();
     $('selectedCount').textContent = String(tests.length);
@@ -369,10 +405,13 @@
 
     const groups = new Map();
     tests.forEach((test) => {
-      const key = test.collect;
-      if (!groups.has(key)) groups.set(key, {count:0, tests:[], category:test.category, singleOptions:[]});
-      const row = groups.get(key);
-      row.count += Math.max(1, Number(test.qty) || 1);
+      const plan = originalCollectionGroup(test);
+      if (!groups.has(plan.key)) groups.set(plan.key, {
+        count:0, tests:[], category:plan.category, container:plan.container,
+        subtitle:plan.subtitle, shared:plan.shared, singleOptions:[]
+      });
+      const row = groups.get(plan.key);
+      row.count += plan.shared ? (row.count ? 0 : 1) : Math.max(1, Number(test.qty) || 1);
       row.tests.push(test.name);
       if (test.singleVialOption) row.singleOptions.push(test.name);
       if (row.category !== test.category) row.category = 'Other';
@@ -380,11 +419,14 @@
     $('cedarsDrawCount').textContent = groups.size ?
       groups.size + ' collection types' : 'No collection types';
     $('cedarsDraw').innerHTML = tests.length ?
-      Array.from(groups, ([container, group]) =>
+      Array.from(groups, ([, group]) =>
         '<div class="cedars-plan-row ' + specimenClass(group.category) + '"><span class="cedars-count">' + group.count + '×</span>' +
-        photoArt(container, 'card') +
-        '<div><strong>' + esc(container) + '</strong>' + specimenBadge(group.category) + '<small>' +
-        esc(group.tests.join('; ')) + '</small>' +
+        photoArt(group.container, 'card') +
+        '<div><strong>' + esc(group.container) + '</strong>' + specimenBadge(group.category) +
+        (group.subtitle ? '<small class="cedars-urine-method">' + esc(group.subtitle) + '</small>' : '') +
+        '<small>' + esc(group.tests.join('; ')) + '</small>' +
+        (group.shared ? '<small class="cedars-urine-sharing-note">' +
+          esc(originalCupNote(group.category, group.tests.length, group.subtitle)) + '</small>' : '') +
         (group.singleOptions.length ? '<small class="cedars-single-vial-note">Single white-cap clean vial also acceptable for: ' + esc(group.singleOptions.join('; ')) + '</small>' : '') +
         '</div></div>').join('') :
       '<div class="cedars-empty">Add tests to view collection containers.</div>';
@@ -516,12 +558,11 @@
 
     // The Cedars 2023 reference often lacks verified tube volumes or shipping
     // temperatures. Counts are additive per test; never silently pool specimens.
-    // The sterile cup is the INITIAL collection vessel for stool and urine.
-    // Final transport requirements remain assay-specific. Do not pool patients,
-    // different requested tests, first-catch and clean-catch specimens.
-    const initialCollection = (test) => test.category === 'Urine' ?
-      'Sterile specimen cup (urine)' : test.category === 'Stool' ?
-      'Sterile specimen cup (stool)' : test.collect;
+    // Original urine collection cups can be shared across COMPATIBLE tests.
+    // First-stream, clean-catch, and first-morning AFB collection remain separate.
+    // Each test still has its own required transport tube and fill/handling rules.
+    const initialCollection = (test) => test.category === 'Stool' ?
+      'Sterile specimen cup (stool)' : originalCollectionGroup(test).container;
     const mustTransfer = (test) => (test.category === 'Urine' || test.category === 'Stool') &&
       !/sterile (specimen )?cup|sterile container/i.test(test.submit);
     const initialCountFor = (test) => (test.category === 'Urine' || test.category === 'Stool') ?
@@ -546,9 +587,13 @@
     const collection = new Map();
     const transport = new Map();
     tests.forEach((test) => {
-      const initial = initialCollection(test);
-      if (!collection.has(initial)) collection.set(initial, []);
-      collection.get(initial).push(test);
+      const original = originalCollectionGroup(test);
+      const initialKey = test.category === 'Stool' ? 'stool-cup' : original.key;
+      if (!collection.has(initialKey)) collection.set(initialKey, {
+        container:initialCollection(test), subtitle:original.subtitle, shared:original.shared,
+        category:test.category, tests:[]
+      });
+      collection.get(initialKey).tests.push(test);
       const bucket = transportBucket(test);
       if (!transport.has(bucket)) transport.set(bucket, []);
       transport.get(bucket).push(test);
@@ -557,17 +602,19 @@
       '<strong>' + esc(test.name) + '</strong>' +
       '<span class="cedars-print-test-type ' + specimenClass(test.category) + '">' + esc(test.category || 'Other') + '</span>' +
       ((test.code || test.secondaryCode) ? '<span class="cedars-print-test-code">' + esc([test.code, test.secondaryCode].filter(Boolean).join(' / ')) + '</span>' : '');
-    const collectionCards = Array.from(collection, ([container, group]) => {
-      const quantity = group.reduce((sum, test) => sum + initialCountFor(test), 0);
+    const collectionCards = Array.from(collection.values()).map(({container,tests:group,category,subtitle,shared}) => {
+      const quantity = shared ? 1 : group.reduce((sum, test) => sum + initialCountFor(test), 0);
       const cupCollection = group.some(test => test.category === 'Urine' || test.category === 'Stool');
-      const cupBadge = cupCollection ? '<span class="cedars-print-collector-pill ' + specimenClass(group[0].category) + '">' +
-        esc(group[0].category) + '</span>' : '';
+      const cupBadge = cupCollection ? '<span class="cedars-print-collector-pill ' + specimenClass(category) + '">' +
+        esc(category) + '</span>' : '';
       return '<article class="cedars-print-card cedars-print-collection-card">' +
         '<div class="cedars-print-card-heading"><span class="cedars-print-total">' + quantity +
         '</span>' + containerArt(container, 'print') +
         '<div class="cedars-print-card-name"><strong>' + esc(container) +
         '</strong>' + cupBadge +
-        '<small>' + (cupCollection ? 'One original cup per test; do not pool specimens' :
+        (subtitle ? '<small><strong>' + esc(subtitle) + '</strong></small>' : '') +
+        '<small>' + (cupCollection ?
+          (category === 'Urine' ? esc(originalCupNote(category,group.length,subtitle)) : 'One original stool cup per test') :
           'Keep specimens separate') + '</small></div></div>' +
         '<div class="cedars-print-for-tests">For ' + group.length +
         (group.length === 1 ? ' test' : ' tests') + '</div>' +
@@ -637,7 +684,8 @@
     const handlingCards = tests.filter(test => clean(test.notes) && !isPrecaution(test))
       .map(noteCard).join('');
 
-    const totalContainers = tests.reduce((sum,test) => sum + initialCountFor(test), 0);
+    const totalContainers = Array.from(collection.values()).reduce((sum,group) =>
+      sum + (group.shared ? 1 : group.tests.reduce((n,test) => n + initialCountFor(test),0)), 0);
     $('cedarsPrintSheet').innerHTML =
       '<header class="cedars-print-header"><div><h1>Cedars Collection Summary</h1>' +
         '<p>What to collect · What to submit · Transport instructions</p></div>' +
@@ -665,7 +713,8 @@
         '<small>Test-specific instructions from the listed source</small></div></div>' +
         '<div class="cedars-print-handling-grid">' + handlingCards + '</div></section>' : '') +
       '<footer class="cedars-print-footer">Verify current Cedars/Lexicomp instructions before collecting. ' +
-        'Do not pool specimens, combine collection types, or substitute required transport containers. ' +
+        'Compatible urine tests may share one original sterile cup when collection method and volume allow; ' +
+        'use separate cups for first-stream and first-morning urine. Never combine separate transport containers. ' +
         'Confirm the original collection method and transfer process for each assay. No patient identifiers are required.</footer>';
     window.print();
   }
