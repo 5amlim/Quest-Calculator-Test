@@ -28,6 +28,8 @@
   };
   const bagClass = (bucket) => bucket === 'Refrigerated' ? 'temp-refrigerated' :
     bucket === 'Frozen' ? 'temp-frozen' : bucket === 'Room temperature' ? 'temp-room' : 'temp-unknown';
+  const containerArt = (container, size) => typeof window.CEDARS_CONTAINER_ART === 'function'
+    ? window.CEDARS_CONTAINER_ART(container, size) : '';
 
   // The Quest calculator uses its own storage keys. Cedars restores its cart
   // and browser-created test records without ever accessing Quest state.
@@ -161,8 +163,9 @@
       '<td><div class="test-name">' + esc(test.name) + '</div>' +
       '<div class="subtext cedars-row-source">' + esc(source(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">Verify-only</span>' : '') + '</td>' +
-      '<td><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
-      '<div class="subtext">' + esc(test.collect) + '</div></td>' +
+      '<td><div class="cedars-container-cell">' + containerArt(test.collect, 'table') +
+      '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
+      '<div class="subtext">' + esc(test.collect) + '</div></div></div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
       esc(test.temp || 'Verify') + '</span></td>' +
       '<td class="cedars-volume-unknown">Verify</td>' +
@@ -189,7 +192,8 @@
       '</strong>' + (test.code ? '<small>' + esc(test.code) + '</small>' : '') + '</div>' +
       '<button type="button" class="mini-button remove" data-remove="' + esc(test.id) +
       '" aria-label="Remove ' + esc(test.name) + '">Remove</button></div>' +
-      (showCartDetails ? '<div class="cedars-cart-details"><div><b>Collect</b> ' + esc(test.collect) +
+      (showCartDetails ? '<div class="cedars-cart-details"><div class="cedars-cart-art-row">' +
+        containerArt(test.collect, 'small') + '<div><b>Collect</b> ' + esc(test.collect) + '</div></div>' +
         '</div><div><b>Submit</b> ' + esc(test.submit) + '</div><div><b>Transport</b> ' +
         esc(test.temp) + '</div><p>' + esc(test.notes || 'Verify current requirements.') +
         '</p><span class="cedars-source">' + esc(source(test)) + '</span></div>' : '') +
@@ -209,6 +213,7 @@
     $('cedarsDraw').innerHTML = tests.length ?
       Array.from(groups, ([container, group]) =>
         '<div class="cedars-plan-row"><span class="cedars-count">' + group.count + '×</span>' +
+        containerArt(container, 'card') +
         '<div><strong>' + esc(container) + '</strong><small>' +
         esc(group.tests.join('; ')) + '</small></div></div>').join('') :
       '<div class="cedars-empty">Add tests to view collection containers.</div>';
@@ -225,8 +230,10 @@
       Array.from(bags, ([bucket, items]) =>
         '<div class="cedars-bag"><div class="cedars-bag-header"><span class="badge ' +
         bagClass(bucket) + '">' + esc(bucket) + '</span><span>' + items.length + ' tests</span></div>' +
-        items.map((test) => '<div class="cedars-bag-line"><strong>' + esc(test.name) +
-          '</strong><small>' + esc(test.submit) + '</small></div>').join('') + '</div>').join('') :
+        items.map((test) => '<div class="cedars-bag-line">' +
+          containerArt(test.submit, 'card') +
+          '<div><strong>' + esc(test.name) +
+          '</strong><small>' + esc(test.submit) + '</small></div></div>').join('') + '</div>').join('') :
       '<div class="cedars-empty">Add tests to view transport groups.</div>';
   }
   function render() { makeRows(); renderCart(); }
@@ -243,6 +250,11 @@
     if (!test) return;
     $('cedarsInfoTitle').textContent = test.name;
     $('cedarsInfoBody').innerHTML =
+      '<div class="cedars-info-illustrations">' +
+      '<div>' + containerArt(test.collect, 'detail') + '<span>Collection container</span></div>' +
+      '<div>' + containerArt(test.submit, 'detail') + '<span>Submission container</span></div>' +
+      '</div>' +
+      '<p class="cedars-illustration-note">Illustrations are approximate. Confirm the exact kit before collection.</p>' +
       '<div class="cedars-summary-notice"><strong>' +
       (test.hold ? 'Verification required: do not use this record to plan collection.' :
         '2023 reference only: verify the current Cedars/Lexicomp instructions.') +
@@ -326,7 +338,8 @@
       const quantity = group.reduce((sum, test) => sum + countFor(test), 0);
       return '<article class="cedars-print-card cedars-print-collection-card">' +
         '<div class="cedars-print-card-heading"><span class="cedars-print-total">' + quantity +
-        '</span><div class="cedars-print-card-name"><strong>' + esc(container) +
+        '</span>' + containerArt(container, 'print') +
+        '<div class="cedars-print-card-name"><strong>' + esc(container) +
         '</strong><small>Separate collections; no pooling</small></div></div>' +
         '<div class="cedars-print-for-tests">For ' + group.length +
         (group.length === 1 ? ' test' : ' tests') + '</div>' +
@@ -367,7 +380,8 @@
           '<p class="cedars-print-pending-note">Do not assign to a transport bag until the current directory confirms requirements.</p>' :
           '<p class="cedars-print-pending-note">Temperature listed in the record. Reconfirm with current Cedars requirements before packing.</p>') +
         Array.from(byContainer, ([container, items]) =>
-          '<div class="cedars-print-submit-item"><strong>' + esc(container) + '</strong>' +
+          '<div class="cedars-print-submit-item"><div class="cedars-print-submit-line">' +
+          containerArt(container, 'print') + '<strong>' + esc(container) + '</strong></div>' +
           '<ul class="cedars-print-test-list">' +
           items.map(test => '<li>' + testTag(test) + '</li>').join('') +
           '</ul></div>').join('') +
@@ -396,7 +410,7 @@
       '<div class="cedars-print-warning"><strong>Verify before collecting or sending.</strong> ' +
         'The built-in catalog is based on a 2023 Cedars guide, not current Lexicomp. ' +
         'Confirm volume, kit, patient preparation, processing, stability, temperature and courier requirements. ' +
-        'No specimens are pooled automatically.</div>' +
+        'No specimens are pooled automatically. Container illustrations are examples, not kit identification.</div>' +
       (precautionCards ? '<section class="cedars-print-precautions">' +
         '<div class="cedars-print-precautions-title"><strong>Check before collection</strong>' +
         '<span>Source-specific requirements that can affect specimen acceptance</span></div>' +
