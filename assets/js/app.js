@@ -1232,11 +1232,20 @@
     if (/aptima/.test(value)) return ['aptima'];
     if (/viral|vcm|utm|transport media/.test(value)) return ['viral'];
     if (/total fix|stool container/.test(value)) return ['stool'];
-    if (/sterile (?:urine )?cup|plastic urine container|24 hour urine/.test(value)) return ['urine-cup'];
+    if (/sterile (?:urine )?cup/.test(value)) return ['sterile-cup'];
+    if (/plastic urine container|24 hour urine/.test(value)) return ['urine-cup'];
     if (/plasma transport/.test(value)) return ['plasma'];
     if (/serum transport|serum .* transport vial/.test(value)) return ['serum'];
     if (/^(?:(?:\d+|two)\s+)?(?:separate\s+)?transport tubes?$/.test(value)) return ['transport'];
     return ['special'];
+  }
+
+  // This filter also covers the original collection cup when a specimen
+  // is later transferred into a preservative or other transport container.
+  // It is intentionally specimen-agnostic: urine, stool, body fluids, etc.
+  function usesSterileCup(test) {
+    return [test.drawContainer, test.transportContainer, test.alternativeContainer]
+      .some(value => /\bsterile(?:\s+urine)?\s+cup\b/i.test(String(value || '')));
   }
 
   function toggleCatalogFilters(force) {
@@ -1268,7 +1277,9 @@
     const temperature = els.temperatureFilter.value;
     if (temperature && transportBagInfo(test).key !== temperature) return false;
     const container = els.transportContainerFilter.value;
-    if (container && !transportContainerFilterCategories(test).includes(container)) return false;
+    if (container && !(container === 'sterile-cup'
+      ? usesSterileCup(test)
+      : transportContainerFilterCategories(test).includes(container))) return false;
     const fasting = els.fastingFilter.value;
     if (fasting && fastingRequirement(test)?.level !== fasting) return false;
     // Limit this category to explicitly named pediatric/neonatal tests;
@@ -1835,7 +1846,7 @@
     if (!selectedUrineCultureIsSponge() || !isCultureTransportEligible(test)) return test;
     const reflex = String(test.testCode || '') === '3020'
       || /urinalysis.*reflex to culture/i.test(test.testName || '');
-    const instructions = 'Collect clean-catch midstream urine in a sterile urine cup. Dip the UriSponge applicator into the urine sample, fully submerging for 5 seconds. Return saturated sponge to UriSponge tube and secure tightly. Do not pour urine into the UriSponge tube. Transport preserved urine at room temperature or refrigerated. Confirm acceptance with the receiving lab.';
+    const instructions = 'Collect clean-catch midstream urine in a sterile cup. Dip the UriSponge applicator into the urine sample, fully submerging for 5 seconds. Return saturated sponge to UriSponge tube and secure tightly. Do not pour urine into the UriSponge tube. Transport preserved urine at room temperature or refrigerated. Confirm acceptance with the receiving lab.';
     if (reflex) {
       return {
         ...test,
@@ -3642,7 +3653,7 @@
       return [
         { key: 'ua-swirl', label: 'Red/Yellow Swirl UA Preservative Tube', className: 'tube-ua-swirl', count: 1, detail: 'Urine in preservative tube' },
         selectedUrineCultureIsSponge() && isCultureTransportEligible(test)
-          ? { key: 'urine-culture-urisponge', label: 'UriSponge Urine Culture Transport', className: 'tube-urisponge', count: 1, detail: 'Saturated UriSponge from sterile urine cup · do not pour urine into tube' }
+          ? { key: 'urine-culture-urisponge', label: 'UriSponge Urine Culture Transport', className: 'tube-urisponge', count: 1, detail: 'Saturated UriSponge from sterile cup · do not pour urine into tube' }
           : { key: 'urine-culture', label: 'Gray-Top Urine Culture Preservative Tube', className: 'tube-urine-culture', count: 1, detail: 'Urine in culture preservative tube' }
       ];
     }
