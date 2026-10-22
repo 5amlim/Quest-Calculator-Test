@@ -48,7 +48,7 @@ const lcCtx = vm.createContext({
   localStorage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}},
   console
 });
-vm.runInContext(read('labcorp-data.js'),lcCtx);
+vm.runInContext(read('labcorp-urgent-pcp-data.js'),lcCtx);
 const labcorpApp=read('labcorp-app.js');
 vm.runInContext(labcorpApp.replace('  init();',
   '  window.testApi={normalizeRecord,buildTransportBagPlan,buildCollectionPlan,buildSubmissionContents,menuContainerBadges,printCollectionSubmissionPlan};'),
