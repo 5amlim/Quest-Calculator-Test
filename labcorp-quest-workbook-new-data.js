@@ -82,6 +82,27 @@ const additions=[
     "status": "active",
     "source": "Labcorp official test directory verified 2026-10-22 • https://www.labcorp.com/tests/500142/dihydrotestosterone-dht-endocrine-sciences"
   }
+,
+  {
+    "id": "labcorp-146712",
+    "testCode": "146712",
+    "testName": "Leptin, Serum or Plasma",
+    "specimenType": "Serum",
+    "drawContainer": "SST / Gold",
+    "alternativeContainer": "Red-top serum or lavender EDTA plasma",
+    "transportContainer": "Plastic Serum Transport Tube",
+    "preferredVolume": "0.5 mL serum",
+    "minimumVolume": "0.2 mL",
+    "transportTemperature": "Room Temperature",
+    "transportTemperatureRaw": "Room Temperature",
+    "stability": "Room temperature 14 days; refrigerated 30 days; frozen 21 days",
+    "spin": "Yes",
+    "specialInstructions": "Separate serum or plasma from cells and transfer to plastic transport tube. Avoid gross hemolysis or lipemia.",
+    "fastingStatus": "",
+    "fastingInstructions": "",
+    "status": "active",
+    "source": "Labcorp official test directory verified 2026-10-22 • https://www.labcorp.com/tests/146712/leptin-serum-or-plasma"
+  }
 ];
 const catalog=Array.isArray(window.SEED_TESTS)?window.SEED_TESTS:[];
 const known=new Set(catalog.map(test=>String(test.testCode)));
