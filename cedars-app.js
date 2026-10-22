@@ -315,7 +315,11 @@
     (test.id === 'fecal-fit' || /\b(?:FOBT-CHEK|FIT sampling bottle|dedicated stool collection kit)\b/i.test(String(test.collect || '')));
   const collectionContainer = (test) =>
     requiresOriginalStoolKit(test) ? test.collect :
-    (test.category === 'Urine' || test.category === 'Stool') ? 'Sterile cup' : test.collect;
+    (test.category === 'Urine' || test.category === 'Stool') ? 'Sterile cup' :
+    // For swabs and culture bottles, the transport kit IS the collection
+    // device. An anatomical site or a kit's longer trade name is not a transfer.
+    (test.category === 'Swab' || test.category === 'Blood') ? (test.submit || test.collect) :
+    test.collect;
 
   // All Cedars menu rows show the original collection vessel before the
   // final submission container, without changing the existing container art.
@@ -324,21 +328,30 @@
     const target = String(test.submit || 'Verify submission container').trim();
     const canonical = value => {
       const text = clean(value);
-      // FIT sampling and shipping names refer to the same physical bottle.
+      // FIT bottles and sterile urine cups can have different catalog labels
+      // without representing two different physical containers.
       if (/\bfobt[- ]?chek\b|\bfit\s+(?:sampling\s+)?bottle\b/i.test(text)) return 'fit original sampling bottle';
+      if (/^(?:sterile\s+)?(?:specimen\s+)?(?:cup|container)(?:\s*\(urine\))?$/i.test(text)
+          || /^sterile\s+(?:specimen\s+)?cup\s*\(urine\)$/i.test(text)) return 'sterile cup';
       return text.replace(/\b(?:sterile|specimen|collection)\b/g, ' ')
         .replace(/\s+/g, ' ').trim();
     };
+    const sameCup = canonical(source) === 'sterile cup' && canonical(target) === 'sterile cup';
     const unchanged = canonical(source) === canonical(target) ||
       /^(?:submit|send)\s+(?:in\s+)?(?:the\s+)?original\s+(?:tube|cup|container)$/i.test(target);
+    // Only urine/stool collection-to-preservative workflows show transfer
+    // arrows. Swab transport kits and blood culture bottles are used directly
+    // to collect the specimen, not transferred after the collection.
+    const transfer = (test.category === 'Urine' || test.category === 'Stool') && !unchanged;
     const cls = specimenClass(test.category);
     const pill = (value, role) =>
       '<span class="cedars-container-name ' + cls + '" aria-label="' + role + '">' + esc(value) + '</span>';
-    return '<div class="cedars-container-path' + (unchanged ? ' is-single' : '') + '">' +
-      (unchanged ? pill(source, 'Collection and submission container') :
-       '<span class="cedars-container-path-stage">' + pill(source,'Collect in') + '</span>' +
+    const single = sameCup ? 'Sterile cup' : (target || source);
+    return '<div class="cedars-container-path' + (!transfer ? ' is-single' : '') + '">' +
+      (!transfer ? pill(single, 'Collection and submission container') :
+       '<span class="cedars-container-path-stage">' + pill(source, 'Collect in') + '</span>' +
        '<span class="cedars-container-path-arrow" role="img" aria-label="Then submit in">→</span>' +
-       '<span class="cedars-container-path-stage">' + pill(target,'Submit in') + '</span>') +
+       '<span class="cedars-container-path-stage">' + pill(target, 'Submit in') + '</span>') +
       '</div>';
   }
 
@@ -432,8 +445,8 @@
       shared:true
     };
     return {
-      key:'other|' + test.collect,
-      container:test.collect,
+      key:'other|' + collectionContainer(test),
+      container:collectionContainer(test),
       category:test.category,
       subtitle:'',
       shared:false
