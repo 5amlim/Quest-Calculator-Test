@@ -1172,7 +1172,7 @@
     const blocked = test.status === 'blocked';
     return `<tr class="${selected ? 'is-selected' : ''}">
       <td class="code-cell" data-label="Code">${escapeHtml(displayCode(test))}</td>
-      <td data-label="Test"><div class="test-name">${escapeHtml(test.testName)}${isStatEligible(test) ? `<span class="library-stat-eligible${statSelectedIds.includes(test.id) ? ' selected' : ''}" title="Eligible on the selected receiving laboratory's STAT menu. Confirm current acceptance before sending.">${statSelectedIds.includes(test.id) ? 'STAT selected' : 'STAT eligible'}</span>` : ''}</div><div class="subtext">${escapeHtml(truncate(test.specialInstructions, 95))}</div></td>
+      <td data-label="Test"><div class="test-name">${escapeHtml(test.testName)}${statSelectedIds.includes(test.id) && isStatEligible(test) ? '<span class="library-stat-eligible selected" title="Manually marked STAT; verify receiving-lab acceptance and courier routing.">STAT selected</span>' : ''}</div><div class="subtext">${escapeHtml(truncate(test.specialInstructions, 95))}</div></td>
       <td data-label="Specimen / tube">${requiredDrawContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}${test.alternativeContainer ? ` <span>· Alt: ${escapeHtml(test.alternativeContainer)}</span>` : ''}</div></td>
       <td data-label="Temperature"><span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td>
       <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</div></td>
@@ -1400,13 +1400,13 @@
     }).filter(({code,test}) => !keyword || normalizeSearch(`${code} ${test?.testName || ''}`).includes(keyword));
     els.statMenuPanel.classList.toggle('hidden', !statMenuOpen);
     els.statMenuButton?.setAttribute('aria-expanded', String(statMenuOpen));
-    els.statMenuButton.textContent = `${statMenuOpen ? 'Hide' : 'Show'} STAT tests${codes.length ? ` (${codes.length})` : ''}`;
+    els.statMenuButton.textContent = `${statMenuOpen ? 'Hide' : 'Show'} STAT routing info`;
     if (!statMenuOpen) return;
     els.statMenuTitle.textContent = info.label;
     els.statMenuCount.textContent = `${codes.length} listed code${codes.length === 1 ? '' : 's'}`;
     els.statAreaHelp.textContent = `${info.note} Confirm current receiving-lab acceptance, cutoff, requisition, and courier before sending STAT. ${statAreaResetNotice}`.trim();
     els.statMenuResults.innerHTML = !codes.length
-      ? '<p class="stat-menu-empty">No verified STAT codes configured for this receiving area.</p>'
+      ? '<p class="stat-menu-empty">No preapproved Labcorp STAT menu is configured. After confirming local acceptance, you can mark a test STAT in the cart.</p>'
       : matches.length
         ? matches.map(({code,test}) => {
           const available = test && test.status !== 'blocked';
