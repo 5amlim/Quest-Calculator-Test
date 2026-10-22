@@ -381,7 +381,7 @@
       if (record[key] != null) record[key] = interfaceWording(record[key]);
     }
 
-    const specimenType = normalizeSpecimenType(record.specimenType);
+    let specimenType = normalizeSpecimenType(record.specimenType);
     let transportContainer = cleanTransportContainer(record.transportContainer);
     let drawContainer = normalizeStoolCollectionSource(
       specimenType,
@@ -391,6 +391,20 @@
         transportContainer
       )
     );
+    // For swab assays the swab transport device is also the collection kit.
+    // Anatomical labels such as "Throat Swab" describe specimen SOURCE, not
+    // a second tube. Preserve the site in the specimen column while treating
+    // the actual Amies/viral/Aptima swab kit as both draw and submit container.
+    if (/\bswab\b/i.test(specimenType) &&
+        /(?:swab|amies|aptima|cobas|viral transport|\butm\b|\bvtm\b)/i.test(transportContainer) &&
+        !/^(?:verify|other \/ verify)/i.test(transportContainer)) {
+      if (/^swab$/i.test(specimenType) &&
+          /\b(?:throat|nasal|nasopharyngeal|oropharyngeal|rectal|vaginal|cervical|endocervical|urethral|lesion|wound|ear|eye|buccal)\b/i.test(drawContainer) &&
+          /\bswab\b/i.test(drawContainer)) {
+        specimenType = drawContainer;
+      }
+      drawContainer = transportContainer;
+    }
     // Microtainer-only neonatal instructions override the generic SST/Gold
     // source. Never count these small-volume microcollection tubes as regular
     // 5 mL Gold or 7.5 mL Tiger SSTs. Preserve the full manufacturer notes.
@@ -3575,6 +3589,12 @@
     // original source cup, even if older records listed the vial for both.
     if (collectionSpecimenGroupForTest(test) === 'stool' && /total[- ]?fix/.test(transport.toLowerCase())) return false;
     if (!draw || /^do not collect$/i.test(draw) || /^n\/?a$/i.test(transport)) return false;
+
+    // Swabs are collected directly into their supplied transport kit. Unlike
+    // spun blood or transferred urine/stool, no second container is required.
+    if (/\bswab\b/i.test(String(test.specimenType || '')) &&
+        /(?:swab|amies|aptima|cobas|viral transport|\butm\b|\bvtm\b)/i.test(transport) &&
+        normalizeSearch(draw) === normalizeSearch(transport)) return true;
 
     const drawClass = tubeClass(draw);
     const transportClass = tubeClass(transport);
