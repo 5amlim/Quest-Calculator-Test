@@ -24,11 +24,11 @@
   const STAT_AREA_KEY = 'labcorpCollectionCalculator.labcorpStatArea.v1';
   const STAT_AREAS = Object.freeze({
     unselected: {label:'Area not selected',codes:[],note:'Select the Labcorp receiving region; STAT status is not automatically verified.'},
-    socal: {label:'Southern California',codes:[],note:'Confirm STAT eligibility, local performing lab, cutoff and courier before marking an order STAT.'},
-    norcal: {label:'Northern California',codes:[],note:'Confirm STAT eligibility, local performing lab, cutoff and courier before marking an order STAT.'},
-    ny: {label:'New York',codes:[],note:'Confirm STAT eligibility, local performing lab, cutoff and courier before marking an order STAT.'},
-    fl: {label:'Florida',codes:[],note:'Confirm STAT eligibility, local performing lab, cutoff and courier before marking an order STAT.'},
-    other: {label:'Other service area',codes:[],note:'Confirm STAT eligibility and courier with the receiving Labcorp location before marking an order STAT.'}
+    socal: {label:'Southern California',codes:[],note:'No approved SoCal Labcorp STAT menu is loaded. STAT selection is disabled pending receiving-lab verification.'},
+    norcal: {label:'Northern California',codes:[],note:'No approved Labcorp STAT menu is loaded for this area. STAT selection is disabled pending receiving-lab verification.'},
+    ny: {label:'New York',codes:[],note:'No approved Labcorp STAT menu is loaded for this area. STAT selection is disabled pending receiving-lab verification.'},
+    fl: {label:'Florida',codes:[],note:'No approved Labcorp STAT menu is loaded for this area. STAT selection is disabled pending receiving-lab verification.'},
+    other: {label:'Other service area',codes:[],note:'No approved Labcorp STAT menu is loaded for this area. STAT selection is disabled pending receiving-lab verification.'}
   });
   // All STAT-eligible tests, including sedimentation rate (809), start as Routine.
   const DEFAULT_STAT_TEST_CODES = new Set();
@@ -1427,8 +1427,12 @@
   }
 
   function isStatEligible(test) {
-    // Staff must explicitly confirm Labcorp STAT acceptance; no code menu is presumed.
-    return Boolean(test && test.status !== 'blocked' && statArea !== 'unselected');
+    // Only an explicitly verified per-region Labcorp code may be marked STAT.
+    // Selecting a region alone is NOT eligibility. An empty list disables STAT.
+    const area = STAT_AREAS[statArea];
+    return Boolean(test && test.status !== 'blocked' && area &&
+      statArea !== 'unselected' &&
+      area.codes.some(code => String(code) === String(test.testCode || '').trim()));
   }
 
   function reconcileStatWithArea() {
@@ -1564,7 +1568,7 @@
     els.statMenuCount.textContent = `${codes.length} listed code${codes.length === 1 ? '' : 's'}`;
     els.statAreaHelp.textContent = `${info.note} Confirm current receiving-lab acceptance, cutoff, requisition, and courier before sending STAT. ${statAreaResetNotice}`.trim();
     els.statMenuResults.innerHTML = !codes.length
-      ? '<p class="stat-menu-empty">No preapproved Labcorp STAT menu is configured. After confirming local acceptance, you can mark a test STAT in the cart.</p>'
+      ? '<p class="stat-menu-empty">No verified Labcorp STAT codes are configured for this receiving area. STAT actions are disabled until an approved local menu is added. Confirm with the receiving lab before requesting STAT testing.</p>'
       : matches.length
         ? matches.map(({code,test}) => {
           const available = test && test.status !== 'blocked';
@@ -1640,7 +1644,7 @@
   }
 
   function confirmStatSelection(test) {
-    return window.confirm(`Mark ${displayCode(test)} · ${test.testName} as STAT?\n\nReceiving lab: ${STAT_AREAS[statArea].label}\n\nLabcorp STAT eligibility has not been preverified. Only proceed if this code is accepted STAT at the actual receiving lab. Confirm local cutoff, requisition, and separate STAT courier routing.`);
+    return window.confirm(`Mark ${displayCode(test)} · ${test.testName} as STAT?\n\nReceiving lab: ${STAT_AREAS[statArea].label}\n\nThis code is in the configured regional STAT menu. Confirm current receiving-lab acceptance, cutoff, requisition, and separate STAT courier routing before proceeding.`);
   }
 
   function toggleStatPriority(id) {
