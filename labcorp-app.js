@@ -3532,6 +3532,11 @@
       && transportClass === 'tube-sst'
       && /sst|gold|serum separator|gel[- ]barrier/.test(transport.toLowerCase())
       && !/do not use (?:an? )?(?:sst|gel)|gel[- ]barrier (?:tube|specimen) (?:not acceptable|rejected)|must (?:transfer|pour off|separate) (?:the )?(?:serum|specimen)|(?:transfer|separation) (?:of )?(?:serum|specimen) (?:is )?(?:mandatory|required)/.test(instructions);
+    // A mandatory tube-to-tube serum transfer or gel prohibition overrides any
+    // apparently matching SST label; do not silently merge those submissions.
+    const transferRequired = /\bmust\s+(?:(?:immediately|promptly)\s+)?(?:transfer|pour\s+off)\b|\btransfer\s+(?:of\s+)?serum\s+(?:to|into)\s+(?:a\s+)?(?:separate|dedicated|another)\s+(?:tube|container)\s+(?:is\s+)?(?:mandatory|required)\b|\b(?:separate|dedicated)\s+serum\s+(?:transport\s+)?tube\s+(?:is\s+)?(?:mandatory|required)\b/.test(instructions);
+    const noGelSst = /\bdo\s+not\s+use\s+(?:an?\s+)?(?:sst|gel)|\bgel[- ]barrier\s+(?:tube|specimen)\s+(?:not\s+acceptable|rejected)\b/.test(instructions);
+    if (drawClass === 'tube-sst' && (transferRequired || noGelSst)) return false;
     if (spunOriginalSst) return true;
 
     const explicitOriginal = /no transfer|original tube|same tube|primary tube|do not open|unopened|submit (?:the )?(?:spun )?(?:original|collection|primary) tube|leave .* in (?:the )?original tube/.test(combined);
