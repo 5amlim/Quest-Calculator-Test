@@ -4459,7 +4459,7 @@
   function directoryUrl(test) {
     // Prefer the exact Labcorp official record URL bundled with verified tests.
     const source = String(test?.source || '');
-    const match = source.match(/https:\/\/www\.labcorp\.com\/tests\/[0-9]+\/[a-z0-9-]+/i);
+    const match = source.match(/https:\/\/(?:www|womenshealth)\.labcorp\.com\/tests\/[0-9]+\/[a-z0-9-]+/i);
     if (match) return match[0];
     return directorySearchUrl(test?.testCode || test?.testName || '');
   }
