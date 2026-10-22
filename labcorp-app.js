@@ -166,7 +166,7 @@
       // selected special containers for exceptional collection workflows.
       if (els.specimenType.value === 'Stool' && (els.drawContainer.value !== '__other__' ||
         /^(?:stool container|sterile cup|total[- ]?fix(?:®)?(?: transport vial)?)$/i.test(selectedDrawContainer(true)))) {
-        setDrawContainerValue('Sterile Urine Cup');
+        setDrawContainerValue('Sterile cup');
         window.syncPortalSelects?.();
       }
     });
@@ -336,7 +336,7 @@
     // Do not replace true 24-hour collection jugs, special collection devices,
     // or intentionally unavailable tests with a spot-urine cup.
     if (/24\s*[- ]?hour|24h\b|timed\s+urine|do not collect|^n\/?a$/i.test(draw)) return draw;
-    if (/^sterile urine cup$/i.test(draw)) return 'Sterile Urine Cup';
+    if (/^sterile(?: urine)? cup$/i.test(draw)) return 'Sterile cup';
 
     // Some previously saved browser overrides put the downstream preservative
     // tube in the Draw Container field. For the clinic workflow the patient
@@ -349,7 +349,7 @@
     const isUrinePreservativeTransport = grayUrineTransport.test(transport)
       || uaPreservative.test(transport);
     if (isUrinePreservativeDraw && isUrinePreservativeTransport) {
-      return 'Sterile Urine Cup';
+      return 'Sterile cup';
     }
     return draw;
   }
@@ -361,7 +361,7 @@
     // any required preservative/transport vial (e.g., Total-Fix). Do not
     // overwrite special primary collections such as trace-metal-free sources
     // or timed total-stool containers.
-    if (/^(?:sterile\s+(?:urine\s+)?cup|stool\s+container|standard\s+stool\s+container|total[- ]?fix(?:®)?\s+(?:transport\s+)?vial)$/i.test(draw)) return 'Sterile Urine Cup';
+    if (/^(?:sterile\s+(?:urine\s+)?cup|stool\s+(?:collection\s+)?(?:cup|container)|standard\s+stool\s+container|total[- ]?fix(?:®)?\s+(?:transport\s+)?vial)$/i.test(draw)) return 'Sterile cup';
     return draw;
   }
 
@@ -638,12 +638,13 @@
 
   function cleanCollectionContainer(value) {
     const text = String(value || '').trim();
-    // Local standard: generic urine cups/containers are the existing Sterile Urine Cup.
+    // Local standard: generic urine cups/containers are the existing Sterile cup.
     // Keep truly special devices (24-hour jugs, preservative tubes, trace-metal containers, Aptima, etc.) distinct.
     if (/^(?:sterile\s*,?\s*)?(?:plastic\s+)?urine\s+(?:collection\s+)?(?:cup|container)$/i.test(text)) {
-      return 'Sterile Urine Cup';
+      return 'Sterile cup';
     }
-    if (/^urine\s+collection\s+(?:cup|container)$/i.test(text)) return 'Sterile Urine Cup';
+    if (/^urine\s+collection\s+(?:cup|container)$/i.test(text)) return 'Sterile cup';
+    if (/^(?:sterile\s+stool\s+cup|stool\s+collection\s+cup|sterile\s+cup|sterile\s+specimen\s+cup)$/i.test(text)) return 'Sterile cup';
     return text;
   }
 
@@ -1123,7 +1124,7 @@
     if (/aptima/.test(value)) return ['aptima'];
     if (/viral|vcm|utm|transport media/.test(value)) return ['viral'];
     if (/total fix|stool container/.test(value)) return ['stool'];
-    if (/sterile urine cup|plastic urine container|24 hour urine/.test(value)) return ['urine-cup'];
+    if (/sterile (?:urine )?cup|plastic urine container|24 hour urine/.test(value)) return ['urine-cup'];
     if (/plasma transport/.test(value)) return ['plasma'];
     if (/serum transport|serum .* transport vial/.test(value)) return ['serum'];
     if (/^(?:(?:\d+|two)\s+)?(?:separate\s+)?transport tubes?$/.test(value)) return ['transport'];
@@ -2840,7 +2841,7 @@
   function canonicalCollectionContainer(test) {
     const draw = String(test.drawContainer || 'Verify collection container').trim();
     if (isUrineTest(test) && !isTimedUrineTest(test)) {
-      return { key: 'sterile-urine-cup', label: 'Sterile Urine Cup', className: 'tube-urine-cup' };
+      return { key: 'sterile-urine-cup', label: 'Sterile cup', className: 'tube-urine-cup' };
     }
 
     const cls = tubeClass(draw);
@@ -2868,7 +2869,7 @@
       'tube-total-fix': 'Total-Fix® Transport Vial',
       'tube-trace-metal-container': 'Trace Metal-Free Plastic Container',
       'tube-24h-urine': '24-Hour Urine Container',
-      'tube-urine-cup': 'Sterile Urine Cup',
+      'tube-urine-cup': 'Sterile cup',
       'tube-ua-swirl': 'Red/Yellow Swirl UA Preservative Tube',
       'tube-urine-culture': 'Gray-Top Urine Culture Preservative Tube'
     };
@@ -3226,7 +3227,7 @@
     // count, not permission to combine incompatible tests or submitted aliquots.
     const sharedStoolTests = uniqueTests(tests.filter(isShareableStoolSourceTest));
     if (sharedStoolTests.length) {
-      items.push({ key: 'stool-shared-source-cup', label: 'Sterile Urine Cup',
+      items.push({ key: 'stool-shared-source-cup', label: 'Sterile cup',
         className: 'tube-urine-cup', count: 1, tests: sharedStoolTests,
         sharedStoolSource: true,
         detail: sharedStoolTests.length > 1
@@ -3245,7 +3246,7 @@
     spotUrineGroups.forEach(group => {
       items.push({
         key: `sterile-urine-cup|${group.key}`,
-        label: 'Sterile Urine Cup',
+        label: 'Sterile cup',
         className: 'tube-urine-cup',
         urineSeparateCollection: group.dedicated,
         urineCollectionKey: group.key,
@@ -3264,7 +3265,7 @@
       if (isShareableStoolSourceTest(test)) return;
       const info = canonicalCollectionContainer(test);
       // Keep physically identical containers separate when they hold different specimen types.
-      // A Sterile Urine Cup, for example, may be used for either urine or stool, but those
+      // A Sterile cup, for example, may be used for either urine or stool, but those
       // specimens should never be combined into the same collection card/count.
       const specimenGroup = collectionSpecimenGroupForTest(test);
       const specimenSubtype = specimenGroup === 'urine' ? urineCollectionType(test).key : specimenGroup;
@@ -3286,7 +3287,7 @@
 
     // Final card-level normalization. Collection cards are grouped by the physical
     // collection container AND specimen type, so urine and stool never merge just
-    // because both use a Sterile Urine Cup. Conversely, duplicate urine cards that
+    // because both use a Sterile cup. Conversely, duplicate urine cards that
     // use the same cup are collapsed into one card even when downstream transport
     // tubes or processing differ.
     const mergedItems = [];
@@ -3309,7 +3310,7 @@
       const target = mergedIndex.get(sameContainerKey);
       target.tests = uniqueTests([...(target.tests || []), ...(item.tests || [])]);
 
-      // Spot urine collected in the same Sterile Urine Cup is one shared source
+      // Spot urine collected in the same Sterile cup is one shared source
       // specimen. Preserve a larger explicit cup count if a test truly requires it.
       if (specimenGroup === 'urine' && item.className === 'tube-urine-cup') {
         target.count = Math.max(Number(target.count) || 0, Number(item.count) || 0);
