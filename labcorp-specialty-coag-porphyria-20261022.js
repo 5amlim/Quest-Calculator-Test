@@ -37,7 +37,7 @@ const additions=[
     "transportTemperatureRaw": "Frozen",
     "stability": "Keep frozen; protect from light",
     "spin": "No",
-    "specialInstructions": "Protect from light. Avoid first morning and late evening specimen. Optional 0.5 mL 30% acetic acid preservative, but mandatory if paired with delta-ALA. Freeze separately for each requested frozen assay. Transfer aliquot to amber frozen transport tube (78656); freeze immediately and keep frozen in transit. Do not pool with unrelated urine preservative workflows.",
+    "specialInstructions": "Protect from light. Avoid first morning and late evening specimen. Optional 0.5 mL 30% acetic acid preservative, but mandatory if paired with delta-ALA; with delta-ALA ensure urine pH is below 6. Freeze separately for each requested frozen assay. Transfer aliquot to amber frozen transport tube (78656); freeze immediately and keep frozen in transit. Do not pool with unrelated urine preservative workflows.",
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
