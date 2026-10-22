@@ -475,6 +475,50 @@
     return extras ? `${primary} ${extras}` : primary;
   }
 
+  // In the searchable Labcorp menu, show the container sent to Labcorp,
+  // not the source tube/cup used during collection. The collection/print
+  // plan continues using its own separate draw-versus-submit logic.
+  function libraryTransportContainerBadges(test, className = 'badge') {
+    const code = String(test.testCode || '').trim();
+    const multipleContainers = ['008623', '188110', '377036'].includes(code);
+    const submissions = multipleContainers
+      ? splitSubmissionContainers(test).map(item => ({
+          label: item.label, className: item.className
+        }))
+      : [
+          {
+            label: finalTransportContainer(test),
+            className: transportTubeClass(test, finalTransportContainer(test))
+          },
+          ...additionalDrawRequirements(test).map(requirement => {
+            const label = requirement.transportContainer || requirement.container;
+            return {
+              label,
+              className: transportTubeClass(
+                { ...test, specimenType: requirement.specimenType || test.specimenType },
+                label
+              )
+            };
+          })
+        ];
+    const seen = new Set();
+    return submissions
+      .filter(item => {
+        if (!item.label || seen.has(item.label)) return false;
+        seen.add(item.label);
+        return true;
+      })
+      .map(item => {
+        const cls = item.className || tubeClass(item.label);
+        const displayClass = cls === 'tube-sst' ? selectedSstVisualClass() : cls;
+        const label = cls === 'tube-sst'
+          ? `${selectedSstTransportLabel()}${/\\bspun\\b/i.test(item.label) ? ' (spun)' : ''}`
+          : item.label;
+        return `<span class="${className} tube ${displayClass}">${escapeHtml(label)}</span>`;
+      })
+      .join(' ');
+  }
+
   function requiredSpecimenBadges(test, extraClass = '') {
     const labels = [normalizeSpecimenType(test.specimenType), ...additionalDrawRequirements(test).map(requirement => normalizeSpecimenType(requirement.specimenType))]
       .filter(Boolean);
@@ -555,6 +599,9 @@
   }
 
   function combinedVolumeText(test, label) {
+    // QuantiFERON is a four-tube kit. Keep four 1 mL requirements in the
+    // collection calculation, but show a concise volume in the test menu.
+    if (String(test.testCode || '').trim() === '182879') return '1 mL each';
     const primary = cleanVolumeDisplayText(label === 'preferred' ? test.preferredVolume : test.minimumVolume);
     const extras = additionalDrawRequirements(test)
       .map(requirement => cleanVolumeDisplayText(label === 'preferred' ? requirement.preferredVolume : requirement.minimumVolume))
@@ -1192,7 +1239,7 @@
     return `<tr class="${selected ? 'is-selected' : ''}">
       <td class="code-cell" data-label="Code">${escapeHtml(displayCode(test))}</td>
       <td data-label="Test"><div class="test-name">${escapeHtml(test.testName)}${statSelectedIds.includes(test.id) && isStatEligible(test) ? '<span class="library-stat-eligible selected" title="Manually marked STAT; verify receiving-lab acceptance and courier routing.">STAT selected</span>' : ''}</div><div class="subtext">${escapeHtml(truncate(test.specialInstructions, 95))}</div></td>
-      <td data-label="Specimen / tube">${requiredDrawContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}${test.alternativeContainer ? ` <span>· Alt: ${escapeHtml(test.alternativeContainer)}</span>` : ''}</div></td>
+      <td data-label="Submit container">${libraryTransportContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}</div></td>
       <td data-label="Temperature"><span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td>
       <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</div></td>
       <td class="row-actions" data-label="Actions">
@@ -4423,6 +4470,8 @@
 
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
+    // Para-Pak C&S orange vial has a red Cary-Blair medium, not a gray cap.
+    if (/cary[- ]?blair|para[- ]?pak\\s+c\\s*&\\s*s\\s+orange/.test(value)) return 'tube-cary-blair';
     if (/microtainer/.test(value)) return 'tube-microtainer';
     if (/uri[- ]?sponge/.test(value)) return 'tube-urisponge';
     if (/aptima/.test(value)) return 'tube-aptima';
