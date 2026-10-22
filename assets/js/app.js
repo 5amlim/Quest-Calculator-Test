@@ -611,22 +611,35 @@
   // Search results only: show the final submission vial for urine/stool.
   // For blood and all other specimens retain the original collection-badge display.
   function menuContainerBadges(test) {
-    const specimen = String(test.specimenType || '');
-    const showSubmission = /\burine\b|\b(?:stool|feces|fecal|faeces|faecal)\b/i.test(specimen);
-    // No-transfer is a handling instruction, not a submission container.
-    // For urine/stool, display the existing collection container in that case.
-    const transport = String(test.transportContainer || '').trim();
-    const originalContainer = /\bno\s+transfer\b/i.test(transport)
-      || /^(?:(?:submit|send|ship|keep|leave)\b.{0,70}\b)?(?:original|primary)(?:\s+collection)?\s+(?:tube|container|cup|specimen|vial)\b/i.test(transport)
-      || /^(?:submit|send|ship|keep|leave)\b.{0,70}\b(?:original|primary)(?:\s+collection)?\s+(?:tube|container|cup|specimen|vial)\b/i.test(transport);
-    const badges = showSubmission && !originalContainer
-      ? librarySubmissionBadges(test)
-      : requiredDrawContainerBadges(test);
-    // Hide verbose original-tube flags in menu badges only.
-    return badges
-      .replace(/\s*\(\s*original (?:tube|specimen)\s*\)/gi, '')
-      .replace(/\s*\/\s*original tube\b/gi, '')
-      .replace(/\s*\(\s*submit in original tube\s*\)/gi, '');
+    // Directory-only presentation. Never change collection, processing or pooling.
+    // Display the physical source followed by its distinct submission container.
+    const specimen = String(test.specimenType || '').toLowerCase();
+    const rawDraw = String(test.drawContainer || 'Verify collection container').trim();
+    const draw = cleanCollectionContainer(rawDraw);
+    const transport = String(finalTransportContainer(test) || '').trim();
+    const isCup = /^(?:sterile\s+(?:urine\s+|stool\s+|specimen\s+)?cup|stool\s+collection\s+cup|urine\s+collection\s+cup)$/i.test(rawDraw);
+    const collectionLabel = isCup ? 'Sterile cup' : draw;
+    const drawBadges = drawContainerBadge(collectionLabel) +
+      additionalDrawRequirements(test).map(req => drawContainerBadge(cleanCollectionContainer(req.container || 'Verify collection container'))).join(' ');
+    const cleanName = value => {
+      const text = normalizeSearch(cleanCollectionContainer(value))
+        .replace(/\b(?:spun|centrifuged|original|tube)\b/g, ' ').replace(/\s+/g, ' ').trim();
+      return /^(?:gold\s+sst|sst\s+gold|gold|sst)$/.test(text) ? 'sst gold' : text;
+    };
+    const original = /\bno\s+transfer\b|\bsubmit\s+in\s+(?:the\s+)?original\s+(?:tube|container)\b|\b(?:original|primary)\s+(?:tube|container)\b/i.test(transport);
+    const same = cleanName(collectionLabel) === cleanName(transport) ||
+      (tubeClass(collectionLabel) === 'tube-sst' &&
+        tubeClass(transport) === 'tube-sst' &&
+        !/transport\s+tube|aliquot|cryovial|transpak/i.test(transport));
+    if (original || same || !transport) {
+      return '<span class="container-path is-single">' + drawBadges + '</span>';
+    }
+    const sendBadges = librarySubmissionBadges(test);
+    return '<span class="container-path is-transfer">' +
+      '<span class="container-path-source" aria-label="Collect in">' + drawBadges + '</span>' +
+      '<span class="container-path-arrow" role="img" aria-label="Then transfer to">→</span>' +
+      '<span class="container-path-submit" aria-label="Submit in">' + sendBadges + '</span>' +
+      '</span>';
   }
 
   function menuVolumeText(test, label) {
