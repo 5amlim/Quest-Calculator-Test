@@ -2497,6 +2497,13 @@
     return String(test.drawContainer || 'Verify container').trim();
   }
 
+  // Certain Labcorp monographs specify a serum yield larger than one SST can
+  // supply. Unlike generic one-test estimates, their source-derived volume
+  // requirement is explicitly opted into capacity-based multi-tube counting.
+  function needsPreferredSerumYieldSstCount(test) {
+    return /preferred serum yield requires multi-sst calculation/i.test(String(test.specialInstructions || ''));
+  }
+
   function sstEstimateForTests(tests) {
     let sharedMl = 0;
     let dedicatedTubes = 0;
@@ -2516,7 +2523,7 @@
       if (requiresDedicatedSst(test)) {
         dedicatedTubes += Math.max(explicitCount, 1);
       } else if (plannedMl !== null) {
-        sharedMl += Math.min(plannedMl, SST_USABLE_ML_PER_TUBE);
+        sharedMl += needsPreferredSerumYieldSstCount(test) ? plannedMl : Math.min(plannedMl, SST_USABLE_ML_PER_TUBE);
       } else {
         unmeasuredTubes += 1;
         unmeasuredTests.push(test.testName);
@@ -2557,7 +2564,7 @@
       } else if (plannedMl !== null) {
         // Never infer a second source SST for a single test solely from volume.
         // The volume warning flags tests that may exceed the assumed yield.
-        sharedMl += Math.min(plannedMl, TIGER_SST_USABLE_ML_PER_TUBE);
+        sharedMl += needsPreferredSerumYieldSstCount(test) ? plannedMl : Math.min(plannedMl, TIGER_SST_USABLE_ML_PER_TUBE);
       } else {
         unmeasuredTubes += 1;
       }
@@ -2574,7 +2581,7 @@
   }
 
   function singleSstSpecimenVolumeWarning(test) {
-    if (!isSstDraw(test) || requiresDedicatedSst(test) && explicitSstTubeCount(test) > 1) return '';
+    if (!isSstDraw(test) || needsPreferredSerumYieldSstCount(test) || requiresDedicatedSst(test) && explicitSstTubeCount(test) > 1) return '';
     // Approximate quantities are safeguards, not guarantees of a usable yield.
     // The selected source container still counts as one unless a source
     // explicitly requests multiple collection tubes.
