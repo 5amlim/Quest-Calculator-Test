@@ -322,9 +322,13 @@
   function cedarsMenuContainerPath(test) {
     const source = collectionContainer(test);
     const target = String(test.submit || 'Verify submission container').trim();
-    const canonical = value => clean(value)
-      .replace(/\b(?:sterile|specimen|collection)\b/g, ' ')
-      .replace(/\s+/g, ' ').trim();
+    const canonical = value => {
+      const text = clean(value);
+      // FIT sampling and shipping names refer to the same physical bottle.
+      if (/\bfobt[- ]?chek\b|\bfit\s+(?:sampling\s+)?bottle\b/i.test(text)) return 'fit original sampling bottle';
+      return text.replace(/\b(?:sterile|specimen|collection)\b/g, ' ')
+        .replace(/\s+/g, ' ').trim();
+    };
     const unchanged = canonical(source) === canonical(target) ||
       /^(?:submit|send)\s+(?:in\s+)?(?:the\s+)?original\s+(?:tube|cup|container)$/i.test(target);
     const cls = specimenClass(test.category);
