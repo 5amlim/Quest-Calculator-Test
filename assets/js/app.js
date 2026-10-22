@@ -626,12 +626,16 @@
         .replace(/\b(?:spun|centrifuged|original|tube)\b/g, ' ').replace(/\s+/g, ' ').trim();
       return /^(?:gold\s+sst|sst\s+gold|gold|sst)$/.test(text) ? 'sst gold' : text;
     };
+    // Presentation only. Mandatory transfer instructions take priority over
+    // similarly named SST tubes; never conceal a required aliquot step.
+    const collectionNotes = String(test.specialInstructions || '').toLowerCase();
+    const mandatoryTransfer = /\bmust\s+(?:immediately\s+|promptly\s+)?(?:transfer|pour\s+off)\b|\b(?:transfer|separation)\s+of\s+(?:the\s+)?serum\s+(?:is\s+)?(?:mandatory|required)\b|\b(?:transfer|separate)\s+(?:serum|plasma)\s+(?:to|into)\s+(?:a\s+)?(?:separate|dedicated|plastic)\s+(?:tube|container)\b/.test(collectionNotes);
     const original = /\bno\s+transfer\b|\bsubmit\s+in\s+(?:the\s+)?original\s+(?:tube|container)\b|\b(?:original|primary)\s+(?:tube|container)\b/i.test(transport);
     const same = cleanName(collectionLabel) === cleanName(transport) ||
       (tubeClass(collectionLabel) === 'tube-sst' &&
         tubeClass(transport) === 'tube-sst' &&
         !/transport\s+tube|aliquot|cryovial|transpak/i.test(transport));
-    if (original || same || !transport) {
+    if (((original || same) && !mandatoryTransfer) || !transport) {
       return '<span class="container-path is-single">' + drawBadges + '</span>';
     }
     const sendBadges = librarySubmissionBadges(test);
