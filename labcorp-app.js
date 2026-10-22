@@ -3440,6 +3440,16 @@
   }
 
   function splitSubmissionContainers(test) {
+    // Labcorp O&P (008623) and Giardia + O&P (188110) require TWO DIFFERENT
+    // preservative vials, pink formalin and gray PVA. Never treat them as one.
+    if (['008623', '188110'].includes(String(test.testCode || '').trim())) {
+      return [
+        { key: 'labcorp-op-formalin', label: 'Pink Formalin O&P Vial',
+          className: 'tube-stool', count: 1, detail: 'Feces preserved in formalin to fill line; no Cary-Blair' },
+        { key: 'labcorp-op-pva', label: 'Gray PVA O&P Vial',
+          className: 'tube-stool', count: 1, detail: 'Feces preserved in PVA to fill line; no Cary-Blair' }
+      ];
+    }
     const transport = finalTransportContainer(test);
     const combined = `${transport} ${test.specialInstructions || ''}`.toLowerCase();
     if (String(test.testCode || '') === '3020' || (/red\s*\/\s*yellow|red-yellow|swirl/.test(combined) && /gray|grey|urisponge/.test(combined) && /urine|culture/.test(combined))) {
