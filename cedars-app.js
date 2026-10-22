@@ -311,8 +311,7 @@
   // Collection is the original sterile cup for urine/stool. Menu results show
   // what is actually submitted (e.g. cobas tube or separate ParaPak vials).
   const collectionContainer = (test) =>
-    test.category === 'Urine' ? 'Sterile specimen cup (urine)' :
-    test.category === 'Stool' ? 'Sterile specimen cup (stool)' : test.collect;
+    (test.category === 'Urine' || test.category === 'Stool') ? 'Sterile cup' : test.collect;
 
   function makeRows() {
     const q = $('cedarsSearch').value;
@@ -371,19 +370,25 @@
     return 'Clean-catch / routine urine';
   };
   const originalCollectionGroup = (test) => {
-    // Stool may require multiple separate transport vials, but its initial
-    // collection is one sterile cup PER test (never implicitly pool stool).
-    if (test.category === 'Stool') return {
-      key:'stool-cup|' + test.id,
-      container:collectionContainer(test),
-      category:'Stool',
-      subtitle:'',
-      shared:true
-    };
+    // One source cup can supply compatible tests from the SAME stool specimen.
+    // Dedicated collection kits, special timed collections and tests requiring
+    // independent specimens retain their own source. Urine and stool NEVER
+    // share a physical cup even though both are labeled "Sterile cup".
+    if (test.category === 'Stool') {
+      const instructions = `${test.name || ''} ${test.collect || ''} ${test.notes || ''}`;
+      const dedicated = /\b(?:FOBT-CHEK|FIT bottle|separate stool specimen|separate stool sample|dedicated collection|24[- ]?hour|72[- ]?hour)\b/i.test(instructions);
+      return {
+        key: dedicated ? 'stool-cup|separate|' + test.id : 'stool-cup|compatible',
+        container: 'Sterile cup',
+        category: 'Stool',
+        subtitle: dedicated ? 'Separate specimen required' : '',
+        shared: true
+      };
+    }
     const type = urineCupCategory(test);
     if (type) return {
       key:'urine-cup|' + type,
-      container:'Sterile specimen cup (urine)',
+      container:'Sterile cup',
       category:'Urine',
       subtitle:type,
       shared:true
@@ -397,6 +402,12 @@
     };
   };
   const originalCupNote = (category, groupSize, subtitle) => {
+    if (category === 'Stool') {
+      if (subtitle) return 'Dedicated specimen: follow the collection kit instructions';
+      return groupSize > 1
+        ? '1 shared sterile cup for compatible tests from the same stool sample; transfer to each required vial'
+        : 'Collect stool in a sterile cup and transfer to the required vial or kit';
+    }
     if (category !== 'Urine') return 'Keep specimens separate';
     if (subtitle === 'Clean-catch / routine urine' && groupSize > 1)
       return '1 shared cup for compatible tests; sufficient urine must be collected to fill each separate transport tube';
@@ -655,7 +666,7 @@
         '</strong>' + cupBadge +
         (subtitle ? '<small><strong>' + esc(subtitle) + '</strong></small>' : '') +
         '<small>' + (cupCollection ?
-          (category === 'Urine' ? esc(originalCupNote(category,group.length,subtitle)) : 'One original stool cup per test') :
+          esc(originalCupNote(category, group.length, subtitle)) :
           'Keep specimens separate') + '</small></div></div>' +
         '<div class="cedars-print-for-tests">For ' + group.length +
         (group.length === 1 ? ' test' : ' tests') + '</div>' +
@@ -780,8 +791,9 @@
         '<small>Test-specific instructions from the listed source</small></div></div>' +
         '<div class="cedars-print-handling-grid">' + handlingCards + '</div></section>' : '') +
       '<footer class="cedars-print-footer">Verify current Cedars/Lexicomp instructions before collecting. ' +
-        'Compatible urine tests may share one original sterile cup when collection method and volume allow; ' +
-        'use separate cups for first-stream and first-morning urine. Never combine separate transport containers. ' +
+        'Compatible urine tests may share one sterile cup when collection method and volume allow; ' +
+        'compatible stool tests from the same sample may share a separate sterile cup. ' +
+        'Never combine urine with stool, first-stream with clean-catch, or separate transport containers. ' +
         'Confirm the original collection method and transfer process for each assay. No patient identifiers are required.</footer>';
     window.print();
   }
