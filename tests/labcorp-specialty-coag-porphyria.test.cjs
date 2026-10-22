@@ -84,6 +84,18 @@ for (const mode of ['gold', 'tiger']) {
   assert.equal(frozenSubmissions.reduce((count, x) => count + x.count, 0), 2,
     'Two frozen urine assays require separate transport aliquots');
 
+  const timedPorphyria = [byCode('003103'), byCode('096354')];
+  const timedBags = api.buildTransportBagPlan(timedPorphyria);
+  const timedCollection = api.buildCollectionPlan(timedPorphyria, timedBags);
+  const timedTransport = timedBags.flatMap(b => api.buildSubmissionContents(b));
+  assert.equal(timedCollection.filter(x => x.label === '24-Hour Urine Container')
+    .reduce((sum, card) => sum + card.count, 0), 1,
+    'PBG + ALA can share one acid-preserved 24-hour urine collection');
+  assert.match(timedCollection[0].detail, /30% acetic acid/i,
+    'Print source card must identify preservative');
+  assert.equal(timedTransport.reduce((sum, item) => sum + item.count, 0), 2,
+    'PBG + ALA require two separately frozen amber urine aliquots');
+
   // Exercise every possible two-test combination in the same workflow and
   // ensure neither test disappears from the bag plan or printed summary.
   let pairCount = 0;
