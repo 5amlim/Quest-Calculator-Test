@@ -36,7 +36,7 @@ for (const mode of ['gold', 'tiger']) {
   vm.runInContext(read(batch), ctx, { filename: batch });
   assert.equal(ctx.window.SEED_TESTS.length, codes.length, 'Repeated script load must be idempotent');
   const app = read('labcorp-app.js').replace('  init();',
-    '  window.api = { normalizeRecord, buildTransportBagPlan, buildCollectionPlan, menuContainerBadges };');
+    '  window.api = { normalizeRecord, buildTransportBagPlan, buildCollectionPlan, buildSubmissionContents, menuContainerBadges, printCollectionSubmissionPlan, rankLibraryTest };');
   vm.runInContext(app, ctx, { filename: 'labcorp-app.js' });
   const api = ctx.window.api;
   const normalized = raws.map(t => api.normalizeRecord(t));
@@ -51,6 +51,60 @@ for (const mode of ['gold', 'tiger']) {
     if (t.transportTemperature === 'Frozen')
       assert(bags.some(b => b.key.includes('frozen')), t.testCode + ' must ship frozen');
   }
+  // Regression: "preserved" in a 24-hour urine collection label must NEVER
+  // be interpreted as a red-top blood tube in the submission source.
+  for (const code of ['003103', '096354']) {
+    const test = byCode(code);
+    const bags = api.buildTransportBagPlan([test]);
+    const submission = bags.flatMap(b => api.buildSubmissionContents(b));
+    assert.equal(submission[0].detail, 'Urine from 24-Hour Urine Container',
+      code + ' must use the actual 24-hour urine source');
+    assert.doesNotMatch(api.printCollectionSubmissionPlan([test]), /Urine from Red Top/,
+      code + ' printout must not mislabel the source');
+  }
+  for (const test of normalized) {
+    assert.equal(api.rankLibraryTest(test.testCode, test), 2000,
+      'Exact code search must find ' + test.testCode);
+    assert(api.rankLibraryTest(test.testName, test) > 0,
+      'Name search must find ' + test.testCode);
+    const printed = api.printCollectionSubmissionPlan([test]);
+    assert(printed.includes(test.testCode) &&
+      printed.includes('What to collect') &&
+      printed.includes('What to submit'),
+      'Printout must contain the complete workflow for ' + test.testCode);
+  }
+  // Two frozen urine tests can use one compatible collection cup, but
+  // Labcorp requires a separate frozen aliquot for each ordered test.
+  const frozenPair = [byCode('003065'), byCode('007364')];
+  const frozenBags = api.buildTransportBagPlan(frozenPair);
+  const frozenCollections = api.buildCollectionPlan(frozenPair, frozenBags);
+  const frozenSubmissions = frozenBags.flatMap(b => api.buildSubmissionContents(b));
+  assert.equal(frozenCollections.filter(x => x.label === 'Sterile cup')
+    .reduce((count, x) => count + x.count, 0), 1);
+  assert.equal(frozenSubmissions.reduce((count, x) => count + x.count, 0), 2,
+    'Two frozen urine assays require separate transport aliquots');
+
+  // Exercise every possible two-test combination in the same workflow and
+  // ensure neither test disappears from the bag plan or printed summary.
+  let pairCount = 0;
+  for (let i = 0; i < normalized.length; i++) {
+    for (let j = i + 1; j < normalized.length; j++) {
+      const pair = [normalized[i], normalized[j]];
+      const bags = api.buildTransportBagPlan(pair);
+      const collected = api.buildCollectionPlan(pair, bags);
+      const submitted = bags.flatMap(b => api.buildSubmissionContents(b));
+      assert(collected.length && submitted.length, 'Pair needs collection and submission');
+      assert(pair.every(test => submitted.some(item =>
+        item.tests.some(record => record.id === test.id))),
+        'Each test needs a submission container');
+      const printout = api.printCollectionSubmissionPlan(pair);
+      assert(pair.every(test => printout.includes(test.testCode)),
+        'Each paired test code must appear in printout');
+      pairCount++;
+    }
+  }
+  assert.equal(pairCount, 253, 'All pairs of 23 tests must be tested');
+
   assert.match(byCode('003065').specialInstructions, /below 6/);
   assert.match(byCode('550672').specialInstructions, /144012/);
   assert.match(byCode('003103').drawContainer, /24-Hour/);
