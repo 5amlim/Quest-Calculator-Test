@@ -2881,3 +2881,95 @@
     color:#55707d;
   }
 }
+
+
+/* Phone-sized Cedars directory: use readable cards instead of five squeezed table columns. */
+@media screen and (max-width: 720px) {
+  .cedars-page .cedars-directory-panel .table-wrap {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+  .cedars-page .cedars-directory-panel table.cedars-library,
+  .cedars-page .cedars-directory-panel .cedars-library tbody {
+    display: block;
+    min-width: 0 !important;
+    width: 100% !important;
+    table-layout: auto;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library thead { display: none; }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-specimen-heading {
+    display: block;
+    width: 100%;
+    margin: 14px 0 7px;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-specimen-heading > td {
+    display: block !important;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+    padding: 9px 12px !important;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 9px 12px;
+    width: 100%;
+    min-width: 0;
+    padding: 13px;
+    margin-bottom: 10px;
+    border: 1px solid #dfe5e8;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: inset 3px 0 var(--type-line, #e3d9dd);
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td {
+    display: block;
+    box-sizing: border-box;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    padding: 0 !important;
+    border: 0;
+    box-shadow: none !important;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td:nth-child(1),
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td:nth-child(2),
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .code-cell {
+    font-size: 11px;
+    color: #687782;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-cell { width: 100%; }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-copy {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td:nth-child(4) {
+    grid-column: 1;
+    align-self: center;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td:nth-child(5) {
+    grid-column: 2;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .row-actions .mini-button {
+    margin: 0;
+    width: auto;
+    min-height: 36px;
+    padding: 7px 12px;
+  }
+}
