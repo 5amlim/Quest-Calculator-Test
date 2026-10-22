@@ -313,6 +313,27 @@
   const collectionContainer = (test) =>
     (test.category === 'Urine' || test.category === 'Stool') ? 'Sterile cup' : test.collect;
 
+  // All Cedars menu rows show the original collection vessel before the
+  // final submission container, without changing the existing container art.
+  function cedarsMenuContainerPath(test) {
+    const source = collectionContainer(test);
+    const target = String(test.submit || 'Verify submission container').trim();
+    const canonical = value => clean(value)
+      .replace(/\b(?:sterile|specimen|collection)\b/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+    const unchanged = canonical(source) === canonical(target) ||
+      /^(?:submit|send)\s+(?:in\s+)?(?:the\s+)?original\s+(?:tube|cup|container)$/i.test(target);
+    const cls = specimenClass(test.category);
+    const pill = (value, role) =>
+      '<span class="cedars-container-name ' + cls + '" aria-label="' + role + '">' + esc(value) + '</span>';
+    return '<div class="cedars-container-path' + (unchanged ? ' is-single' : '') + '">' +
+      (unchanged ? pill(source, 'Collection and submission container') :
+       '<span class="cedars-container-path-stage">' + pill(source,'Collect in') + '</span>' +
+       '<span class="cedars-container-path-arrow" role="img" aria-label="Then submit in">→</span>' +
+       '<span class="cedars-container-path-stage">' + pill(target,'Submit in') + '</span>') +
+      '</div>';
+  }
+
   function makeRows() {
     const q = $('cedarsSearch').value;
     const cat = $('cedarsType').value;
@@ -344,7 +365,7 @@
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at this site') + '</span>' : '') + '</td>' +
       '<td><div class="cedars-container-cell">' + photoArt(test.submit, 'table') +
       '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
-      '<div class="cedars-container-name ' + specimenClass(test.category) + '">' + esc(test.submit) + '</div></div></div></td>' +
+      cedarsMenuContainerPath(test) + '</div></div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
       esc(test.temp || 'Verify') + '</span></td>' +
       '<td class="row-actions"><button class="mini-button edit" type="button" data-info="' +
