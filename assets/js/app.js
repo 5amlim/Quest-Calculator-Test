@@ -635,7 +635,11 @@
       (tubeClass(collectionLabel) === 'tube-sst' &&
         tubeClass(transport) === 'tube-sst' &&
         !/transport\s+tube|aliquot|cryovial|transpak/i.test(transport));
-    if (((original || same) && !mandatoryTransfer) || !transport) {
+    // A red-top or plasma ALTERNATIVE may require transfer even when the
+    // primary SST goes directly to the lab. That conditional instruction
+    // must not invent a transfer arrow for the primary draw.
+    const alternativeOnly = /\b(?:if|when)\s+(?:using|drawn\s+in|collected\s+in)\s+(?:a\s+)?(?:red[- ]?top|plain\s+red|plasma)\b/i.test(collectionNotes);
+    if (((original || same) && (!mandatoryTransfer || alternativeOnly)) || !transport) {
       return '<span class="container-path is-single">' + drawBadges + '</span>';
     }
     const sendBadges = librarySubmissionBadges(test);
