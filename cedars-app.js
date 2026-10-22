@@ -310,7 +310,11 @@
 
   // Collection is the original sterile cup for urine/stool. Menu results show
   // what is actually submitted (e.g. cobas tube or separate ParaPak vials).
+  const requiresOriginalStoolKit = (test) =>
+    test.category === 'Stool' &&
+    (test.id === 'fecal-fit' || /\b(?:FOBT-CHEK|FIT sampling bottle|dedicated stool collection kit)\b/i.test(String(test.collect || '')));
   const collectionContainer = (test) =>
+    requiresOriginalStoolKit(test) ? test.collect :
     (test.category === 'Urine' || test.category === 'Stool') ? 'Sterile cup' : test.collect;
 
   // All Cedars menu rows show the original collection vessel before the
@@ -396,6 +400,15 @@
     // independent specimens retain their own source. Urine and stool NEVER
     // share a physical cup even though both are labeled "Sterile cup".
     if (test.category === 'Stool') {
+      // A FIT bottle is itself the initial collection kit, not a cup to
+      // transfer from. Never merge it with stool collected for other tests.
+      if (requiresOriginalStoolKit(test)) return {
+        key: 'stool-original-kit|' + test.id,
+        container: test.collect,
+        category: 'Stool',
+        subtitle: 'Dedicated collection kit',
+        shared: false
+      };
       const instructions = `${test.name || ''} ${test.collect || ''} ${test.notes || ''}`;
       const dedicated = /\b(?:FOBT-CHEK|FIT bottle|separate stool specimen|separate stool sample|dedicated collection|24[- ]?hour|72[- ]?hour)\b/i.test(instructions);
       return {
