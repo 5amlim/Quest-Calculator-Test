@@ -3322,6 +3322,18 @@
 
     grouped.forEach(item => {
       item.tests = uniqueTests(item.tests);
+      // Labcorp explicitly accepts the same 30% acetic-acid-preserved
+      // 24-hour urine collection for PBG (003103) and delta-ALA (096354).
+      // Count that physical jug once, but submit a separate frozen amber
+      // aliquot for EACH assay. Do not generalize this exception to other
+      // timed urine tests or incompatible preservative workflows.
+      const codes = new Set(item.tests.map(test => String(test.testCode || '').trim()));
+      if (item.className === 'tube-24h-urine'
+          && collectionSpecimenGroupForItem(item) === 'urine'
+          && codes.has('003103') && codes.has('096354')) {
+        item.count = Math.max(1, item.count - 1);
+        item.detail = 'One 24-hour urine collection with 30% acetic acid for PBG and delta-ALA. Refrigerate during collection; mix and submit separate frozen, light-protected aliquots.';
+      }
       items.push(item);
     });
 
