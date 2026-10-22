@@ -666,7 +666,9 @@
     // Each test still has its own required transport tube and fill/handling rules.
     const initialCollection = (test) => collectionContainer(test);
     const mustTransfer = (test) => (test.category === 'Urine' || test.category === 'Stool') &&
-      !/sterile (specimen )?cup|sterile container/i.test(test.submit);
+      !requiresOriginalStoolKit(test) &&
+      !/^(?:sterile\s+)?(?:specimen\s+)?(?:cup|container)(?:\s*\(urine\))?$/i.test(String(test.submit || '').trim()) &&
+      !/^sterile\s+(?:specimen\s+)?cup\s*\(urine\)$/i.test(String(test.submit || '').trim());
     const initialCountFor = (test) => (test.category === 'Urine' || test.category === 'Stool') ?
       1 : Math.max(1, Number(test.qty) || 1);
     const countFor = (test) => Math.max(1, Number(test.qty) || 1);
@@ -678,7 +680,9 @@
       return '';
     };
     const transferDirections = (test) => {
-      if (!mustTransfer(test)) return '<small class="cedars-print-submit-step is-original">Submit the original sterile cup. No transfer needed.</small>';
+      if (!mustTransfer(test)) return '<small class="cedars-print-submit-step is-original">' +
+        (requiresOriginalStoolKit(test) ? 'Submit the original stool sampling bottle.' :
+          'Submit the original sterile cup.') + ' No transfer needed.</small>';
       const special = test.id === 'gc-ct-urine' ? ' Use the supplied pipette and follow the kit fill marks.' :
         test.id === 'urine-culture' ? ' Fill the preservative tube to its mark.' :
         test.category === 'Stool' ? ' Fill each required vial to its mark; use the correct preservative.' : '';
@@ -707,7 +711,8 @@
       '</div>';
     const collectionCards = Array.from(collection.values()).map(({container,tests:group,category,subtitle,shared}) => {
       const quantity = shared ? 1 : group.reduce((sum, test) => sum + initialCountFor(test), 0);
-      const cupCollection = group.some(test => test.category === 'Urine' || test.category === 'Stool');
+      const cupCollection = /^(?:sterile\s+)?(?:specimen\s+)?cup$/i.test(String(container).trim()) &&
+        group.some(test => test.category === 'Urine' || test.category === 'Stool');
       const cupBadge = cupCollection ? '<span class="cedars-print-collector-pill ' + specimenClass(category) + '">' +
         esc(category) + '</span>' : '';
       return '<article class="cedars-print-card cedars-print-collection-card">' +
