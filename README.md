@@ -10,9 +10,9 @@ A browser-based reference for laboratory specimen collection, processing, and se
 | --- | --- | --- |
 | Quest Lab Calculator | Test-code and name search, multiple-test collection plans, collection volumes, container estimates, processing instructions, STAT options, and temperature-organized submission groups | [Open Quest](https://5amlim.github.io/Quest-Calculator-Test/) |
 | Cedars Lab Guide | Searchable test directory, illustrated collection and submission containers, specimen-source information, handling notes, and a separate print summary | [Open Cedars](https://5amlim.github.io/Quest-Calculator-Test/cedars.html) |
-| Labcorp Lab Calculator | Quest-equivalent cart, draw-volume estimation, tube pooling, transport-temperature grouping, specimen bags, print summary and CSV export; starts with 10 officially sourced Labcorp tests | [Open Labcorp](https://5amlim.github.io/Quest-Calculator-Test/labcorp.html) |
+| Labcorp Lab Calculator | Quest-style cart, volume estimates, specimen bags, print summary, and a searchable comparison of all 2,692 Quest tests. Labcorp specimen planning is limited to the individually documented Labcorp records. | [Open Labcorp](https://5amlim.github.io/Quest-Calculator-Test/labcorp.html) |
 
-Use **Select Lab** to switch between calculators. The main page opens on Quest. Labcorp maintains its own catalog and browser storage. Its starter directory includes 10 tests checked against Labcorp's official pages; use **Add a missing test** for others only after confirming the Labcorp test code, specimen requirements and local acceptance. No Quest-specific test instructions or STAT menus are imported into Labcorp.
+Use **Select Lab** to switch between calculators. The main page opens on Quest. Labcorp maintains its own catalog and browser storage. Its starter directory includes 10 tests checked against Labcorp's official pages; use **Add a missing test** for others only after confirming the Labcorp test code, specimen requirements and local acceptance. No Quest-specific test instructions or STAT menus are imported into Labcorp. The **Compare Quest tests to Labcorp** section indexes all 2,692 Quest tests, currently includes 29 possible code/name crosswalk suggestions, and exports the entire comparison as CSV. **Suggestions are not certified equivalents.** Unmatched records do not enter the Labcorp collection calculator until code, method, specimen, minimum volume, stability, and container instructions are verified with Labcorp.
 
 ## Project structure
 
@@ -20,6 +20,7 @@ Use **Select Lab** to switch between calculators. The main page opens on Quest. 
 | --- | --- |
 | `index.html` | Quest calculator interface |
 | `labcorp.html`, `labcorp-app.js`, `labcorp-data.js`, `labcorp-theme.css` | Independent Labcorp interface, shared calculation model and verified starter directory |
+| `labcorp-crosswalk-data.js`, `labcorp-crosswalk-ui.js`, `labcorp-crosswalk.css` | Read-only all-Quest comparison index, possible Labcorp code suggestions, search and CSV export |
 | `assets/js/data.js` | Quest reference test records |
 | `assets/js/app.js` | Quest search, planning, and print logic |
 | `assets/css/` | Shared interface and print layouts |
