@@ -3487,8 +3487,20 @@
     if (/aptima/.test(value)) return 'tube-aptima';
     if (/amber|protect from light|light[- ]?protected/.test(value)) return 'tube-amber';
 
-    // Specialty acid-washed/metal-free tubes must stay neutral, regardless of specimen type.
-    if (isSpecialtyMetalContainer) return 'tube-transport';
+    // Quest metal-free transport vials have white caps and clear bodies.
+    // The LABEL is red for serum and purple for plasma, whole blood, or RBCs.
+    // Use specimen identity first; the container label is a fallback.
+    if (isSpecialtyMetalContainer) {
+      const material = /\b(?:plasma|whole blood|blood|rbcs?|red blood cells?|packed red cells?)\b/i.test(specimen)
+        ? 'purple'
+        : /\bserum\b/i.test(specimen)
+          ? 'red'
+          : /\b(?:plasma|whole blood|blood|rbcs?|red blood cells?|packed red cells?)\b/i.test(value)
+            ? 'purple'
+            : /\bserum\b/i.test(value)
+              ? 'red' : '';
+      return material ? `tube-transport tube-metal-free-${material}-label` : 'tube-transport';
+    }
 
     if (/transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/.test(value)) {
       // Serum, plasma, and platelet-poor plasma use the green-top transport badge.
