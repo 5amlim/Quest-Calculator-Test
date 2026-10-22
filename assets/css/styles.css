@@ -3671,3 +3671,30 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     .library-table .container-path-arrow { font-size: 18px; }
   }
 }
+
+
+/* v12.01: iPhone print pagination. A submission heading is inserted as
+   the FIRST grid child of the existing two-column bag row during mobile
+   printing. The paired bag cards retain their original layout and sizing.
+   Avoid leaving a purple empty panel when WebKit moves the first bag row. */
+@media print {
+  html.mobile-print .print-sheet .print-submit-section {
+    margin-top: 13px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+  html.mobile-print .print-sheet .print-bag-row > .print-submit-heading {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    margin: 0 !important;
+    border-radius: 6px;
+    box-sizing: border-box;
+    break-after: avoid-page !important;
+    page-break-after: avoid !important;
+  }
+  html.mobile-print .print-sheet .print-bag-row > .print-bag-card {
+    grid-column: auto;
+  }
+}
