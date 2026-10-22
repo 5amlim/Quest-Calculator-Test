@@ -1,0 +1,47 @@
+/* Official Labcorp ACOG gestational glucose challenge/screen. All timepoints are separate draw and submit tubes. */
+(()=>{'use strict';const additions=[
+  {
+    "id": "labcorp-102277",
+    "testCode": "102277",
+    "testName": "Gestational Diabetes Screen, ACOG (1-hour 50g)",
+    "specimenType": "Serum",
+    "drawContainer": "SST / Gold",
+    "alternativeContainer": "Gray Sodium Fluoride/Oxalate Tube",
+    "transportContainer": "Spun SST / Gold (Original Tube)",
+    "preferredVolume": "1 mL serum/plasma at EACH timepoint",
+    "minimumVolume": "0.5 mL each",
+    "transportTemperature": "Room Temperature",
+    "transportTemperatureRaw": "Room Temperature",
+    "stability": "Room/refrigerated/frozen 14 days; do NOT freeze unprocessed gray tube",
+    "spin": "Yes",
+    "collectionCount": 1,
+    "submissionCount": 1,
+    "specialInstructions": "CLINICIAN-SUPERVISED GESTATIONAL GLUCOSE CHALLENGE. 1 individually labeled specimen (1-hour post-challenge), 50 gram oral glucose loading dose. Collect 1 SEPARATE SST or gray fluoride/oxalate tubes, one for EACH timepoint; no pooling or shared transport containers. For SST separate serum within 45 min; gray plasma tube may be sent unspun. Label exact patient, fasting/interval, date and draw time. Fasting NOT required for this 50g screen. Follow Labcorp pretest patient instructions and do not perform with known diabetes unless clinician specifically directs.",
+    "fastingStatus": "",
+    "fastingInstructions": "No fasting required for one-hour 50g screening.",
+    "status": "active",
+    "source": "Labcorp official test directory • https://www.labcorp.com/tests/102277"
+  },
+  {
+    "id": "labcorp-102004",
+    "testCode": "102004",
+    "testName": "Gestational Glucose Tolerance Diagnostic Test, ACOG (3-hour 100g, 4 specimens)",
+    "specimenType": "Serum",
+    "drawContainer": "4 SST / Gold Tubes",
+    "alternativeContainer": "4 Gray Fluoride/Oxalate Tubes",
+    "transportContainer": "4 Separate Spun SST / Gold Tubes",
+    "preferredVolume": "1 mL serum/plasma at EACH timepoint",
+    "minimumVolume": "0.5 mL each",
+    "transportTemperature": "Room Temperature",
+    "transportTemperatureRaw": "Room Temperature",
+    "stability": "Room/refrigerated/frozen 14 days; do NOT freeze unprocessed gray tube",
+    "spin": "Yes",
+    "collectionCount": 4,
+    "submissionCount": 4,
+    "specialInstructions": "CLINICIAN-SUPERVISED GESTATIONAL GLUCOSE CHALLENGE. 4 individually labeled specimens (fasting, 1h, 2h, 3h), 100 gram oral glucose loading dose. Collect 4 SEPARATE SST or gray fluoride/oxalate tubes, one for EACH timepoint; no pooling or shared transport containers. For SST separate serum within 45 min; gray plasma tube may be sent unspun. Label exact patient, fasting/interval, date and draw time. Patient should fast 8–14 h before baseline and follow physician-approved gestational OGTT protocol. Follow Labcorp pretest patient instructions and do not perform with known diabetes unless clinician specifically directs.",
+    "fastingStatus": "required",
+    "fastingInstructions": "Fast 8–14 hours; water allowed; 150g daily carbohydrate for three days prior.",
+    "status": "active",
+    "source": "Labcorp official test directory • https://www.labcorp.com/tests/102004"
+  }
+];const catalog=Array.isArray(window.SEED_TESTS)?window.SEED_TESTS:[];const seen=new Set(catalog.map(x=>String(x.testCode)));for(const t of additions){if(!seen.has(t.testCode)){catalog.push(t);seen.add(t.testCode);}}window.SEED_TESTS=catalog;})();
