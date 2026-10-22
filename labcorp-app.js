@@ -2898,6 +2898,13 @@
 
   function canonicalCollectionContainer(test) {
     const draw = String(test.drawContainer || 'Verify collection container').trim();
+    // Keep the EXACT original device name on both the collection card and
+    // submission card for swabs, including Aptima and Amies variants.
+    if (/\bswab\b/i.test(String(test.specimenType || '')) &&
+        normalizeSearch(draw) === normalizeSearch(test.transportContainer || '')) {
+      return { key: 'original-swab|' + normalizeSearch(draw), label: draw,
+        className: tubeClass(draw) || 'tube-transport' };
+    }
     if (isUrineTest(test) && !isTimedUrineTest(test)) {
       return { key: 'sterile-urine-cup', label: 'Sterile cup', className: 'tube-urine-cup' };
     }
@@ -3637,7 +3644,7 @@
     return {
       key: `original|${normalizeSearch(label)}|${normalizeSearch(sourceSpecimen)}`,
       label,
-      className: tubeClass(draw),
+      className: tubeClass(draw) || (/\bswab\b/i.test(test.specimenType) ? 'tube-transport' : ''),
       // Every original collection tube must travel as an original submission.
       // If two distinct whole-blood tubes are drawn, they cannot be compressed
       // into a single original tube in the bag plan (e.g. 38287).
