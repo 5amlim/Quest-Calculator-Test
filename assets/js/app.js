@@ -608,6 +608,28 @@
     }).join(' ');
   }
 
+  // Search results only: show the final submission vial for urine/stool.
+  // For blood and all other specimens retain the original collection-badge display.
+  function menuContainerBadges(test) {
+    const specimen = String(test.specimenType || '');
+    const showSubmission = /\burine\b|\b(?:stool|feces|fecal|faeces|faecal)\b/i.test(specimen);
+    const badges = showSubmission
+      ? librarySubmissionBadges(test)
+      : requiredDrawContainerBadges(test);
+    // Hide verbose original-tube flags in menu badges only.
+    return badges
+      .replace(/\s*\(\s*original (?:tube|specimen)\s*\)/gi, '')
+      .replace(/\s*\/\s*original tube\b/gi, '')
+      .replace(/\s*\(\s*submit in original tube\s*\)/gi, '');
+  }
+
+  function menuVolumeText(test, label) {
+    const value = combinedVolumeText(test, label);
+    return /^fill\s+(?:(?:the|a)\s+)?(?:[\w-]+\s+){0,3}tube\s+to\s+capacity$/i.test(value)
+      ? 'Full tube'
+      : value;
+  }
+
   function requiredSpecimenBadges(test, extraClass = '') {
     const labels = [normalizeSpecimenType(test.specimenType), ...additionalDrawRequirements(test).map(requirement => normalizeSpecimenType(requirement.specimenType))]
       .filter(Boolean);
@@ -1306,9 +1328,9 @@
     return `<tr class="${selected ? 'is-selected' : ''}">
       <td class="code-cell" data-label="Code">${escapeHtml(displayCode(test))}</td>
       <td data-label="Test"><div class="test-name">${escapeHtml(test.testName)}${isStatEligible(test) ? `<span class="library-stat-eligible${statSelectedIds.includes(test.id) ? ' selected' : ''}" title="Eligible on the selected receiving laboratory's STAT menu. Confirm current acceptance before sending.">${statSelectedIds.includes(test.id) ? 'STAT selected' : 'STAT eligible'}</span>` : ''}</div><div class="subtext">${escapeHtml(truncate(test.specialInstructions, 95))}</div></td>
-      <td data-label="What to submit">${librarySubmissionBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}</div></td>
+      <td data-label="Container">${menuContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}</div></td>
       <td data-label="Temperature"><span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td>
-      <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</div></td>
+      <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(menuVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(menuVolumeText(test, 'minimum') || '—')}</div></td>
       <td class="row-actions" data-label="Actions">
         ${blocked ? '<span class="badge temp-unknown">Do not perform</span>' : selected
           ? `<button class="mini-button" disabled>✓ Added${statSelectedIds.includes(test.id) ? ' · STAT' : ''}</button>`
