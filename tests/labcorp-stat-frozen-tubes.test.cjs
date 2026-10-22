@@ -83,7 +83,7 @@ for(const t of [one,two,plasma]){
   assert.equal(contents.length,1);
   assert.equal(contents[0].label,'Frozen Transport Tube');
   assert.equal(contents[0].className,'tube-frozen-purple');
-  assert.equal(contents[0].originalTube,true===false);
+  assert.notEqual(contents[0].originalTube,true,'Frozen aliquot must not be the original source tube');
   assert.match(api.menuContainerBadges(t),/container-path-arrow/);
   assert.match(api.printCollectionSubmissionPlan([t]),/Frozen Transport Tube/);
 }
