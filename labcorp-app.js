@@ -505,7 +505,7 @@
         }))
       : [
           {
-            label: finalTransportContainer(test),
+            label: frozenTransportLabel(test, finalTransportContainer(test)),
             className: transportTubeClass(test, finalTransportContainer(test))
           },
           ...additionalDrawRequirements(test).map(requirement => {
@@ -3507,9 +3507,30 @@
     return sourceTube ? `${specimen} from ${sourceTube}` : sourceSpecimen;
   }
 
+  // Frozen serum/plasma aliquots belong in dedicated purple-cap frozen
+  // transport tubes, not the green-top routine serum/plasma transport badge.
+  // Keep the actual source requirements in the record; do not recategorize
+  // original SSTs, whole blood, urine amber tubes, or specialty containers.
+  function isFrozenSerumPlasmaTransport(test, container) {
+    const material = normalizeSpecimenType(test?.specimenType || '').toLowerCase();
+    const tube = String(container || '').toLowerCase();
+    const temp = String(test?.transportTemperature || '').toLowerCase().trim();
+    return temp === 'frozen'
+      && /^(?:serum|plasma|platelet[- ]poor plasma)$/.test(material)
+      && /(?:transport\s+tube|transpak)/.test(tube)
+      && !/(?:amber|acid[- ]?washed|metal[- ]?free|trace[- ]?metal|glass|cryovial)/.test(tube);
+  }
+  function frozenTransportLabel(test, container) {
+    if (!isFrozenSerumPlasmaTransport(test, container)) return String(container || '');
+    return /pp\s+transpak|transpak\s+purple/i.test(String(container || ''))
+      ? 'Frozen Transport Tube (PP Transpak)'
+      : 'Frozen Transport Tube';
+  }
+
   function transportTubeClass(test, container) {
     const value = String(container || '').toLowerCase();
     const specialty = tubeClass(container);
+    if (isFrozenSerumPlasmaTransport(test, container)) return 'tube-frozen-purple';
     if (/^tube-(?:qft-|eswab|utm|frozen-purple|op-|stool-clean)/.test(specialty)) return specialty;
     const specimen = normalizeSpecimenType(test.specimenType).toLowerCase();
     const specimenAndContainer = `${specimen} ${value}`;
@@ -3703,6 +3724,20 @@
         className: 'tube-amber',
         count: explicitSubmissionCount(test),
         detail: sourcePhrase
+      }];
+    }
+
+    // One separate frozen tube per serum/plasma assay. Never pool these with
+    // routine green-top transport tubes or with other frozen test aliquots.
+    if (isFrozenSerumPlasmaTransport(test, transport)) {
+      const sourcePhrase = specimenSourceDetail(test);
+      const special = /pp\s+transpak|transpak\s+purple/i.test(transport);
+      return [{
+        key: `frozen-transport|${normalizeSearch(sourcePhrase)}|${normalizeSearch(transport)}|${normalizeSearch(String(test.sourceTestId || test.id || test.testCode))}`,
+        label: frozenTransportLabel(test, transport),
+        className: 'tube-frozen-purple',
+        count: explicitSubmissionCount(test),
+        detail: sourcePhrase + (special ? ' · PP Transpak frozen purple-cap tube required' : ' · Freeze separate aliquot')
       }];
     }
 
@@ -4641,7 +4676,7 @@
     }
     if (/e[- ]?swab|\bliquid\s+amies\b|\bamies\s+liquid\b/.test(value)) return 'tube-eswab';
     if (/\butm\b|\bvtm\b|universal transport medium|viral transport medium/.test(value)) return 'tube-utm';
-    if (/purple\s+pp|pp\s+transpak|frozen\s+(?:plasma\s+)?transport\s+tube|frozen\s+transpak/.test(value)) return 'tube-frozen-purple';
+    if (/purple\s+pp|pp\s+transpak|(?:dedicated\s+)?frozen\s+(?:(?:serum|plasma|platelet[- ]poor plasma)\s+)?transport\s+tube|frozen\s+transpak/.test(value)) return 'tube-frozen-purple';
     if (/pink.*formalin|formalin.*o\s*&\s*p/.test(value)) return 'tube-op-formalin';
     if (/gray\s+pva|grey\s+pva|pva\s+o\s*&\s*p/.test(value)) return 'tube-op-pva';
     if (/para[- ]?pak.*clean|sterile\s+screw[- ]?cap\s+stool|stool.*screw[- ]?cap/.test(value)) return 'tube-stool-clean';
