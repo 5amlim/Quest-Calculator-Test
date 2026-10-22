@@ -739,7 +739,7 @@ window.SEED_TESTS = [
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp official test directory (checked 2026-10-21) • https://www.labcorp.com/tests/001610/"
+    "source": "Labcorp official test directory (checked 2026-10-21) • https://www.labcorp.com/tests/001610/fibrinogen-activity"
   },
   {
     "id": "labcorp-343925",
