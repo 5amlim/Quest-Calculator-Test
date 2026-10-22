@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="assets/css/experience.css?v=11.82">
   <link rel="stylesheet" href="market-switch.css?v=8">
   <link rel="stylesheet" href="labcorp-theme.css?v=1">
+  <link rel="stylesheet" href="labcorp-crosswalk.css?v=1">
   <link rel="stylesheet" href="print-button-theme.css?v=4">
 </head>
 <body class="labcorp-page">
@@ -152,6 +153,33 @@
           <div class="library-footer-actions"><button class="button ghost" id="loadMoreButton">Show more tests</button><button class="button browser-custom-clear" id="clearBrowserTestsButton" type="button" disabled title="Only tests added manually in this browser; packaged tests stay">Clear manually added tests <span id="browserCustomCount"></span></button></div>
         </div>
         <p class="library-help">Can’t find a test? <a href="https://www.labcorp.com/test-menu/search" target="_blank" rel="noreferrer">Check the official directory ↗</a> or contact Sam to have it added.</p>
+        <details class="labcorp-crosswalk" id="labcorpCrosswalk">
+          <summary><span class="crosswalk-icon" aria-hidden="true">⇄</span>Compare Quest tests to Labcorp <span id="labcorpCrosswalkCount">2,692 Quest entries</span></summary>
+          <div class="crosswalk-interior">
+            <p class="crosswalk-explainer"><strong>All Quest tests are included here for name/code comparison, not Labcorp specimen planning.</strong> Quest codes and collection requirements are not interchangeable with Labcorp's. Possible code matches require confirmation of method, specimen, volume and transport instructions before use in the Labcorp calculator.</p>
+            <div class="crosswalk-tools">
+              <label>Find a Quest test or possible Labcorp code
+                <input id="labcorpCrosswalkSearch" type="search" autocomplete="off" placeholder="Test name, Quest code, or Labcorp code">
+              </label>
+              <label>Match status
+                <select id="labcorpCrosswalkFilter" aria-label="Quest to Labcorp comparison status">
+                  <option value="all">All Quest tests</option>
+                  <option value="suggested">Possible Labcorp matches</option>
+                  <option value="pending">Mapping not verified</option>
+                </select>
+              </label>
+              <button type="button" id="labcorpCrosswalkExport">Download comparison CSV</button>
+            </div>
+            <div class="crosswalk-table-wrap">
+              <table class="crosswalk-table">
+                <thead><tr><th>Quest code</th><th>Quest test</th><th>Possible Labcorp equivalent</th><th>Next step</th></tr></thead>
+                <tbody id="labcorpCrosswalkBody"></tbody>
+              </table>
+            </div>
+            <div class="crosswalk-bottom"><span id="labcorpCrosswalkStatus" role="status">Loading comparison…</span><button type="button" id="labcorpCrosswalkMore" class="button secondary" hidden>Show more matches</button></div>
+          </div>
+        </details>
+
       </div>
     </section>
 
@@ -397,7 +425,9 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="labcorp-data.js?v=1"></script>
+  <script src="labcorp-crosswalk-data.js?v=1"></script>
   <script src="labcorp-app.js?v=4"></script>
+  <script src="labcorp-crosswalk-ui.js?v=1"></script>
   <script src="assets/js/portal-selects.js?v=11.84"></script>
   <script src="assets/js/lab-select.js?v=1"></script>
 </body>
