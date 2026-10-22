@@ -20,11 +20,11 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 144691 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
-    "id": "labcorp-146315",
-    "testCode": "146315",
+    "id": "labcorp-144706",
+    "testCode": "144706",
     "testName": "Dehydroepiandrosterone Sulfate (DHEA-S) (3 Timed Specimens)",
     "specimenType": "Serum",
     "drawContainer": "SST / Gold",
@@ -42,7 +42,7 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 146315 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
     "id": "labcorp-146316",
@@ -64,11 +64,11 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 146316 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
-    "id": "labcorp-146317",
-    "testCode": "146317",
+    "id": "labcorp-144707",
+    "testCode": "144707",
     "testName": "Dehydroepiandrosterone Sulfate (DHEA-S) (5 Timed Specimens)",
     "specimenType": "Serum",
     "drawContainer": "SST / Gold",
@@ -86,11 +86,11 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 146317 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
-    "id": "labcorp-146318",
-    "testCode": "146318",
+    "id": "labcorp-144708",
+    "testCode": "144708",
     "testName": "Dehydroepiandrosterone Sulfate (DHEA-S) (6 Timed Specimens)",
     "specimenType": "Serum",
     "drawContainer": "SST / Gold",
@@ -108,11 +108,11 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 146318 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
-    "id": "labcorp-146319",
-    "testCode": "146319",
+    "id": "labcorp-144710",
+    "testCode": "144710",
     "testName": "Dehydroepiandrosterone Sulfate (DHEA-S) (7 Timed Specimens)",
     "specimenType": "Serum",
     "drawContainer": "SST / Gold",
@@ -130,11 +130,11 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 146319 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
-    "id": "labcorp-146321",
-    "testCode": "146321",
+    "id": "labcorp-144711",
+    "testCode": "144711",
     "testName": "Dehydroepiandrosterone Sulfate (DHEA-S) (8 Timed Specimens)",
     "specimenType": "Serum",
     "drawContainer": "SST / Gold",
@@ -152,7 +152,7 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 146321 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
     "id": "labcorp-070037",
@@ -309,8 +309,8 @@
     "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 070145 in official test menu"
   },
   {
-    "id": "labcorp-231819",
-    "testCode": "231819",
+    "id": "labcorp-273813",
+    "testCode": "273813",
     "testName": "Dehydroepiandrosterone (DHEA), Unconjugated (2 Timed Specimens)",
     "specimenType": "Serum",
     "drawContainer": "SST / Gold",
@@ -328,11 +328,11 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 231819 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   },
   {
-    "id": "labcorp-231821",
-    "testCode": "231821",
+    "id": "labcorp-226803",
+    "testCode": "226803",
     "testName": "Dehydroepiandrosterone (DHEA), Unconjugated (3 Timed Specimens)",
     "specimenType": "Serum",
     "drawContainer": "SST / Gold",
@@ -350,6 +350,6 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp multiple-specimen testing table https://www.labcorp.com/test-menu/resources/multiple-specimen-testing ; confirmed Labcorp test code 231821 in official test menu"
+    "source": "Labcorp official multiple-specimen order-code table (2026-10-22) • https://www.labcorp.com/test-menu/resources/multiple-specimen-testing"
   }
 ];const catalog=Array.isArray(window.SEED_TESTS)?window.SEED_TESTS:[];const used=new Set(catalog.map(t=>String(t.testCode)));for(const t of additions){if(!used.has(t.testCode)){catalog.push(t);used.add(t.testCode);}}window.SEED_TESTS=catalog;})();
