@@ -3469,21 +3469,51 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   }
 }
 
-/* iPhone print: WebKit can split a grid card's header from its contents.
-   Start dense collection groups together on a clean page, without changing
-   the two-column card grid or pagination for ordinary small orders. */
+/* Mobile print pagination: keep individual collection cards intact, but
+   do not move an entire short section to the next page merely because it
+   contains a dense SST list or multiple precautions. WebKit can pack the
+   summary and What to Collect on the same page when they actually fit. */
 @media print {
   html.mobile-print .print-sheet .print-collection-card {
     break-inside: avoid-page !important;
     page-break-inside: avoid !important;
     -webkit-column-break-inside: avoid !important;
   }
-  html.mobile-print .print-logistics-plan:has(
-    .print-collection-card.is-sst-long,
-    .print-fasting-item:nth-child(4)
-  ) > .print-logistics-subheading {
-    break-before: page !important;
-    page-break-before: always !important;
+  html.mobile-print .print-sheet .print-logistics-subheading {
+    break-before: auto !important;
+    page-break-before: auto !important;
+    break-after: avoid-page !important;
+    page-break-after: avoid !important;
+  }
+  /* The old forced bag and detail-table page starts left large blank areas
+     on iPhone pages. Let page height determine the actual boundaries. */
+  html.mobile-print .print-sheet .print-submit-section.bag-page-start,
+  html.mobile-print .print-sheet .print-detail-table-section {
+    break-before: auto !important;
+    page-break-before: auto !important;
+  }
+  html.mobile-print .print-sheet .print-logistics-plan,
+  html.mobile-print .print-sheet .print-collection-grid,
+  html.mobile-print .print-sheet .print-submit-section,
+  html.mobile-print .print-sheet .print-bag-grid,
+  html.mobile-print .print-sheet .print-detail-table-section {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+  /* Keep labels with their content; cards and table rows provide the
+     boundaries instead of unconditionally starting another sheet. */
+  html.mobile-print .print-sheet .print-submit-heading,
+  html.mobile-print .print-sheet .print-bag-card-header {
+    break-after: avoid-page !important;
+    page-break-after: avoid !important;
+  }
+  html.mobile-print .print-sheet .print-bag-card:not(.bag-long) {
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+  }
+  html.mobile-print .print-sheet .print-table tr {
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
   }
 }
 
