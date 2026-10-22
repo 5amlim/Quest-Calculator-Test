@@ -512,7 +512,7 @@
         const cls = item.className || tubeClass(item.label);
         const displayClass = cls === 'tube-sst' ? selectedSstVisualClass() : cls;
         const label = cls === 'tube-sst'
-          ? `${selectedSstTransportLabel()}${/\\bspun\\b/i.test(item.label) ? ' (spun)' : ''}`
+          ? `${selectedSstTransportLabel()}${/\bspun\b/i.test(item.label) ? ' (spun)' : ''}`
           : item.label;
         return `<span class="${className} tube ${displayClass}">${escapeHtml(label)}</span>`;
       })
@@ -4471,7 +4471,7 @@
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
     // Para-Pak C&S orange vial has a red Cary-Blair medium, not a gray cap.
-    if (/cary[- ]?blair|para[- ]?pak\\s+c\\s*&\\s*s\\s+orange/.test(value)) return 'tube-cary-blair';
+    if (/cary[- ]?blair|para[- ]?pak\s+c\s*&\s*s\s+orange/.test(value)) return 'tube-cary-blair';
     if (/microtainer/.test(value)) return 'tube-microtainer';
     if (/uri[- ]?sponge/.test(value)) return 'tube-urisponge';
     if (/aptima/.test(value)) return 'tube-aptima';
