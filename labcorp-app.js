@@ -519,6 +519,27 @@
       .join(' ');
   }
 
+  // Search-list badge presentation only. Blood and swab records display draw
+  // containers; urine/stool display the actual container shipped to Labcorp.
+  function menuContainerBadges(test) {
+    const specimen = String(test.specimenType || '');
+    const showSubmission = /\burine\b|\b(?:stool|feces|fecal|faeces|faecal)\b/i.test(specimen);
+    const badges = showSubmission
+      ? libraryTransportContainerBadges(test)
+      : requiredDrawContainerBadges(test);
+    return badges
+      .replace(/\s*\(\s*original (?:tube|specimen)\s*\)/gi, '')
+      .replace(/\s*\/\s*original tube\b/gi, '')
+      .replace(/\s*\(\s*submit in original tube\s*\)/gi, '');
+  }
+
+  function menuVolumeText(test, label) {
+    const value = combinedVolumeText(test, label);
+    return /^fill\s+(?:(?:the|a)\s+)?(?:[\w-]+\s+){0,3}tube\s+to\s+capacity$/i.test(value)
+      ? 'Full tube'
+      : value;
+  }
+
   function requiredSpecimenBadges(test, extraClass = '') {
     const labels = [normalizeSpecimenType(test.specimenType), ...additionalDrawRequirements(test).map(requirement => normalizeSpecimenType(requirement.specimenType))]
       .filter(Boolean);
@@ -1244,9 +1265,9 @@
     return `<tr class="${selected ? 'is-selected' : ''}">
       <td class="code-cell" data-label="Code">${escapeHtml(displayCode(test))}</td>
       <td data-label="Test"><div class="test-name">${escapeHtml(test.testName)}${statSelectedIds.includes(test.id) && isStatEligible(test) ? '<span class="library-stat-eligible selected" title="Manually marked STAT; verify receiving-lab acceptance and courier routing.">STAT selected</span>' : ''}</div><div class="subtext">${escapeHtml(truncate(test.specialInstructions, 95))}</div></td>
-      <td data-label="Submit container">${libraryTransportContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}</div></td>
+      <td data-label="Container">${menuContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}</div></td>
       <td data-label="Temperature"><span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td>
-      <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</div></td>
+      <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(menuVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(menuVolumeText(test, 'minimum') || '—')}</div></td>
       <td class="row-actions" data-label="Actions">
         ${blocked ? '<span class="badge temp-unknown">Do not perform</span>' : selected
           ? `<button class="mini-button" disabled>✓ Added${statSelectedIds.includes(test.id) ? ' · STAT' : ''}</button>`
@@ -3387,6 +3408,8 @@
 
   function transportTubeClass(test, container) {
     const value = String(container || '').toLowerCase();
+    const specialty = tubeClass(container);
+    if (/^tube-(?:qft-|eswab|utm|frozen-purple|op-|stool-clean)/.test(specialty)) return specialty;
     const specimen = normalizeSpecimenType(test.specimenType).toLowerCase();
     const specimenAndContainer = `${specimen} ${value}`;
     const isStandardSerumOrPlasma = /\b(?:serum|plasma)\b/.test(specimenAndContainer);
@@ -3516,9 +3539,9 @@
     if (['008623', '188110'].includes(String(test.testCode || '').trim())) {
       return [
         { key: 'labcorp-op-formalin', label: 'Pink Formalin O&P Vial',
-          className: 'tube-stool', count: 1, detail: 'Feces preserved in formalin to fill line; no Cary-Blair' },
+          className: 'tube-op-formalin', count: 1, detail: 'Feces preserved in formalin to fill line; no Cary-Blair' },
         { key: 'labcorp-op-pva', label: 'Gray PVA O&P Vial',
-          className: 'tube-stool', count: 1, detail: 'Feces preserved in PVA to fill line; no Cary-Blair' }
+          className: 'tube-op-pva', count: 1, detail: 'Feces preserved in PVA to fill line; no Cary-Blair' }
       ];
     }
     const transport = finalTransportContainer(test);
@@ -4475,6 +4498,19 @@
 
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
+    // Special Labcorp tube and vial badges reflect the actual kit cap/medium.
+    if (/quanti[- ]?feron/.test(value)) {
+      if (/\bnil\b/.test(value)) return 'tube-qft-nil';
+      if (/\btb\s*1\b/.test(value)) return 'tube-qft-tb1';
+      if (/\btb\s*2\b/.test(value)) return 'tube-qft-tb2';
+      if (/\bmitogen\b/.test(value)) return 'tube-qft-mitogen';
+    }
+    if (/e[- ]?swab|\bliquid\s+amies\b|\bamies\s+liquid\b/.test(value)) return 'tube-eswab';
+    if (/\butm\b|\bvtm\b|universal transport medium|viral transport medium/.test(value)) return 'tube-utm';
+    if (/purple\s+pp|pp\s+transpak|frozen\s+(?:plasma\s+)?transport\s+tube|frozen\s+transpak/.test(value)) return 'tube-frozen-purple';
+    if (/pink.*formalin|formalin.*o\s*&\s*p/.test(value)) return 'tube-op-formalin';
+    if (/gray\s+pva|grey\s+pva|pva\s+o\s*&\s*p/.test(value)) return 'tube-op-pva';
+    if (/para[- ]?pak.*clean|sterile\s+screw[- ]?cap\s+stool|stool.*screw[- ]?cap/.test(value)) return 'tube-stool-clean';
     // Para-Pak C&S orange vial has a red Cary-Blair medium, not a gray cap.
     if (/cary[- ]?blair|para[- ]?pak\s+c\s*&\s*s\s+orange/.test(value)) return 'tube-cary-blair';
     if (/microtainer/.test(value)) return 'tube-microtainer';
