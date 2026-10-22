@@ -570,6 +570,42 @@
     return extras ? `${primary} ${extras}` : primary;
   }
 
+  // Search-library display only. Do not change collection, cart, or print logic.
+  // Surface the transport tube instead of the source collection tube/cup.
+  function librarySubmissionBadges(test, className = 'badge') {
+    const transport = String(finalTransportContainer(test) || '').trim();
+    const combined = `${transport} ${test.specialInstructions || ''}`;
+    const isMultiple = String(test.testCode || '') === '3020'
+      || (/red\s*\\/\s*yellow|red-yellow|swirl/i.test(combined)
+        && /gray|grey|urisponge/i.test(combined) && /urine|culture/i.test(combined));
+    const parts = isMultiple
+      ? splitSubmissionContainers(test).map(item => ({ label: item.label, cls: item.className }))
+      : [{
+        label: /^no transfer\s*\\/\s*submit in original tube$|^submit in original tube$/i.test(transport)
+          ? String(test.drawContainer || transport) : transport,
+        cls: transportTubeClass(test, transport)
+      }];
+    for (const requirement of additionalDrawRequirements(test)) {
+      const label = String(requirement.transportContainer || requirement.container || '').trim();
+      if (label) parts.push({
+        label,
+        cls: transportTubeClass({ ...test, specimenType: requirement.specimenType || test.specimenType }, label)
+      });
+    }
+    const seen = new Set();
+    return parts.filter(item => {
+      if (!item.label || seen.has(item.label.toLowerCase())) return false;
+      seen.add(item.label.toLowerCase());
+      return true;
+    }).map(item => {
+      const cls = item.cls || tubeClass(item.label);
+      const isSst = cls === 'tube-sst';
+      const visual = isSst ? selectedSstVisualClass() : cls;
+      const label = isSst ? `${selectedSstTransportLabel()}${/\bspun\b/i.test(item.label) ? ' (spun)' : ''}` : item.label;
+      return `<span class="${className} tube ${visual}">${escapeHtml(label)}</span>`;
+    }).join(' ');
+  }
+
   function requiredSpecimenBadges(test, extraClass = '') {
     const labels = [normalizeSpecimenType(test.specimenType), ...additionalDrawRequirements(test).map(requirement => normalizeSpecimenType(requirement.specimenType))]
       .filter(Boolean);
@@ -1268,7 +1304,7 @@
     return `<tr class="${selected ? 'is-selected' : ''}">
       <td class="code-cell" data-label="Code">${escapeHtml(displayCode(test))}</td>
       <td data-label="Test"><div class="test-name">${escapeHtml(test.testName)}${isStatEligible(test) ? `<span class="library-stat-eligible${statSelectedIds.includes(test.id) ? ' selected' : ''}" title="Eligible on the selected receiving laboratory's STAT menu. Confirm current acceptance before sending.">${statSelectedIds.includes(test.id) ? 'STAT selected' : 'STAT eligible'}</span>` : ''}</div><div class="subtext">${escapeHtml(truncate(test.specialInstructions, 95))}</div></td>
-      <td data-label="Specimen / tube">${requiredDrawContainerBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}${test.alternativeContainer ? ` <span>· Alt: ${escapeHtml(test.alternativeContainer)}</span>` : ''}</div></td>
+      <td data-label="What to submit">${librarySubmissionBadges(test)}<div class="subtext specimen-line">${requiredSpecimenBadges(test)}</div></td>
       <td data-label="Temperature"><span class="badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td>
       <td data-label="Volume"><span class="preferred-volume-chip">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><div class="subtext">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</div></td>
       <td class="row-actions" data-label="Actions">
@@ -2883,9 +2919,9 @@
     // A count in the structured draw-container field is reliable when the number
     // directly describes tubes/bottles/containers. Do not infer counts from specimen
     // mass, time, RCF/RPM, tube dimensions, identifiers, test codes, or K2 additive text.
-    const drawPattern = new RegExp(`(?:^|\\s)${countPattern}\\s*(?:x|×)?\\s*(?:full\\s+|separate\\s+|standard\\s+){0,2}(?:[a-z][a-z /-]{0,24}\\s+)?(?:tubes?|bottles?|containers?)\\b`);
+    const drawPattern = new RegExp(`(?:^|\s)${countPattern}\s*(?:x|×)?\s*(?:full\s+|separate\s+|standard\s+){0,2}(?:[a-z][a-z /-]{0,24}\s+)?(?:tubes?|bottles?|containers?)\b`);
     const drawMatch = draw.match(drawPattern);
-    if (drawMatch && !/\\b(?:ml|g|gram|grams|mg|mm|cm|hours?|hrs?|minutes?|mins?|days?|rcf|rpm)\\b/.test(drawMatch[0])) {
+    if (drawMatch && !/\b(?:ml|g|gram|grams|mg|mm|cm|hours?|hrs?|minutes?|mins?|days?|rcf|rpm)\b/.test(drawMatch[0])) {
       return Math.max(numberWordValue(drawMatch[1]), 1);
     }
 
@@ -2893,9 +2929,9 @@
     // “Draw 3 tubes” or “Collect 4 separate EDTA tubes” create extra collection
     // tubes. This prevents phrases like “10 g ... into the container”, “2 hours”,
     // “1600 RCF”, “K2 EDTA”, and “two patient identifiers” from changing counts.
-    const actionPattern = new RegExp(`\\b(?:draw|collect|use|requires?|obtain)\\s+(?:blood\\s+(?:in|into)\\s+)?${countPattern}\\s*(?:x|×)?\\s*(?:full\\s+|separate\\s+|standard\\s+){0,2}(?:[a-z][a-z /-]{0,24}\\s+)?(?:tubes?|bottles?|containers?)\\b`);
+    const actionPattern = new RegExp(`\b(?:draw|collect|use|requires?|obtain)\s+(?:blood\s+(?:in|into)\s+)?${countPattern}\s*(?:x|×)?\s*(?:full\s+|separate\s+|standard\s+){0,2}(?:[a-z][a-z /-]{0,24}\s+)?(?:tubes?|bottles?|containers?)\b`);
     const actionMatch = note.match(actionPattern);
-    if (actionMatch && !/\\b(?:ml|g|gram|grams|mg|mm|cm|hours?|hrs?|minutes?|mins?|days?|rcf|rpm|identifiers?)\\b/.test(actionMatch[0])) {
+    if (actionMatch && !/\b(?:ml|g|gram|grams|mg|mm|cm|hours?|hrs?|minutes?|mins?|days?|rcf|rpm|identifiers?)\b/.test(actionMatch[0])) {
       return Math.max(numberWordValue(actionMatch[1]), 1);
     }
 
@@ -3354,13 +3390,13 @@
     const countPattern = '(\\d+|one|two|three|four|five|six|seven|eight)';
 
     // Counts explicitly embedded in the transport-container field are authoritative.
-    const containerPattern = new RegExp(`(?:^|\\s)${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:[a-z][a-z-]*\\s+){0,4}(?:transport tubes?|cryovials?|vials?|containers?)\\b`);
+    const containerPattern = new RegExp(`(?:^|\s)${countPattern}\s*(?:x|×)?\s*(?:separate\s+)?(?:[a-z][a-z-]*\s+){0,4}(?:transport tubes?|cryovials?|vials?|containers?)\b`);
     const containerMatch = containerText.match(containerPattern);
     if (containerMatch) return Math.max(numberWordValue(containerMatch[1]), 1);
 
     // In narrative text only “submit ...” language controls submission counts.
     // Collection counts, time points, specimen volumes, and recommendations do not.
-    const submitPattern = new RegExp(`\\bsubmit\\s+${countPattern}\\s*(?:x|×)?\\s*(?:separate\\s+)?(?:frozen\\s+)?(?:[a-z][a-z-]*\\s+){0,3}(?:aliquots?|transport tubes?|cryovials?|vials?|tubes?|containers?)\\b`);
+    const submitPattern = new RegExp(`\bsubmit\s+${countPattern}\s*(?:x|×)?\s*(?:separate\s+)?(?:frozen\s+)?(?:[a-z][a-z-]*\s+){0,3}(?:aliquots?|transport tubes?|cryovials?|vials?|tubes?|containers?)\b`);
     const submitMatch = note.match(submitPattern);
     return submitMatch ? Math.max(numberWordValue(submitMatch[1]), 1) : 1;
   }
