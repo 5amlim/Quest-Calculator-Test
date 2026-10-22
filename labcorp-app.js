@@ -3521,6 +3521,19 @@
 
     const drawClass = tubeClass(draw);
     const transportClass = tubeClass(transport);
+
+    // When Labcorp explicitly lists a spun SST/Gold as BOTH collection source
+    // and submission container, it is the original tube. Notes describing
+    // optional red-top/plasma alternatives must not turn that SST into a
+    // second printed submission card or a fictitious serum transfer.
+    // Preserve any mandatory separate-serum or no-gel restriction.
+    const instructions = String(test.specialInstructions || '').toLowerCase();
+    const spunOriginalSst = drawClass === 'tube-sst'
+      && transportClass === 'tube-sst'
+      && /sst|gold|serum separator|gel[- ]barrier/.test(transport.toLowerCase())
+      && !/do not use (?:an? )?(?:sst|gel)|gel[- ]barrier (?:tube|specimen) (?:not acceptable|rejected)|must (?:transfer|pour off|separate) (?:the )?(?:serum|specimen)|(?:transfer|separation) (?:of )?(?:serum|specimen) (?:is )?(?:mandatory|required)/.test(instructions);
+    if (spunOriginalSst) return true;
+
     const explicitOriginal = /no transfer|original tube|same tube|primary tube|do not open|unopened|submit (?:the )?(?:spun )?(?:original|collection|primary) tube|leave .* in (?:the )?original tube/.test(combined);
     const matchingTube = Boolean(drawClass && transportClass && drawClass === transportClass)
       && !/transport tube|aliquot|cryovial|screw[- ]?cap|pour[- ]?off/.test(combined);
