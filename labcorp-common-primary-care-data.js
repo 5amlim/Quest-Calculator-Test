@@ -142,7 +142,7 @@
     "fastingStatus": "",
     "fastingInstructions": "",
     "status": "active",
-    "source": "Labcorp official individual test directory • https://www.labcorp.com/tests/164855/antinuclear-antibodies-ana-qualitative-by-multiplex-immunoassay"
+    "source": "Labcorp official individual test directory • https://womenshealth.labcorp.com/tests/164855/antinuclear-antibodies-ana-qualitative-by-multiplex-immunoassay"
   },
   {
     "id": "labcorp-002014",
@@ -499,8 +499,8 @@
     "stability": "14 days at room temperature",
     "spin": "Yes",
     "specialInstructions": "Separate serum or plasma from cells within 45 minutes. Gel-barrier serum preferred; red-top serum or lithium heparin plasma may be used, but separated serum/plasma must be transferred to a plastic transport tube if not submitted in gel barrier. Do not use EDTA, citrate, or oxalate plasma. For fasting glucose draw in the morning after at least 8 hours without caloric intake; confirm ordered context.",
-    "fastingStatus": "required",
-    "fastingInstructions": "For fasting glucose testing, at least 8 hours fasting per Labcorp.",
+    "fastingStatus": "",
+    "fastingInstructions": "An 8-hour fast is required when this is ordered as a fasting glucose, not necessarily for random glucose.",
     "status": "active",
     "source": "Labcorp official individual test directory • https://www.labcorp.com/tests/001032/glucose"
   },
