@@ -1,0 +1,34 @@
+/* Labcorp-branded header only. Calculator, specimen badges, and print
+   layout inherit the exact Quest interface; only lab identity differs. */
+@media screen {
+  .labcorp-page .app-header {
+    background: #164a72;
+    color: #fff;
+    border-bottom: 4px solid #f3922f;
+  }
+  .labcorp-page .app-header h1 { color: #fff; }
+  .labcorp-page .app-header p { color: #e0eefa; }
+  .labcorp-page .app-header .privacy-pill {
+    background: #225a82;
+    border-color: #729aba;
+    color: #e8f4fc;
+  }
+  .labcorp-page .lab-select--labcorp {
+    --lab-accent: #236da4;
+    --lab-accent-strong: #164a72;
+    --lab-light: #e8f3fc;
+  }
+  .labcorp-page .labcorp-coverage-note {
+    margin: 0 0 16px;
+    padding: 11px 13px;
+    background: #f0f6fb;
+    border: 1px solid #cbdde9;
+    border-left: 3px solid #236da4;
+    border-radius: 9px;
+    color: #385466;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .labcorp-page .labcorp-coverage-note strong { color: #164a72; }
+  .labcorp-page .labcorp-coverage-note a { color: #175d90; }
+}
