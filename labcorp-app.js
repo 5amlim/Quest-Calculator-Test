@@ -210,64 +210,16 @@
   }
 
   function applyUserState(state) {
+    // Separate Labcorp records and local edits; no Quest code migrations.
     const builtIns = seedDatabase.map(test => ({ ...test }));
-    const byId = new Map(builtIns.map((test, index) => [test.id, index]));
-    const byKey = new Map(builtIns.map((test, index) => [databaseKey(test), index]));
-
+    const byId = new Map(builtIns.map((test, i) => [test.id, i]));
+    const byKey = new Map(builtIns.map((test, i) => [databaseKey(test), i]));
     (state.overrides || []).map(normalizeRecord).forEach(override => {
       const index = byId.get(override.id) ?? byKey.get(databaseKey(override));
-      if (index !== undefined) {
-        const base = builtIns[index];
-        if (base.testCode === '92701') {
-          // Replace only the outdated values from earlier built-in releases.
-          // Preserve staff-entered changes that differ from those legacy defaults.
-          const legacyValues = {
-            preferredVolume: '0.5 mL whole blood',
-            minimumVolume: '0.1 mL',
-            transportContainer: 'No transfer unless directed',
-            stability: '70 days',
-            source: 'Quest MASTER directory verified 2026-09-02'
-          };
-          const updated = { ...override };
-          Object.entries(legacyValues).forEach(([field, previous]) => {
-            if (updated[field] === previous) updated[field] = base[field];
-          });
-          const legacyInstructions = 'Fasting is preferred but not required. Lavender - EDTA\n1. Collect and label sample according to standard protocols.\n2. Gently invert tube 8-10 times immediately after draw. DO NOT SHAKE.\n3. Do not centrifuge.\n4. Store and transport refrigerated.';
-          if (updated.specialInstructions === legacyInstructions) {
-            updated.specialInstructions = base.specialInstructions;
-          }
-          builtIns[index] = updated;
-        } else if (['15447', '6421', '90567'].includes(base.testCode)) {
-          // Preserve explicit local edits, but correct fields still matching
-          // the obsolete bundled defaults for these verified Quest codes.
-          const previous = {
-            '15447': {
-              testName: 'Epstein-Barr Virus Early Antigen D Antibody (IgG)',
-              stability: '4 days', specialInstructions: 'SST→transport'
-            },
-            '6421': {
-              testName: 'EBV Panel', stability: '4 Days', specialInstructions: 'SST→transport'
-            },
-            '90567': {
-              testName: 'Dihydrotestosterone',
-              preferredVolume: '1 mL serum',
-              specialInstructions: 'Collect in a red-top tube (no gel). Allow the blood to clot, centrifuge, and transfer serum to a transport tube. SST and plasma are not acceptable.'
-            }
-          }[base.testCode];
-          const updated = { ...override };
-          Object.entries(previous).forEach(([field, oldValue]) => {
-            if (updated[field] === oldValue) updated[field] = base[field];
-          });
-          builtIns[index] = updated;
-        } else {
-          builtIns[index] = override;
-        }
-      }
+      if (index !== undefined) builtIns[index] = override;
     });
-
     const customTests = (state.customTests || []).map(normalizeRecord);
-    // Retired Quest codes must not reappear through legacy user edits or saved custom tests.
-    return [...customTests, ...builtIns].filter(test => !RETIRED_TEST_CODES.has(test.testCode));
+    return [...customTests, ...builtIns];
   }
 
   function userStateFromDatabase() {
@@ -350,10 +302,7 @@
   // Neutral wording also applies to records already saved in this browser.
   // Keep identifiers and source attribution intact.
   function interfaceWording(value) {
-    return String(value ?? '')
-      .replace(/\bQuest(?:\s+Diagnostics)?[- ]referral\b/gi, 'referral')
-      .replace(/\bQuest(?:\s+Diagnostics)?\s+MASTER\b/gi, 'official')
-      .replace(/\bQuest(?:\s+Diagnostics)?(?:[’']s)?\b/gi, 'the laboratory');
+    return String(value ?? '');
   }
 
   function normalizeAdditionalDrawRequirements(value) {
@@ -449,14 +398,6 @@
       && /\bserum\b/i.test(specimenType)
       && /sst|serum separator|gold|microtainer/i.test(drawContainer);
     if (microtainerRequired) drawContainer = 'Amber Microtainer SST';
-    // Quest neonatal bilirubin codes 6631, 20381 and 34162 accept two
-    // spun amber Microtainer SSTs in their original tubes. The amber
-    // transport vial is an alternative, not the required default route.
-    // Preserve explicit two-tube source counts and protect-from-light notes.
-    if (microtainerRequired && /^(?:6631|20381|34162)$/.test(String(record.testCode || '').trim())) {
-      transportContainer = 'Amber Microtainer SST (spun)';
-    }
-
     return {
       id: String(record.id || `custom-${Date.now()}-${index}`),
       testCode: String(record.testCode ?? record[['que', 'stCode'].join('')] ?? '').trim(),
