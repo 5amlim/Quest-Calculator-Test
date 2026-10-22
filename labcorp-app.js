@@ -3377,6 +3377,11 @@
       return 'Royal Blue — verify additive';
     }
 
+    // Source descriptions must match the actual container. Do not confuse
+    // "preserved" with a red-top blood tube.
+    if (/24\s*[- ]?hour\s+urine\s+(?:container|jug)|24h\s+urine\s+(?:container|jug)/i.test(draw)) return '24-Hour Urine Container';
+    if (/^(?:sterile\s+(?:urine\s+|specimen\s+)?cup|urine\s+collection\s+cup)$/i.test(draw)) return 'Sterile cup';
+
     if (/microtainer/i.test(draw)) return 'Amber Microtainer SST';
     if (/light blue|sodium citrate|citrate/i.test(draw)) return 'Light Blue Citrate';
     if (/blue/i.test(draw) && /edta/i.test(draw)) return 'Blue Top EDTA';
@@ -3389,7 +3394,7 @@
     if (/sodium\s+heparin/i.test(draw)) return 'Green Sodium Heparin';
     if (/lithium\s+heparin/i.test(draw)) return 'Green Lithium Heparin';
     if (/green|heparin/i.test(draw)) return 'Green Heparin — verify additive';
-    if (/red/i.test(draw)) return 'Red Top';
+    if (/\bred\b/i.test(draw)) return 'Red Top';
     if (/yellow|acd/i.test(draw)) return 'Yellow ACD';
     if (/gray|grey|fluoride|oxalate/i.test(draw)) return 'Gray Fluoride/Oxalate';
     if (/aptima/i.test(draw)) return 'Aptima Multitest';
