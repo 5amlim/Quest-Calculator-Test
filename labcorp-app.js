@@ -4569,6 +4569,15 @@
     } else if (!mobilePrint) {
       mobilePageRule?.remove();
     }
+    // On iPhone, put the submission heading inside the FIRST existing bag
+    // row. WebKit previously printed the heading and an empty purple panel
+    // before pushing both bag cards onto the next sheet. Grid columns and
+    // individual bag markup remain exactly the same.
+    if (mobilePrint) {
+      const heading = els.printSheet.querySelector('.print-submit-heading');
+      const firstBagRow = els.printSheet.querySelector('.print-bag-row');
+      if (heading && firstBagRow) firstBagRow.insertBefore(heading, firstBagRow.firstChild);
+    }
     window.print();
   }
 
