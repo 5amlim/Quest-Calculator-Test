@@ -401,7 +401,11 @@
       if (/^swab$/i.test(specimenType) &&
           /\b(?:throat|nasal|nasopharyngeal|oropharyngeal|rectal|vaginal|cervical|endocervical|urethral|lesion|wound|ear|eye|buccal)\b/i.test(drawContainer) &&
           /\bswab\b/i.test(drawContainer)) {
-        specimenType = drawContainer;
+        // Keep the anatomical source, not the swab manufacturer's or assay's
+        // name, in the specimen column.
+        specimenType = /bacterial\s+culture\s+swab.*\bwound\b/i.test(drawContainer)
+          ? 'Wound swab'
+          : drawContainer.replace(/^(?:aptima|synthetic)\s+/i, '');
       }
       drawContainer = transportContainer;
     }
