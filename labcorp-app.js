@@ -524,7 +524,13 @@
   function menuContainerBadges(test) {
     const specimen = String(test.specimenType || '');
     const showSubmission = /\burine\b|\b(?:stool|feces|fecal|faeces|faecal)\b/i.test(specimen);
-    const badges = showSubmission
+    // No-transfer is a handling instruction, not a submission container.
+    // For urine/stool, display the existing collection container in that case.
+    const transport = String(test.transportContainer || '').trim();
+    const originalContainer = /\bno\s+transfer\b/i.test(transport)
+      || /^(?:(?:submit|send|ship|keep|leave)\b.{0,70}\b)?(?:original|primary)(?:\s+collection)?\s+(?:tube|container|cup|specimen|vial)\b/i.test(transport)
+      || /^(?:submit|send|ship|keep|leave)\b.{0,70}\b(?:original|primary)(?:\s+collection)?\s+(?:tube|container|cup|specimen|vial)\b/i.test(transport);
+    const badges = showSubmission && !originalContainer
       ? libraryTransportContainerBadges(test)
       : requiredDrawContainerBadges(test);
     return badges
