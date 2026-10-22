@@ -3149,3 +3149,71 @@
     justify-content:flex-start;
   }
 }
+
+
+/* Final narrow-screen safeguards for Cedars directory cards.  Keep the
+   illustrated submission container unchanged, while showing a legible
+   source -> submission path instead of narrow five-column table cells. */
+@media screen and (max-width: 760px) {
+  .cedars-page .cedars-directory-panel,
+  .cedars-page .cedars-directory-panel .table-wrap,
+  .cedars-page .cedars-directory-panel table.cedars-library {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-specimen-heading > td {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    white-space: normal !important;
+    box-sizing: border-box;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-path {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-path-stage {
+    min-width: 0;
+    max-width: 100%;
+    flex: 0 1 auto;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-path-arrow {
+    flex: 0 0 auto;
+    padding: 0 2px;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-name {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .cedars-page .cedars-directory-panel #cedarsSearch {
+    font-size: 16px; /* Prevent automatic input zoom on iPhone. */
+  }
+}
+@media screen and (max-width: 430px) {
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td:nth-child(4),
+  .cedars-page .cedars-directory-panel .cedars-library tr.cedars-test-row > td.row-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-art-table {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 44px;
+  }
+  .cedars-page .cedars-directory-panel .cedars-library .cedars-container-cell {
+    gap: 8px;
+  }
+}
