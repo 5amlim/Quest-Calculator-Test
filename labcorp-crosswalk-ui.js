@@ -42,7 +42,7 @@
         ? '<strong>' + escape(labcorpName) + '</strong><small>Labcorp candidate code ' + escape(labcorpCode) + ' · Verify assay and specimen requirements</small>'
         : '<span class="crosswalk-pending">Labcorp match not confirmed</span>';
       const action = usable
-        ? '<button type="button" class="crosswalk-open" data-labcorp-code="' + escape(labcorpCode) + '">Find in Labcorp calculator</button>'
+        ? '<button type="button" class="crosswalk-open" data-labcorp-code="' + escape(labcorpCode) + '">View Labcorp test (verify equivalence)</button>'
         : '<a href="' + escape(directoryUrl(questName,labcorpCode)) + '" target="_blank" rel="noopener noreferrer">Search Labcorp ↗</a>';
       return '<tr><td><strong>' + escape(questCode) + '</strong><small>Quest code only</small></td>' +
         '<td><strong>' + escape(questName) + '</strong><small>Quest specimen: ' + escape(questSpecimen || 'Not listed') +
