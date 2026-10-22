@@ -1127,7 +1127,26 @@
       .filter(test => test.status !== 'blocked' && matchesLibraryFilters(test))
       .map(test => ({ test, score: filter ? rankLibraryTest(filter, test) : 1 }))
       .filter(item => item.score > 0);
-    if (filter) filtered.sort((a, b) => b.score - a.score || a.test.testName.localeCompare(b.test.testName));
+    if (filter) {
+      filtered.sort((a, b) => b.score - a.score || a.test.testName.localeCompare(b.test.testName));
+    } else {
+      // Prioritize routine urgent-care/PCP tests on first load; keep all other
+      // tests, including specific IgE assays, available through search.
+      const commonOrder = [
+        '322000','005009','028142','377036','008847','003772',
+        '322758','001453','303756','004259','224576','140285',
+        '183194','180045','180021','083935','082345','012005',
+        '144050','006510','182879','008169','008342','006189',
+        '004416','004556','001321','004598','081950','000810',
+        '180764','183480','008144','008623','008649','188056',
+        '183992','115188','006627','004226'
+      ];
+      const priority = new Map(commonOrder.map((code, index) => [code, index]));
+      filtered.sort((a, b) =>
+        (priority.get(a.test.testCode) ?? 9999) -
+        (priority.get(b.test.testCode) ?? 9999)
+      );
+    }
 
     const shown = filtered.slice(0, libraryLimit).map(item => item.test);
     const query = els.libraryFilter.value.trim();
