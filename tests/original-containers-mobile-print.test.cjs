@@ -70,9 +70,12 @@ for(const code of codes){
 }
 assert.equal(byLabCode('008169').specimenType,'Throat Swab');
 assert.equal(byLabCode('188056').specimenType,'Lesion Swab');
-const urine=byLabCode('008847');
+const urine=byLabCode('377036');
 assert.match(api.menuContainerBadges(urine),/container-path-arrow/,
   'Actual urine-to-culture-preservative transfer must remain');
+const stool=byLabCode('008144');
+assert.match(api.menuContainerBadges(stool),/container-path-arrow/,
+  'Actual stool-to-Cary-Blair transfer must remain');
 
 const styles=read('assets/css/styles.css');
 for(const [page,code] of [['index.html','assets/js/app.js'],['labcorp.html','labcorp-app.js']]){
