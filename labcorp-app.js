@@ -1627,16 +1627,15 @@
   function selectedUrineCultureIsSponge() { return urineCultureMode === 'urisponge'; }
 
   function loadUrineCultureMode() {
-    try { return localStorage.getItem(URINE_CULTURE_MODE_KEY) === 'urisponge' ? 'urisponge' : 'gray'; }
-    catch (error) { return 'gray'; }
+    // Labcorp starter directory confirms gray-top preserved urine, not UriSponge.
+    return 'gray';
   }
 
   function setUrineCultureMode(mode) {
-    const next = mode === 'urisponge' ? 'urisponge' : 'gray';
-    if (next === urineCultureMode) return;
-    urineCultureMode = next;
-    try { localStorage.setItem(URINE_CULTURE_MODE_KEY, next); } catch (error) {}
-    renderOrder();
+    if (urineCultureMode !== 'gray') {
+      urineCultureMode = 'gray';
+      renderOrder();
+    }
   }
 
   function renderUrineCultureMode() {
