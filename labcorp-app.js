@@ -4643,7 +4643,23 @@
   }
 
 
-  function printStabilityForTemperature(test) {
+  function printDetailContainerPath(test) {
+    const path = menuContainerBadges(test)
+      .replaceAll('class="badge tube ', 'class="print-tube-badge tube ')
+      .replace(/(<span class="container-path-arrow"[^>]*>)→(<\/span>)/g, '$1↓$2');
+    const labels = [normalizeSpecimenType(test.specimenType),
+      ...additionalDrawRequirements(test).map(req => normalizeSpecimenType(req.specimenType))]
+      .filter(Boolean);
+    const badges = Array.from(new Set(labels)).map(label => {
+      const group = /\burine\b/i.test(label) ? 'specimen-urine'
+        : /\bstool\b/i.test(label) ? 'specimen-stool'
+        : /\bswab\b/i.test(label) ? 'specimen-swab' : '';
+      return `<span class="specimen-badge ${specimenClass(label)} ${group} print-specimen-badge">${escapeHtml(label)}</span>`;
+    }).join(' ');
+    return `<div class="print-detail-container">${path}<div class="print-detail-specimens">${badges}</div></div>`;
+  }
+
+    function printStabilityForTemperature(test) {
     const raw = String(test.stability || '').replace(/\s+/g, ' ').trim();
     const t = String(test.transportTemperature || '').toLowerCase();
     const opts = [/(?:room|ambient)/.test(t) && 'room',/(?:refriger|cold|chill)/.test(t) && 'refrigerated',/(?:froz|freez)/.test(t) && 'frozen'].filter(Boolean);
@@ -4721,6 +4737,17 @@
     }
   }
 
+  function printDetailHandling(test) {
+    const notes = String(printSpecialInstructions(test) || '').trim();
+    const alt = String(test.alternativeContainer || '').trim();
+    const altAlreadyInNotes = alt && notes.toLowerCase().replace(/\s+/g, ' ')
+      .includes(alt.toLowerCase().replace(/\s+/g, ' '));
+    const altNote = alt && !altAlreadyInNotes
+      ? `<div class="print-detail-alt-note"><strong>Alternative:</strong> ${escapeHtml(alt)}</div>` : '';
+    const extraRequirements = additionalRequirementSummary(test, true);
+    return `<div class="print-detail-handling-text">${escapeHtml(notes)}</div>${altNote}${extraRequirements}`;
+  }
+
   function printSummary() {
     const tests = selectedTests();
     if (!tests.length) return showToast('Add at least one test before printing.');
@@ -4738,9 +4765,9 @@
       <section class="print-detail-table-section${tests.length <= 3 ? ' print-brief-order' : ''}">
       ${alerts.length ? `<div class="print-alerts">${alerts.map(alert => `<div>${escapeHtml(alert.text)}</div>`).join('')}</div>` : ''}
       <table class="print-table">
-        <colgroup><col style="width:6%"><col style="width:14%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:5%"><col style="width:8%"><col style="width:7%"><col style="width:8%"><col style="width:25%"></colgroup>
-        <thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Draw container</th><th>Transport tube</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
-        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${test.isStat ? '<span class="print-priority-tag">STAT</span>' : ''}${printFastingBadge(test, 'print-test-fasting-badge')}</div>${test.alternativeContainer ? `<div class="print-test-alternative">Alt: <span class="print-inline-tube tube ${tubeClass(test.alternativeContainer)}">${escapeHtml(test.alternativeContainer)}</span></div>` : ''}${additionalRequirementSummary(test, true)}</td><td>${requiredSpecimenBadges(test, 'print-specimen-badge')}</td><td>${requiredDrawContainerBadges(test, 'print-tube-badge')}</td><td>${printContainerBadges(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</span></td><td><span class="print-stability-period">${escapeHtml(printStabilityForTemperature(test))}</span></td><td>${escapeHtml(printSpecialInstructions(test))}</td></tr>`).join('')}</tbody>
+        <colgroup><col style="width:6%"><col style="width:15%"><col style="width:14%"><col style="width:4%"><col style="width:8%"><col style="width:8%"><col style="width:6%"><col style="width:39%"></colgroup>
+        <thead><tr><th>Code</th><th>Test</th><th>Container / specimen</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
+        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${test.isStat ? '<span class="print-priority-tag">STAT</span>' : ''}${printFastingBadge(test, 'print-test-fasting-badge')}</div></td><td>${printDetailContainerPath(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</span></td><td><span class="print-stability-period">${escapeHtml(printStabilityForTemperature(test))}</span></td><td>${printDetailHandling(test)}</td></tr>`).join('')}</tbody>
       </table>
       </section>
       ${printNotesFooter()}
