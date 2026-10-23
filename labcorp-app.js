@@ -3156,7 +3156,7 @@
             <span class='print-sst-volume-action'>Verify specimen volume with receiving lab.</span>
           </div>
         </div>` : ''}
-        <div class="print-for-tests"><b>For ${item.tests.length} ${item.tests.length === 1 ? 'test' : 'tests'}:</b><ul>${uniqueTests(item.tests).map(test => `<li${yieldReviewTests.includes(test) ? ' class="is-volume-warning-test"' : ''}><strong>${escapeHtml(displayCode(test))}</strong> ${escapeHtml(test.testName)}${test.isStat ? '<span class="print-collection-stat-label"> · STAT</span>' : ''}</li>`).join('')}</ul></div>
+        <div class="print-for-tests"><b>For ${item.tests.length} ${item.tests.length === 1 ? 'test' : 'tests'}:</b><ul>${uniqueTests(item.tests).map(test => `<li${item.className === 'tube-sst' && singleSstSpecimenVolumeWarning(test) ? ' class="is-volume-warning-test"' : ''}><strong>${escapeHtml(displayCode(test))}</strong> ${escapeHtml(test.testName)}${test.isStat ? '<span class="print-collection-stat-label"> · STAT</span>' : ''}</li>`).join('')}</ul></div>
       </article>`;
     });
     // A printed page can start between rows, never halfway through either

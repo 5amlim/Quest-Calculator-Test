@@ -4149,16 +4149,22 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   }
 }
 
-/* Highlight only SST tests included in the adjacent volume warning.
-   Shared by Quest and Labcorp; preserve existing list spacing and truncation. */
+/* Make the exact SST tests triggering a volume check visibly amber in print.
+   Preserve the existing list dimensions, bullets, and truncated names. */
 @media print {
   .print-sheet .print-collection-card .print-for-tests li.is-volume-warning-test {
-    color: #8d551f !important;
+    color: #a35b12 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .print-sheet .print-collection-card .print-for-tests li.is-volume-warning-test > strong {
-    color: #99571b !important;
+    color: #924b0a !important;
+    background: #ffedca !important;
+    border-radius: 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
   }
   .print-sheet .print-collection-card.is-sst-long .print-for-tests li.is-volume-warning-test::before {
-    color: #bb7d26 !important;
+    color: #b77916 !important;
   }
 }
