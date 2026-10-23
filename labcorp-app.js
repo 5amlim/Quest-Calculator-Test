@@ -3336,7 +3336,13 @@
         urineCollectionKey: group.key,
         count: group.dedicated ? Math.max(...group.tests.map(explicitCollectionCount)) : 1,
         tests: uniqueTests(group.tests),
-        detail: group.dedicated ? 'Separate urine collection required. Follow test-specific collection instructions.' : 'Collect in the sterile cup first, then fill any required preservative or transport tubes.'
+        detail: group.dedicated
+          ? 'Separate urine collection required. Follow test-specific collection instructions.'
+          : group.tests.every(isOriginalContainerSubmission)
+            ? 'Submit the original sterile cup; no transfer. Confirm sufficient urine for all ordered tests.'
+            : group.tests.some(isOriginalContainerSubmission)
+              ? 'Submit the original cup for direct-submit tests; fill required preservative/transport tubes for the other tests. Confirm sufficient urine.'
+              : 'Collect in the sterile cup first, then fill any required preservative or transport tubes.'
       });
     });
 
@@ -3685,15 +3691,21 @@
     const sourceSpecimen = specificSpecimenSource(test);
     const isAptima70049 = String(test.testCode || '').trim() === '70049';
     const label = isAptima70049 ? 'Aptima' : draw;
-    const directUrineCup = isUrineTest(test) && cleanCollectionContainer(draw) === 'Sterile cup';
+    const directUrineCup = isUrineTest(test) && cleanCollectionContainer(draw) === 'Sterile cup' &&
+      cleanCollectionContainer(finalTransportContainer(test)) === 'Sterile cup';
+    const shareUrineCup = directUrineCup && isShareableUrineCupTest(test) &&
+      explicitSubmissionCount(test) === 1;
     const processing = isAptima70049
       ? `${sourceSpecimen} · Submit as Aptima`
       : directUrineCup ? 'Submit in original sterile cup; no transfer'
       : (String(test.spin || '').toLowerCase() === 'yes' ? 'Process as directed; submit in original tube' : 'Submit in original tube');
     return {
-      key: `original|${normalizeSearch(label)}|${normalizeSearch(sourceSpecimen)}`,
+      key: directUrineCup
+        ? `original-urine-cup|${urineCollectionType(test).key}|${shareUrineCup ? 'shared' : String(test.sourceTestId || test.id || test.testCode)}`
+        : `original|${normalizeSearch(label)}|${normalizeSearch(sourceSpecimen)}`,
       label,
       className: tubeClass(draw) || (/\bswab\b/i.test(test.specimenType) ? 'tube-transport' : ''),
+      shareableOriginalUrineCup: shareUrineCup,
       // Every original collection tube must travel as an original submission.
       // If two distinct whole-blood tubes are drawn, they cannot be compressed
       // into a single original tube in the bag plan (e.g. 38287).
@@ -3843,7 +3855,11 @@
       splitSubmissionContainers(test).forEach(container => {
         if (!items.has(container.key)) items.set(container.key, { ...container, tests: [] });
         const item = items.get(container.key);
-        item.count += item.tests.length ? container.count : 0;
+        // Compatible direct-submit urine assays can share the very same
+        // original sterile cup within a bag, provided volume is sufficient.
+        // Dedicated or different urine collection types are never merged.
+        if (container.shareableOriginalUrineCup) item.count = Math.max(item.count, container.count);
+        else item.count += item.tests.length ? container.count : 0;
         if (!item.detail && container.detail) item.detail = container.detail;
         item.tests.push(test);
       });
