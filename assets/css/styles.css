@@ -3837,3 +3837,51 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     border-color: #c6b7e4 !important;
   }
 }
+
+
+/* Print detail readability and page-safe workflow boundaries (Quest/Labcorp).
+   Changes are deliberately limited to printed output. */
+@media print {
+  .print-sheet .print-detail-table-section .print-stability-period {
+    display: inline-block;
+    font-size: 8px !important;
+    line-height: 1.25 !important;
+    font-weight: 500;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+  .print-sheet .print-detail-table-section .print-detail-specimens .print-specimen-badge {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    box-shadow: none !important;
+  }
+  .print-sheet .print-submit-section.bag-page-start,
+  html.mobile-print .print-sheet .print-submit-section.bag-page-start {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+  .print-sheet .print-detail-table-section,
+  html.mobile-print .print-sheet .print-detail-table-section {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+  .print-sheet .print-submit-item,
+  html.mobile-print .print-sheet .print-submit-item {
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+  /* An exceptionally long bag must be allowed to continue between its
+     individual container items, not halfway through a container card. */
+  html.mobile-print .print-sheet .print-bag-row:has(.bag-long) {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+  html.mobile-print .print-sheet .print-bag-row > .print-bag-card.bag-long {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+}
