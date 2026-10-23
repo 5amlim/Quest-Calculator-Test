@@ -756,6 +756,18 @@
       group.bucket.startsWith('Transport temperature:') || group.bucket.startsWith('Room or')).length;
     // Keep the submission card scan-friendly: single container header,
     // temperature beside the container, and the test plus method per row.
+    // Print submission rows only: show the existing directory container path
+    // and a color-coded specimen badge, without changing collection cards.
+    const printDetailSpecimenLabel = (test) => {
+      const value = String(test.specimen || '').trim();
+      return /^(?:serum|plasma|whole blood|blood|urine|stool|swab|csf|body fluid|synovial fluid|pleural fluid|peritoneal fluid)$/i.test(value)
+        ? value : (test.category || 'Other');
+    };
+    const printDetailContainerPath = (test) =>
+      '<div class="cedars-print-detail-container">' + cedarsMenuContainerPath(test) +
+      '<span class="cedars-print-test-type ' + specimenClass(test.category) + '">' +
+      esc(printDetailSpecimenLabel(test)) + '</span></div>';
+
     const printContainerTests = (items) =>
       '<ul class="cedars-print-simple-tests">' +
       items.slice().sort((a,b) =>
@@ -773,6 +785,7 @@
           ((test.code || test.secondaryCode)
             ? '<small class="cedars-print-test-code">' +
               esc([test.code,test.secondaryCode].filter(Boolean).join(' / ')) + '</small>' : '') +
+          printDetailContainerPath(test) +
           ((test.category === 'Urine' || test.category === 'Stool')
             ? transferDirections(test) : '') +
           (test.category === 'Stool' && countFor(test)>1
