@@ -3818,3 +3818,22 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     border-color: #e9b8cb;
   }
 }
+
+/* Additional specimen colors are scoped to the consolidated print detail cell. */
+@media print {
+  .print-detail-table-section .print-detail-specimens .specimen-urine {
+    background: #fff3c4 !important;
+    color: #74550c !important;
+    border-color: #ddc067 !important;
+  }
+  .print-detail-table-section .print-detail-specimens .specimen-stool {
+    background: #f5dfc3 !important;
+    color: #754514 !important;
+    border-color: #d6a26b !important;
+  }
+  .print-detail-table-section .print-detail-specimens .specimen-swab {
+    background: #ede7fa !important;
+    color: #654594 !important;
+    border-color: #c6b7e4 !important;
+  }
+}
