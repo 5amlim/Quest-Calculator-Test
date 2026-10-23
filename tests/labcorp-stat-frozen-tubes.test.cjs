@@ -8,7 +8,9 @@ const source = read('labcorp-quest-sheet-matches-data.js');
 const html = read('labcorp.html');
 const theme = read('labcorp-theme.css');
 
-assert.match(html,/labcorp-app\.js\?v=25/,'Load the patched app, not cached STAT behavior');
+assert.match(html,/labcorp-app\.js\?v=26/,'Load the patched app, not cached STAT behavior');
+assert.match(html,/<option value="frozen-transport">Frozen transport tube \(purple cap\)<\/option>/);
+
 assert.match(theme,/\.labcorp-page \.tube-frozen-purple::before[\s\S]{0,200}#8057b3/,
   'Frozen transport must have a distinct purple-cap badge');
 
@@ -33,7 +35,7 @@ function boot(area='socal',saveOldStat=false){
   vm.runInContext(source,ctx,{filename:'labcorp-quest-sheet-matches-data.js'});
   vm.runInContext(app.replace('  init();',
     '  window.testApi={normalizeRecord,renderLibraryRow,isStatEligible,'+
-    'menuContainerBadges,libraryTransportContainerBadges,'+
+    'menuContainerBadges,libraryTransportContainerBadges,transportContainerFilterCategories,'+
     'buildTransportBagPlan,buildCollectionPlan,buildSubmissionContents,'+
     'printCollectionSubmissionPlan};'),ctx,{filename:'labcorp-app.js'});
   return {ctx,api:ctx.window.testApi,storage};
@@ -77,6 +79,8 @@ const two=create('990102','Serum','Dedicated Frozen Serum Transport Tube');
 const plasma=create('990103','Plasma','Dedicated Frozen Plasma Transport Tube');
 for(const t of [one,two,plasma]){
   const badges=api.libraryTransportContainerBadges(t);
+  assert(api.transportContainerFilterCategories(t).includes('frozen-transport'),
+    'Frozen serum/plasma assays must appear in the frozen container filter');
   assert.match(badges,/tube-frozen-purple/);
   assert.match(badges,/>Frozen Transport Tube</);
   const contents=api.buildTransportBagPlan([t]).flatMap(b=>api.buildSubmissionContents(b));
