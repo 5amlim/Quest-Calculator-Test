@@ -1150,6 +1150,7 @@
   // tube. Keep special containers separate from generic transport tubes.
   function transportContainerFilterCategories(test) {
     const value = normalizeSearch(test.transportContainer || '');
+    if (isFrozenSerumPlasmaTransport(test, test.transportContainer)) return ['frozen-transport'];
     if (/red yellow|ua preservative/.test(value)) {
       // A few urine panels require both UA and culture preservative tubes.
       return /gray top urine|urine culture|urisponge/.test(value)
