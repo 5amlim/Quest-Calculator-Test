@@ -3974,3 +3974,59 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     font-weight: 500;
   }
 }
+
+
+/* v12.06: Natural page fragmentation for Quest/Labcorp submission bags.
+   Each bag has exactly one header in the DOM. Allow the long bag to
+   continue across a page boundary while keeping each specimen item whole. */
+@media print {
+  .print-sheet .print-bag-row,
+  html.mobile-print .print-sheet .print-bag-row {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    -webkit-column-break-inside: auto !important;
+    align-items: start !important;
+    grid-auto-rows: auto !important;
+  }
+  .print-sheet .print-bag-row > .print-bag-card,
+  .print-sheet .print-bag-row > .print-bag-card.bag-long,
+  html.mobile-print .print-sheet .print-bag-row > .print-bag-card,
+  html.mobile-print .print-sheet .print-bag-row > .print-bag-card.bag-long {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    align-self: start !important;
+  }
+  .print-sheet .print-bag-card .print-bag-topbar,
+  .print-sheet .print-bag-card .print-bag-card-header {
+    break-after: avoid-page !important;
+    page-break-after: avoid !important;
+  }
+  .print-sheet .print-bag-card .print-submit-content {
+    display: block !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+  .print-sheet .print-bag-card .print-submit-content > .print-submit-item + .print-submit-item {
+    margin-top: 5px !important;
+  }
+  .print-sheet .print-bag-card .print-submit-item,
+  html.mobile-print .print-sheet .print-bag-card .print-submit-item {
+    display: block;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+  .print-sheet .print-bag-card .print-submit-item:first-child {
+    break-before: avoid-page !important;
+    page-break-before: avoid !important;
+  }
+  .print-sheet .print-detail-table-section .print-detail-specimens .print-detail-spin {
+    color: #41616c !important;
+    font-size: 8.8px !important;
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+}
