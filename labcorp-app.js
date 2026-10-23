@@ -4659,7 +4659,7 @@
     const spinValue = String(test.spin || '').trim();
     const spinDisplay = /^(?:yes|true|spin|centrifuge)$/i.test(spinValue)
       ? 'Spin ✓'
-      : /^(?:no|false|do not spin)$/i.test(spinValue) ? 'No spin'
+      : /^(?:no|false|do not spin)$/i.test(spinValue) ? ''
       : /^(?:n\/?a|not applicable)$/i.test(spinValue) ? ''
       : spinValue ? `Spin: ${escapeHtml(spinValue)}` : '';
     const spinBadge = spinDisplay ? `<span class="print-detail-spin" aria-label="Spin instruction">· ${spinDisplay}</span>` : '';
