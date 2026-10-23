@@ -3885,3 +3885,15 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     page-break-inside: auto !important;
   }
 }
+
+/* Small mobile orders can share available page space. Longer orders keep
+   the collection, submission, and warnings/detail table as separate units. */
+@media print {
+  html.mobile-print .print-sheet .print-detail-table-section.print-brief-order {
+    break-before: auto !important;
+    page-break-before: auto !important;
+  }
+  .print-sheet .print-bag-continuation .print-bag-title strong {
+    overflow-wrap: anywhere;
+  }
+}
