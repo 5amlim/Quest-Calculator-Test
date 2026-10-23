@@ -4887,10 +4887,9 @@
       ${printCollectionSubmissionPlan(tests)}
       <section class="print-detail-table-section${tests.length <= 3 ? ' print-brief-order' : ''}">
       ${printCompactAlertSummary(tests, alerts)}
-      <div class="print-detail-lab-heading"><strong>Test details</strong><span class="print-detail-lab-badge">QUEST</span></div>
       <table class="print-table">
         <colgroup><col style="width:6%"><col style="width:15%"><col style="width:14%"><col style="width:8%"><col style="width:8%"><col style="width:6%"><col style="width:43%"></colgroup>
-        <thead><tr><th>Code</th><th>Test</th><th>Container / specimen</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Notes</th></tr></thead>
+        <thead><tr class="print-detail-title-row"><th colspan="7" class="print-detail-title-cell"><div class="print-detail-lab-heading"><strong>Test details</strong><span class="print-detail-lab-badge">QUEST</span></div></th></tr><tr><th>Code</th><th>Test</th><th>Container / specimen</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Notes</th></tr></thead>
         <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack${test.testName.length > 48 ? ' print-long-test-name' : ''}"><strong>${escapeHtml(test.testName)}</strong>${test.isStat ? '<span class="print-priority-tag">STAT</span>' : ''}${printFastingBadge(test, 'print-test-fasting-badge')}</div></td><td>${printDetailContainerPath(test)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">${escapeHtml(printDetailVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(printDetailVolumeText(test, 'minimum') || '—')}</span></td><td><span class="print-stability-period">${escapeHtml(printStabilityForTemperature(test))}</span></td><td>${printDetailHandling(test)}</td></tr>`).join('')}</tbody>
       </table>
       </section>
@@ -4909,6 +4908,17 @@
       document.head.appendChild(mobilePageRule);
     } else if (!mobilePrint) {
       mobilePageRule?.remove();
+    }
+    // Keep "What to collect" on the same printed page as the first paired
+    // collection row. The existing row owns equal-height cards and is unchanged.
+    const collectionHeading = els.printSheet.querySelector('.print-logistics-subheading.print-section-banner');
+    const collectionGrid = els.printSheet.querySelector('.print-collection-grid');
+    const firstCollectionRow = collectionGrid?.querySelector(':scope > .print-collection-row');
+    if (collectionHeading && firstCollectionRow) {
+      const firstGroup = document.createElement('div');
+      firstGroup.className = 'print-collection-first-group';
+      collectionGrid.insertBefore(firstGroup, firstCollectionRow);
+      firstGroup.append(collectionHeading, firstCollectionRow);
     }
     // On iPhone, put the submission heading inside the FIRST existing bag
     // row. WebKit previously printed the heading and an empty purple panel
@@ -4936,6 +4946,16 @@
       firstItemList.appendChild(firstItem);
       opening.appendChild(firstItemList);
       if (!containerList.children.length) containerList.remove();
+    });
+    // Short side-by-side bag pairs must start together rather than leaving
+    // a bag topbar on the previous page. Keep the original grid, stretch,
+    // equal-height footer, and individual long-bag pagination rules.
+    els.printSheet.querySelectorAll('.print-bag-row').forEach(row => {
+      if (row.querySelector('.bag-long')) return;
+      const pairKeep = document.createElement('div');
+      pairKeep.className = 'print-bag-pair-keep';
+      row.parentNode.insertBefore(pairKeep, row);
+      pairKeep.appendChild(row);
     });
     window.print();
   }
