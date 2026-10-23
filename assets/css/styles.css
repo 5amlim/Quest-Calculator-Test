@@ -4148,3 +4148,17 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     margin: 0;
   }
 }
+
+/* Highlight only SST tests included in the adjacent volume warning.
+   Shared by Quest and Labcorp; preserve existing list spacing and truncation. */
+@media print {
+  .print-sheet .print-collection-card .print-for-tests li.is-volume-warning-test {
+    color: #8d551f !important;
+  }
+  .print-sheet .print-collection-card .print-for-tests li.is-volume-warning-test > strong {
+    color: #99571b !important;
+  }
+  .print-sheet .print-collection-card.is-sst-long .print-for-tests li.is-volume-warning-test::before {
+    color: #bb7d26 !important;
+  }
+}
