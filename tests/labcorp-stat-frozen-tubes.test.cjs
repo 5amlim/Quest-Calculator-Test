@@ -8,7 +8,7 @@ const source = read('labcorp-quest-sheet-matches-data.js');
 const html = read('labcorp.html');
 const theme = read('labcorp-theme.css');
 
-assert.match(html,/labcorp-app\.js\?v=26/,'Load the patched app, not cached STAT behavior');
+assert.match(html,/labcorp-app\.js\?v=27/,'Load the patched app, not cached STAT behavior');
 assert.match(html,/<option value="frozen-transport">Frozen transport tube \(purple cap\)<\/option>/);
 
 assert.match(theme,/\.labcorp-page \.tube-frozen-purple::before[\s\S]{0,200}#8057b3/,
