@@ -2265,7 +2265,7 @@
       });
       if (test.status === 'blocked') alerts.push({ type: 'danger', text: `${test.testName}: marked do not perform.` });
       const sstYieldWarning = singleSstSpecimenVolumeWarning(test);
-      if (sstYieldWarning) alerts.push({ type: 'warning', text: `${test.testName}: ${sstYieldWarning}` });
+      if (sstYieldWarning) alerts.push({ type: 'danger', text: `${test.testName}: ${sstYieldWarning}` });
       if (/own tube|dedicated tube|needs own tube|two separate|full tube|required on label|draw waste|discard tube/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: dedicated tube, fill, labeling, or discard instructions may apply.` });
       if (/immediately|freeze immediately|centrifuge immediately|stat/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: time-sensitive processing noted.` });
       if (/protect from light|amber|wrap.*foil/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: protect from light.` });
