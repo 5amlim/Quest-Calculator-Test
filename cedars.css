@@ -3217,3 +3217,74 @@
     gap: 8px;
   }
 }
+
+
+/* Cedars printed submission test rows only. Match the directory's
+   collection → submission pills and colored specimen badge. */
+@media print {
+  #cedarsPrintSheet .cedars-print-simple-test .cedars-print-detail-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px 6px;
+    margin-top: 4px;
+    min-width: 0;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-path {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px 5px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-path-stage {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-path-arrow {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    font-weight: 900;
+    line-height: 1;
+    color: #5b7681;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-name {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 2px 6px;
+    border: 1px solid #cbd7dc;
+    border-radius: 999px;
+    font-size: 7.5pt;
+    font-weight: 800;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    background: #f3f6f9 !important;
+    color: #526473 !important;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-name.type-swab {
+    background: #eaf4ff !important; color: #235b8f !important; border-color: #b7d7ef;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-name.type-urine {
+    background: #fff3d8 !important; color: #805405 !important; border-color: #f1d18a;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-name.type-stool {
+    background: #f5e9db !important; color: #76502d !important; border-color: #ddc2a4;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-name.type-blood {
+    background: #f9e9ef !important; color: #873c55 !important; border-color: #e5bccb;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-container-name.type-other {
+    background: #f0ecf9 !important; color: #605384 !important; border-color: #d1c9e5;
+  }
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-print-test-type {
+    margin: 0;
+    border-radius: 999px;
+  }
+}
