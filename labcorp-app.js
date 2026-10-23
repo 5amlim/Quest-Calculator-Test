@@ -678,6 +678,20 @@
 
   function cleanCollectionContainer(value) {
     const text = String(value || '').trim();
+    // Standard unpreserved urine collection and submission cups are one
+    // physical container, despite directory aliases such as "original specimen"
+    // or "plastic urine container, no preservative". Do not normalize aliquot
+    // containers, preservatives, timed collection jugs, or special metal-free cups.
+    const directCup = text
+      .replace(/^(?:submit|send)\s+in\s+(?:the\s+)?original\s+/i, '')
+      .replace(/\s*\(original\s+(?:specimen|container|cup)\)\s*$/i, '')
+      .replace(/\s*\(urine\)\s*$/i, '')
+      .replace(/\s*,\s*(?:no|without)\s+preservative\s*$/i, '')
+      .replace(/\s+without\s+preservative\s*$/i, '')
+      .trim();
+    if (/^(?:(?:sterile\s+)?(?:plastic\s+)?urine\s+(?:collection\s+)?(?:cup|container)|plastic\s+urine\s+container|sterile\s+(?:specimen\s+)?cup)$/i.test(directCup)) {
+      return 'Sterile cup';
+    }
     // Local standard: generic urine cups/containers are the existing Sterile cup.
     // Keep truly special devices (24-hour jugs, preservative tubes, trace-metal containers, Aptima, etc.) distinct.
     if (/^(?:sterile\s*,?\s*)?(?:plastic\s+)?urine\s+(?:collection\s+)?(?:cup|container)$/i.test(text)) {
@@ -3627,6 +3641,13 @@
     if (collectionSpecimenGroupForTest(test) === 'stool' && /total[- ]?fix/.test(transport.toLowerCase())) return false;
     if (!draw || /^do not collect$/i.test(draw) || /^n\/?a$/i.test(transport)) return false;
 
+    // Labcorp accepts an unpreserved plastic urine cup itself for many assays.
+    // If BOTH actual containers normalize to that cup, submission is direct.
+    // A true preservative/aliquot/special transport device does not normalize.
+    if (isUrineTest(test) &&
+        cleanCollectionContainer(draw) === 'Sterile cup' &&
+        cleanCollectionContainer(transport) === 'Sterile cup') return true;
+
     // Swabs are collected directly into their supplied transport kit. Unlike
     // spun blood or transferred urine/stool, no second container is required.
     if (/\bswab\b/i.test(String(test.specimenType || '')) &&
@@ -3664,8 +3685,10 @@
     const sourceSpecimen = specificSpecimenSource(test);
     const isAptima70049 = String(test.testCode || '').trim() === '70049';
     const label = isAptima70049 ? 'Aptima' : draw;
+    const directUrineCup = isUrineTest(test) && cleanCollectionContainer(draw) === 'Sterile cup';
     const processing = isAptima70049
       ? `${sourceSpecimen} · Submit as Aptima`
+      : directUrineCup ? 'Submit in original sterile cup; no transfer'
       : (String(test.spin || '').toLowerCase() === 'yes' ? 'Process as directed; submit in original tube' : 'Submit in original tube');
     return {
       key: `original|${normalizeSearch(label)}|${normalizeSearch(sourceSpecimen)}`,
