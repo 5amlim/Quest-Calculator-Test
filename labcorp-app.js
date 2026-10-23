@@ -708,6 +708,7 @@
       .replace(/^labeled\s+transport\s+tube\s*\(local workflow;\s*verify\s+[a-z]+\)$/i, 'Transport tube (verify official instructions)')
       .replace(/^labeled\s+transport\s+tube$/i, 'Transport tube')
       .replace(/\blabeled transport tube\b/gi, 'transport tube')
+      .replace(/\s*\(original device\)\s*$/i, '')
       .replace(/\s{2,}/g, ' ');
     return cleanCollectionContainer(cleaned);
   }
@@ -1164,6 +1165,11 @@
   // tube. Keep special containers separate from generic transport tubes.
   function transportContainerFilterCategories(test) {
     const value = normalizeSearch(test.transportContainer || '');
+    // Direct submission in the collection cup is still sterile-cup transport,
+    // including records described as "original tube / no transfer".
+    if (cleanCollectionContainer(test.transportContainer) === 'Sterile cup' ||
+        (/\b(?:original tube|primary tube|no transfer|do not open)\b/.test(value) &&
+          cleanCollectionContainer(test.drawContainer) === 'Sterile cup')) return ['sterile-cup', 'original'];
     if (isFrozenSerumPlasmaTransport(test, test.transportContainer)) return ['frozen-transport'];
     if (/red yellow|ua preservative/.test(value)) {
       // A few urine panels require both UA and culture preservative tubes.
@@ -1187,12 +1193,10 @@
     return ['special'];
   }
 
-  // This filter also covers the original collection cup when a specimen
-  // is later transferred into a preservative or other transport container.
-  // It is intentionally specimen-agnostic: urine, stool, body fluids, etc.
+  // This is a TRANSPORT filter: a sterile source cup alone is not enough.
+  // A culture specimen transferred to a gray-top tube is filtered by that tube.
   function usesSterileCup(test) {
-    return [test.drawContainer, test.transportContainer, test.alternativeContainer]
-      .some(value => /\bsterile(?:\s+urine)?\s+cup\b/i.test(String(value || '')));
+    return transportContainerFilterCategories(test).includes('sterile-cup');
   }
 
   function toggleCatalogFilters(force) {
@@ -3126,7 +3130,7 @@
   }
 
   function printCollectionGroups(items, wholeBloodGroups) {
-    return `<div class="print-collection-grid">${items.map(item => {
+    const cards = items.map(item => {
       const specimenBadge = collectionSpecimenBadgeForItem(item);
       const specimenGroup = collectionSpecimenGroupForItem(item);
       const tigerBadge = printSstTigerBadge(item);
@@ -3149,7 +3153,19 @@
         </div>` : ''}
         <div class="print-for-tests"><b>For ${item.tests.length} ${item.tests.length === 1 ? 'test' : 'tests'}:</b><ul>${uniqueTests(item.tests).map(test => `<li><strong>${escapeHtml(displayCode(test))}</strong> ${escapeHtml(test.testName)}${test.isStat ? '<span class="print-collection-stat-label"> · STAT</span>' : ''}</li>`).join('')}</ul></div>
       </article>`;
-    }).join('')}</div>`;
+    });
+    // A printed page can start between rows, never halfway through either
+    // card in a pair. Do not change the two-column presentation or tube math.
+    const rows = [];
+    const fullWidth = item => item.className !== 'tube-sst' &&
+      uniqueTests(item.tests).length >= 12;
+    for (let i = 0; i < cards.length;) {
+      const next = !fullWidth(items[i]) && i + 1 < cards.length &&
+        !fullWidth(items[i + 1]) ? i + 2 : i + 1;
+      rows.push('<div class="print-collection-row">' + cards.slice(i, next).join('') + '</div>');
+      i = next;
+    }
+    return '<div class="print-collection-grid">' + rows.join('') + '</div>';
   }
 
   function buildCollectionPlan(tests, bags) {
