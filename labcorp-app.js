@@ -4656,7 +4656,14 @@
         : /\bswab\b/i.test(label) ? 'specimen-swab' : '';
       return `<span class="specimen-badge ${specimenClass(label)} ${group} print-specimen-badge">${escapeHtml(label)}</span>`;
     }).join(' ');
-    return `<div class="print-detail-container">${path}<div class="print-detail-specimens">${badges}</div></div>`;
+    const spinValue = String(test.spin || '').trim();
+    const spinDisplay = /^(?:yes|true|spin|centrifuge)$/i.test(spinValue)
+      ? 'Spin ✓'
+      : /^(?:no|false|do not spin)$/i.test(spinValue) ? 'No spin'
+      : /^(?:n\/?a|not applicable)$/i.test(spinValue) ? ''
+      : spinValue ? `Spin: ${escapeHtml(spinValue)}` : '';
+    const spinBadge = spinDisplay ? `<span class="print-detail-spin" aria-label="Spin instruction">· ${spinDisplay}</span>` : '';
+    return `<div class="print-detail-container">${path}<div class="print-detail-specimens">${badges}${spinBadge}</div></div>`;
   }
 
     function printStabilityForTemperature(test) {
@@ -4687,56 +4694,6 @@
     return 'Verify';
   }
 
-  function paginatePrintedBagsForMobile() {
-    // A full two-column bag row can be taller than an iPhone print page.
-    // Split only the printed DOM at container boundaries, never the bag plan.
-    const rows = Array.from(els.printSheet.querySelectorAll('.print-bag-grid > .print-bag-row'));
-    for (const row of rows) {
-      const cards = Array.from(row.children).filter(el => el.classList.contains('print-bag-card'));
-      if (!cards.length) continue;
-      const columns = cards.map(card => {
-        const items = Array.from(card.querySelectorAll('.print-submit-content > .print-submit-item'));
-        const groups = [];
-        let group = [], weight = 0;
-        for (const item of items) {
-          const cost = Math.max(1, Math.ceil((item.textContent || '').length / 300));
-          if (group.length && weight + cost > 4) {
-            groups.push(group);
-            group = [];
-            weight = 0;
-          }
-          group.push(item);
-          weight += cost;
-        }
-        if (group.length) groups.push(group);
-        if (groups.length < 2) return [card];
-        return groups.map((part, index) => {
-          const copy = card.cloneNode(true);
-          const body = copy.querySelector('.print-submit-content');
-          body.replaceChildren(...part.map(item => item.cloneNode(true)));
-          copy.classList.remove('bag-long');
-          if (index > 0) {
-            copy.classList.add('print-bag-continuation');
-            const label = copy.querySelector('.print-bag-title strong');
-            if (label) label.textContent += ' (continued)';
-          }
-          return copy;
-        });
-      });
-      const pages = Math.max(...columns.map(parts => parts.length));
-      if (pages < 2) continue;
-      const fragment = document.createDocumentFragment();
-      for (let index = 0; index < pages; index++) {
-        const next = row.cloneNode(false);
-        const pair = columns.map(parts => parts[index]).filter(Boolean);
-        next.classList.toggle('single-row', pair.length === 1);
-        pair.forEach(card => next.appendChild(card));
-        fragment.appendChild(next);
-      }
-      row.replaceWith(fragment);
-    }
-  }
-
   function printDetailHandling(test) {
     const notes = String(printSpecialInstructions(test) || '').trim();
     const alt = String(test.alternativeContainer || '').trim();
@@ -4765,9 +4722,9 @@
       <section class="print-detail-table-section${tests.length <= 3 ? ' print-brief-order' : ''}">
       ${alerts.length ? `<div class="print-alerts">${alerts.map(alert => `<div>${escapeHtml(alert.text)}</div>`).join('')}</div>` : ''}
       <table class="print-table">
-        <colgroup><col style="width:6%"><col style="width:15%"><col style="width:14%"><col style="width:4%"><col style="width:8%"><col style="width:8%"><col style="width:6%"><col style="width:39%"></colgroup>
-        <thead><tr><th>Code</th><th>Test</th><th>Container / specimen</th><th>Spin</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
-        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${test.isStat ? '<span class="print-priority-tag">STAT</span>' : ''}${printFastingBadge(test, 'print-test-fasting-badge')}</div></td><td>${printDetailContainerPath(test)}</td><td>${escapeHtml(test.spin)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</span></td><td><span class="print-stability-period">${escapeHtml(printStabilityForTemperature(test))}</span></td><td>${printDetailHandling(test)}</td></tr>`).join('')}</tbody>
+        <colgroup><col style="width:6%"><col style="width:15%"><col style="width:14%"><col style="width:8%"><col style="width:8%"><col style="width:6%"><col style="width:43%"></colgroup>
+        <thead><tr><th>Code</th><th>Test</th><th>Container / specimen</th><th>Temperature</th><th>Volume</th><th>Stability</th><th>Special handling</th></tr></thead>
+        <tbody>${tests.map(test => `<tr><td>${escapeHtml(displayCode(test))}</td><td><div class="print-test-name-stack"><strong>${escapeHtml(test.testName)}</strong>${test.isStat ? '<span class="print-priority-tag">STAT</span>' : ''}${printFastingBadge(test, 'print-test-fasting-badge')}</div></td><td>${printDetailContainerPath(test)}</td><td><span class="print-temp-badge ${temperatureClass(test.transportTemperature)}">${escapeHtml(test.transportTemperature)}</span></td><td><span class="print-preferred-volume">${escapeHtml(combinedVolumeText(test, 'preferred') || 'Verify')}</span><br><span class="print-minimum-volume">Minimum: ${escapeHtml(combinedVolumeText(test, 'minimum') || '—')}</span></td><td><span class="print-stability-period">${escapeHtml(printStabilityForTemperature(test))}</span></td><td>${printDetailHandling(test)}</td></tr>`).join('')}</tbody>
       </table>
       </section>
       ${printNotesFooter()}
@@ -4791,7 +4748,6 @@
     // before pushing both bag cards onto the next sheet. Grid columns and
     // individual bag markup remain exactly the same.
     if (mobilePrint) {
-      paginatePrintedBagsForMobile();
       const heading = els.printSheet.querySelector('.print-submit-heading');
       const firstBagRow = els.printSheet.querySelector('.print-bag-row');
       if (heading && firstBagRow) firstBagRow.insertBefore(heading, firstBagRow.firstChild);
