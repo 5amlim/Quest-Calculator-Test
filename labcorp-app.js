@@ -574,7 +574,7 @@
     const sendBadges = libraryTransportContainerBadges(test);
     return '<span class="container-path is-transfer">' +
       '<span class="container-path-source" aria-label="Collect in">' + drawBadges + '</span>' +
-      '<span class="container-path-arrow" role="img" aria-label="Then transfer to">→</span>' +
+      '<span class="container-path-arrow" role="img" aria-label="Then transfer to">↓</span>' +
       '<span class="container-path-submit" aria-label="Submit in">' + sendBadges + '</span>' +
       '</span>';
   }
