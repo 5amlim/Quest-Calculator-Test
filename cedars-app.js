@@ -359,7 +359,8 @@
   // Full source options remain in Details and the original records/planner.
   function primaryCedarsMenuSpecimen(test) {
     const value = String(test.specimen || '');
-    if (!Array.isArray(test.submissionOptions) || test.submissionOptions.length === 0) return value;
+    // In the directory's specimen/container column display only the primary
+    // specimen even when alternatives are embedded in the specimen text.
     return value.split(/\s+or\s+/i)[0]
       .replace(/\s*\((?:green|red|lavender|purple|blue)[^)]*\)\s*$/i, '')
       .trim() || value;
