@@ -2248,7 +2248,7 @@
       });
       if (test.status === 'blocked') alerts.push({ type: 'danger', text: `${test.testName}: marked do not perform.` });
       const sstYieldWarning = singleSstSpecimenVolumeWarning(test);
-      if (sstYieldWarning) alerts.push({ type: 'danger', text: `${test.testName}: ${sstYieldWarning}` });
+      if (sstYieldWarning) alerts.push({ type: 'warning', text: `${test.testName}: ${sstYieldWarning}` });
       if (/own tube|dedicated tube|needs own tube|two separate|full tube|required on label|draw waste|discard tube/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: dedicated tube, fill, labeling, or discard instructions may apply.` });
       if (/immediately|freeze immediately|centrifuge immediately|stat/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: time-sensitive processing noted.` });
       if (/protect from light|amber|wrap.*foil/.test(note)) alerts.push({ type: 'warning', text: `${test.testName}: protect from light.` });
@@ -2545,13 +2545,13 @@
     return /preferred serum yield requires multi-sst calculation/i.test(String(test.specialInstructions || ''));
   }
 
-  // Local SST planning policy: a recorded minimum strictly above 3 mL
+  // Local SST planning policy: a recorded minimum of at least 4 mL
   // receives two SST collection tubes. Explicit higher tube counts override
   // this floor. Do not apply to other collection tube types.
   function needsTwoSstForMinimum(test) {
     if (!isSstDraw(test)) return false;
     const minimum = parseVolumeMl(test.minimumVolume);
-    return minimum !== null && minimum > 3 + 1e-8;
+    return minimum !== null && minimum >= 4 - 1e-8;
   }
 
   function sstEstimateForTests(tests) {
@@ -2566,7 +2566,7 @@
       const plannedMl = preferredMl === null ? fallbackMl : preferredMl;
       const explicitCount = explicitSstTubeCount(test);
 
-      // Minimum >3 mL plans two SSTs for this test, unless an explicit
+      // Minimum >=4 mL plans two SSTs for this test, unless an explicit
       // instruction calls for more. Preferred volume alone does not trigger
       // this two-tube rule. Keep these sources out of the shared serum pool.
       const twoSstMinimum = needsTwoSstForMinimum(test);
@@ -2609,7 +2609,7 @@
 
       const twoSstMinimum = needsTwoSstForMinimum(test);
       if (requiresDedicatedSst(test) || hasCollectionFillRule(test) || twoSstMinimum) {
-        // Respect explicit multi-tube requirements, with the same >3 mL
+        // Respect explicit multi-tube requirements, with the same >=4 mL
         // two-SST minimum policy used for Gold SST.
         dedicatedTubes += Math.max(explicitCount, twoSstMinimum ? 2 : 1);
       } else if (plannedMl !== null) {
@@ -2635,7 +2635,7 @@
     // Severity follows the same per-test Gold/Tiger SST yield assumptions as
     // the existing volume check. An explicit multi-tube order stays exempt.
     if (!isSstDraw(test) || requiresDedicatedSst(test) && explicitSstTubeCount(test) > 1) return '';
-    // A minimum above 3 mL has an automatic 2-SST collection plan, even if
+    // A minimum of at least 4 mL has an automatic 2-SST collection plan, even if
     // the selected Tiger SST has a 4 mL estimated yield.
     if (needsTwoSstForMinimum(test)) return 'minimum';
     const tiger = selectedSstIsTiger();
@@ -2652,7 +2652,7 @@
     const tube = selectedSstIsTiger() ? 'Tiger' : 'Gold';
     if (level === 'minimum') {
       return needsTwoSstForMinimum(test)
-        ? 'Minimum exceeds 3 mL: two SSTs planned (unless more explicitly required). Verify specimen volume with the receiving lab.'
+        ? 'Minimum is at least 4 mL: two SSTs planned (unless more explicitly required). Verify specimen volume with the receiving lab.'
         : `minimum required volume may exceed one ${tube} SST's assumed yield. Verify specimen volume with the receiving lab.`;
     }
     if (level === 'preferred') {
@@ -3177,7 +3177,7 @@
             <span>${selectedSstIsTiger() ? 'Tiger' : 'Gold'} SST · ${selectedSstIsTiger() ? '4' : '2.5'} mL estimated serum yield</span>
           </div>
           ${twoSstTests.length ? `<div class="print-sst-volume-tier is-minimum">
-            <strong>2 SSTs planned (minimum &gt;3 mL):</strong>
+            <strong>2 SSTs planned (minimum ≥4 mL):</strong>
             <span>${twoSstTests.map(test => `<b>${escapeHtml(displayCode(test))}</b>`).join(' · ')}</span>
           </div>` : ''}
           ${minimumYieldTests.length ? `<div class="print-sst-volume-tier is-minimum">

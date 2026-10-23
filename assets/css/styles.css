@@ -3005,7 +3005,7 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     overflow-wrap: anywhere;
   }
   .print-sst-volume-tier b { font-weight: 850; }
-  .print-sst-volume-tier.is-minimum { color: #943b31 !important; }
+  .print-sst-volume-tier.is-minimum { color: #91621f !important; }
   .print-sst-volume-tier.is-preferred { color: #91621f !important; }
   /* CSS multi-column pagination varies between mobile print engines. Use
      the same explicit column-first three-column layout everywhere. */
@@ -4187,15 +4187,5 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   .print-sheet .print-collection-card.is-sst-long .print-for-tests li.is-volume-warning-test::before {
     color: #b77916 !important;
   }
-  /* A minimum-volume shortfall is higher priority than preferred-only. */
-  .print-sheet .print-collection-card .print-for-tests li.is-volume-minimum {
-    color: #ac3d32 !important;
-  }
-  .print-sheet .print-collection-card .print-for-tests li.is-volume-minimum > strong {
-    color: #8e2c25 !important;
-    background: #ffe5e0 !important;
-  }
-  .print-sheet .print-collection-card.is-sst-long .print-for-tests li.is-volume-minimum::before {
-    color: #b7493f !important;
-  }
+  /* Minimum- and preferred-volume warnings share the same amber styling. */
 }
