@@ -45,7 +45,7 @@ for (const code of ['140285', '003129', '912334', '912847']) {
   assert.match(submission[0].detail, /original sterile cup; no transfer/i);
   const printed = api.printCollectionSubmissionPlan([test]);
   assert(printed.includes(test.testCode) && printed.includes('What to submit'));
-  assert.match(printed, /Submit in original sterile cup; no transfer/i);
+  assert.match(printed, /Submit original sterile cup · No transfer/i);
 }
 
 const direct = [find('140285'), find('003129')];
