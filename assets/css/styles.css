@@ -3737,3 +3737,84 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     max-width: 100% !important;
   }
 }
+
+
+/* Print detail table only: one compact collection → submission column.
+   Reuses the library path decision while keeping original print font sizes. */
+@media print {
+  .print-detail-table-section .print-detail-container {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+  }
+  .print-detail-table-section .print-detail-container .container-path {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: flex-start;
+    gap: 3px 4px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .print-detail-table-section .print-detail-container .container-path-source,
+  .print-detail-table-section .print-detail-container .container-path-submit {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .print-detail-table-section .print-detail-container .container-path-arrow {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    font-weight: 900;
+    line-height: 1;
+    color: #536e77;
+  }
+  .print-detail-table-section .print-detail-container .print-tube-badge {
+    box-sizing: border-box;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+  .print-detail-table-section .print-detail-specimens {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .print-detail-table-section .print-detail-specimens .print-specimen-badge {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border: 1px solid #c7d0d4;
+    border-radius: 999px;
+    padding: 2px 5px;
+    background: #f0f3f4 !important;
+    color: #59666c;
+  }
+  .print-detail-table-section .print-detail-specimens .specimen-serum {
+    background: #fff3d2 !important;
+    color: #8a5a00 !important;
+    border-color: #e3c77b;
+  }
+  .print-detail-table-section .print-detail-specimens .specimen-plasma {
+    background: #e4f5ff !important;
+    color: #00658f !important;
+    border-color: #a8d5ec;
+  }
+  .print-detail-table-section .print-detail-specimens .specimen-rbc {
+    background: #ffebea !important;
+    color: #a3211c !important;
+    border-color: #efbcb8;
+  }
+  .print-detail-table-section .print-detail-specimens .specimen-whole-blood {
+    background: #fbe8f0 !important;
+    color: #7b1e45 !important;
+    border-color: #e9b8cb;
+  }
+}
