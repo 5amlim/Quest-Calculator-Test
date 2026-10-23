@@ -4671,6 +4671,56 @@
     return 'Verify';
   }
 
+  function paginatePrintedBagsForMobile() {
+    // A full two-column bag row can be taller than an iPhone print page.
+    // Split only the printed DOM at container boundaries, never the bag plan.
+    const rows = Array.from(els.printSheet.querySelectorAll('.print-bag-grid > .print-bag-row'));
+    for (const row of rows) {
+      const cards = Array.from(row.children).filter(el => el.classList.contains('print-bag-card'));
+      if (!cards.length) continue;
+      const columns = cards.map(card => {
+        const items = Array.from(card.querySelectorAll('.print-submit-content > .print-submit-item'));
+        const groups = [];
+        let group = [], weight = 0;
+        for (const item of items) {
+          const cost = Math.max(1, Math.ceil((item.textContent || '').length / 300));
+          if (group.length && weight + cost > 4) {
+            groups.push(group);
+            group = [];
+            weight = 0;
+          }
+          group.push(item);
+          weight += cost;
+        }
+        if (group.length) groups.push(group);
+        if (groups.length < 2) return [card];
+        return groups.map((part, index) => {
+          const copy = card.cloneNode(true);
+          const body = copy.querySelector('.print-submit-content');
+          body.replaceChildren(...part.map(item => item.cloneNode(true)));
+          copy.classList.remove('bag-long');
+          if (index > 0) {
+            copy.classList.add('print-bag-continuation');
+            const label = copy.querySelector('.print-bag-title strong');
+            if (label) label.textContent += ' (continued)';
+          }
+          return copy;
+        });
+      });
+      const pages = Math.max(...columns.map(parts => parts.length));
+      if (pages < 2) continue;
+      const fragment = document.createDocumentFragment();
+      for (let index = 0; index < pages; index++) {
+        const next = row.cloneNode(false);
+        const pair = columns.map(parts => parts[index]).filter(Boolean);
+        next.classList.toggle('single-row', pair.length === 1);
+        pair.forEach(card => next.appendChild(card));
+        fragment.appendChild(next);
+      }
+      row.replaceWith(fragment);
+    }
+  }
+
   function printSummary() {
     const tests = selectedTests();
     if (!tests.length) return showToast('Add at least one test before printing.');
@@ -4714,6 +4764,7 @@
     // before pushing both bag cards onto the next sheet. Grid columns and
     // individual bag markup remain exactly the same.
     if (mobilePrint) {
+      paginatePrintedBagsForMobile();
       const heading = els.printSheet.querySelector('.print-submit-heading');
       const firstBagRow = els.printSheet.querySelector('.print-bag-row');
       if (heading && firstBagRow) firstBagRow.insertBefore(heading, firstBagRow.firstChild);
