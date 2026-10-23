@@ -4069,3 +4069,46 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     white-space: nowrap;
   }
 }
+
+
+/* Print collection cards: label sits above the two volume boxes on the right.
+   Shared by Quest and Labcorp; does not alter volume calculations or card content. */
+@media print {
+  .print-sheet .print-container-count .print-collection-volume-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: auto;
+    gap: 2px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .print-sheet .print-container-count .print-collection-blood-volume {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    grid-template-rows: auto auto;
+    justify-content: end;
+    justify-items: stretch;
+    align-items: start;
+    column-gap: 5px;
+    row-gap: 2px;
+    width: max-content;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .print-sheet .print-container-count .print-collection-blood-label {
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: end;
+    text-align: right;
+    margin: 0 0 1px;
+    white-space: nowrap;
+  }
+  .print-sheet .print-container-count .print-collection-blood-metric {
+    grid-row: 2;
+    margin: 0;
+  }
+}
