@@ -83,7 +83,7 @@ for(const [page,code] of [['index.html','assets/js/app.js'],['labcorp.html','lab
  assert.match(src,/firstBagRow\.insertBefore\(heading, firstBagRow\.firstChild\)/,
    page+' must attach the submission heading to the actual first bag row');
  assert.match(src,/if \(mobilePrint\)/,page+' print change must be mobile only');
- assert.match(read(page),/assets\/css\/styles\.css\?v=12\.01/);
+ assert.match(read(page),/assets\/css\/styles\.css\?v=12\.02/);
 }
 assert.match(styles,/html\.mobile-print \.print-sheet \.print-bag-row > \.print-submit-heading\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/);
 assert.match(styles,/html\.mobile-print \.print-sheet \.print-submit-section\s*\{[^}]*margin-top:\s*13px !important/);
