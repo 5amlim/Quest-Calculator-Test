@@ -42,4 +42,12 @@ for (const [name, html, app] of [['Quest', quest, questApp], ['LabCorp', labcorp
   assert.match(app, /classList\.toggle\('mobile-print', mobilePrint\)/,
     name + ' must detect phone print mode');
 }
+for (const source of [questApp, labcorpApp]) {
+  assert.match(source, /class="print-collection-row"/,
+    'Paired cards must have a shared page-break boundary');
+}
+assert.match(css, /\.print-sheet \.print-collection-row\s*\{[^}]*break-inside:\s*avoid-page !important;/,
+  'Never split a paired collection-card row across print pages');
+assert.match(css, /\.print-sheet \.print-collection-row > \.print-collection-card\s*\{[^}]*page-break-inside:\s*avoid !important;/,
+  'Keep individual card borders with their contents');
 console.log('PASS: iPhone pagination uses available space and preserves cards, headings, bags, and rows');
