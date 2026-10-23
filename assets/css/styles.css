@@ -3698,3 +3698,42 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     grid-column: auto;
   }
 }
+
+
+/* v12.02: Print whole paired collection rows instead of letting WebKit
+   fragment a collection card halfway across the page boundary.
+   Each existing card remains half-width; this only changes pagination. */
+@media print {
+  .print-sheet .print-collection-grid {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+  .print-sheet .print-collection-row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    margin: 0 0 8px !important;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+  .print-sheet .print-collection-row:last-child {
+    margin-bottom: 0 !important;
+  }
+  .print-sheet .print-collection-row > .print-collection-card {
+    flex: 0 0 calc(50% - 4px) !important;
+    width: calc(50% - 4px) !important;
+    max-width: calc(50% - 4px) !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    break-inside: avoid-page !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+  .print-sheet .print-collection-row > .print-collection-card.is-long:not(.is-sst-long) {
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
