@@ -2631,20 +2631,27 @@
     };
   }
 
-  function singleSstSpecimenVolumeWarning(test) {
+  function singleSstSpecimenVolumeLevel(test) {
+    // Severity follows the same per-test Gold/Tiger SST yield assumptions as
+    // the existing volume check. An explicit multi-tube order stays exempt.
     if (!isSstDraw(test) || requiresDedicatedSst(test) && explicitSstTubeCount(test) > 1) return '';
-    // Approximate quantities are safeguards, not guarantees of a usable yield.
-    // The selected source container still counts as one unless a source
-    // explicitly requests multiple collection tubes.
     const tiger = selectedSstIsTiger();
     const capacity = tiger ? TIGER_SST_USABLE_ML_PER_TUBE : SST_USABLE_ML_PER_TUBE;
     const preferred = tiger ? volumeForRequirement(test, 'preferred', { factor: 1 }) : parseVolumeMl(test.preferredVolume);
     const minimum = tiger ? volumeForRequirement(test, 'minimum', { factor: 1 }) : parseVolumeMl(test.minimumVolume);
-    if (minimum !== null && minimum > capacity + 1e-8) {
-      return `minimum required volume may exceed one ${tiger ? 'Tiger' : 'Gold'} SST's assumed yield. Verify the collection tube count with the receiving lab; the one-tube estimate may be insufficient.`;
+    if (minimum !== null && minimum > capacity + 1e-8) return 'minimum';
+    if (preferred !== null && preferred > capacity + 1e-8) return 'preferred';
+    return '';
+  }
+
+  function singleSstSpecimenVolumeWarning(test) {
+    const level = singleSstSpecimenVolumeLevel(test);
+    const tube = selectedSstIsTiger() ? 'Tiger' : 'Gold';
+    if (level === 'minimum') {
+      return `minimum required volume may exceed one ${tube} SST's assumed yield. Verify the collection tube count with the receiving lab; the one-tube estimate may be insufficient.`;
     }
-    if (preferred !== null && preferred > capacity + 1e-8) {
-      return `preferred volume may exceed one ${tiger ? 'Tiger' : 'Gold'} SST's assumed yield. Verify specimen sufficiency and collect additional tubes if needed.`;
+    if (level === 'preferred') {
+      return `preferred volume may exceed one ${tube} SST's assumed yield. Verify specimen sufficiency and collect additional tubes if needed.`;
     }
     return '';
   }
@@ -3144,22 +3151,29 @@
       const longSstList = item.className === 'tube-sst' && printedTestCount >= 9;
       const columnRows = Math.ceil(printedTestCount / (longSstList ? 2 : 3));
       const yieldReviewTests = item.className === 'tube-sst'
-        ? uniqueTests(item.tests).filter(test => singleSstSpecimenVolumeWarning(test)) : [];
+        ? uniqueTests(item.tests).filter(test => singleSstSpecimenVolumeLevel(test)) : [];
+      const minimumYieldTests = yieldReviewTests.filter(test => singleSstSpecimenVolumeLevel(test) === 'minimum');
+      const preferredYieldTests = yieldReviewTests.filter(test => singleSstSpecimenVolumeLevel(test) === 'preferred');
       return `<article class="print-collection-card${longSstList ? ' is-sst-long' : printedTestCount >= 12 ? ' is-long' : ''}" style="--print-column-rows:${columnRows}">
         <div class="print-container-count"><strong>${item.count}</strong><span class="tube ${item.displayClassName || item.className}">${escapeHtml(item.label)}</span>${tigerBadge}${microtainerBadge}${specimenBadge ? `<span class="print-collection-specimen-badge specimen-${specimenGroup}">${escapeHtml(specimenBadge)}</span>` : ''}${printCollectionWholeBloodDetail(item, wholeBloodGroups)}</div>
         ${item.detail ? `<div class="print-container-detail">${escapeHtml(item.detail)}</div>` : ''}
         ${item.className === 'tube-microtainer' ? '<div class="print-microtainer-note">Microcollection tubes · protect from light; follow the test-specific Microtainer instructions.</div>' : ''}
-        ${yieldReviewTests.length ? `<div class='print-sst-volume-warning'>
-          <div class='print-sst-volume-summary'>
+        ${yieldReviewTests.length ? `<div class="print-sst-volume-warning">
+          <div class="print-sst-volume-summary">
             <strong>Volume check</strong>
-            <span>${yieldReviewTests.length} ${yieldReviewTests.length === 1 ? 'test may' : 'tests may'} exceed one ${selectedSstIsTiger() ? 'Tiger' : 'Gold'} SST yield</span>
+            <span>${selectedSstIsTiger() ? 'Tiger' : 'Gold'} SST · ${selectedSstIsTiger() ? '4' : '2.5'} mL estimated serum yield</span>
           </div>
-          <div class='print-sst-volume-meta'>
-            <span class='print-sst-volume-affected'><b>Tests:</b> ${yieldReviewTests.map(test => `<b>${escapeHtml(displayCode(test))}</b>`).join(' · ')}</span>
-            <span class='print-sst-volume-action'>Verify specimen volume with receiving lab.</span>
-          </div>
+          ${minimumYieldTests.length ? `<div class="print-sst-volume-tier is-minimum">
+            <strong>Minimum exceeds yield:</strong>
+            <span>${minimumYieldTests.map(test => `<b>${escapeHtml(displayCode(test))}</b>`).join(' · ')}</span>
+          </div>` : ''}
+          ${preferredYieldTests.length ? `<div class="print-sst-volume-tier is-preferred">
+            <strong>Preferred exceeds yield:</strong>
+            <span>${preferredYieldTests.map(test => `<b>${escapeHtml(displayCode(test))}</b>`).join(' · ')}</span>
+          </div>` : ''}
+          <div class="print-sst-volume-action">Verify specimen volume with receiving lab.</div>
         </div>` : ''}
-        <div class="print-for-tests"><b>For ${item.tests.length} ${item.tests.length === 1 ? 'test' : 'tests'}:</b><ul>${uniqueTests(item.tests).map(test => `<li${item.className === 'tube-sst' && singleSstSpecimenVolumeWarning(test) ? ' class="is-volume-warning-test"' : ''}><strong>${escapeHtml(displayCode(test))}</strong> ${escapeHtml(test.testName)}${test.isStat ? '<span class="print-collection-stat-label"> · STAT</span>' : ''}</li>`).join('')}</ul></div>
+        <div class="print-for-tests"><b>For ${item.tests.length} ${item.tests.length === 1 ? 'test' : 'tests'}:</b><ul>${uniqueTests(item.tests).map(test => `<li${item.className === 'tube-sst' && singleSstSpecimenVolumeLevel(test) ? ` class="is-volume-warning-test is-volume-${singleSstSpecimenVolumeLevel(test)}"` : ''}><strong>${escapeHtml(displayCode(test))}</strong> ${escapeHtml(test.testName)}${test.isStat ? '<span class="print-collection-stat-label"> · STAT</span>' : ''}</li>`).join('')}</ul></div>
       </article>`;
     });
     // A printed page can start between rows, never halfway through either

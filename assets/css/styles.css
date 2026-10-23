@@ -2984,9 +2984,29 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     font-weight: 800;
   }
   .print-sst-volume-action {
+    margin-top: 3px;
+    font-size: 6.7px;
     font-weight: 650;
     color: #665942;
   }
+  .print-sst-volume-tier {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 6px;
+    margin-top: 3px;
+    font-size: 7.1px;
+    line-height: 1.25;
+  }
+  .print-sst-volume-tier > strong {
+    font-weight: 850;
+  }
+  .print-sst-volume-tier span {
+    overflow-wrap: anywhere;
+  }
+  .print-sst-volume-tier b { font-weight: 850; }
+  .print-sst-volume-tier.is-minimum { color: #943b31 !important; }
+  .print-sst-volume-tier.is-preferred { color: #91621f !important; }
   /* CSS multi-column pagination varies between mobile print engines. Use
      the same explicit column-first three-column layout everywhere. */
   .print-sheet .print-collection-card.is-long .print-for-tests ul {
@@ -4166,5 +4186,16 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
   }
   .print-sheet .print-collection-card.is-sst-long .print-for-tests li.is-volume-warning-test::before {
     color: #b77916 !important;
+  }
+  /* A minimum-volume shortfall is higher priority than preferred-only. */
+  .print-sheet .print-collection-card .print-for-tests li.is-volume-minimum {
+    color: #ac3d32 !important;
+  }
+  .print-sheet .print-collection-card .print-for-tests li.is-volume-minimum > strong {
+    color: #8e2c25 !important;
+    background: #ffe5e0 !important;
+  }
+  .print-sheet .print-collection-card.is-sst-long .print-for-tests li.is-volume-minimum::before {
+    color: #b7493f !important;
   }
 }
