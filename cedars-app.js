@@ -355,6 +355,21 @@
       '</div>';
   }
 
+  // Menu-only: show the primary specimen and tube, not accepted alternatives.
+  // Full source options remain in Details and the original records/planner.
+  function primaryCedarsMenuSpecimen(test) {
+    const value = String(test.specimen || '');
+    if (!Array.isArray(test.submissionOptions) || test.submissionOptions.length === 0) return value;
+    return value.split(/\s+or\s+/i)[0]
+      .replace(/\s*\((?:green|red|lavender|purple|blue)[^)]*\)\s*$/i, '')
+      .trim() || value;
+  }
+
+  function primaryCedarsMenuContainer(test) {
+    const value = String(test.submit || '');
+    return value.split(/\s+or\s+/i)[0].trim() || value;
+  }
+
   function makeRows() {
     const q = $('cedarsSearch').value;
     const cat = $('cedarsType').value;
@@ -384,9 +399,9 @@
       '<td><div class="test-name">' + esc(test.name) + '</div>' + specimenBadge(test.category) +
       '<div class="subtext cedars-row-source">' + esc(rowSummary(test)) + '</div>' +
       (test.hold ? '<span class="cedars-hold">' + esc(test.blockReason || 'Not performed at this site') + '</span>' : '') + '</td>' +
-      '<td><div class="cedars-container-cell">' + photoArt(test.submit, 'table') +
-      '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(test.specimen) + '</div>' +
-      cedarsMenuContainerPath(test) + '</div></div></td>' +
+      '<td><div class="cedars-container-cell">' + photoArt(primaryCedarsMenuContainer(test), 'table') +
+      '<div class="cedars-container-copy"><div class="cedars-specimen-name">' + esc(primaryCedarsMenuSpecimen(test)) + '</div>' +
+      cedarsMenuContainerPath({...test, submit: primaryCedarsMenuContainer(test)}) + '</div></div></td>' +
       '<td><span class="badge ' + (isUnknown(test) ? 'temp-unknown' : bagClass(transportBucket(test))) + '">' +
       esc(test.temp || 'Verify') + '</span></td>' +
       '<td class="row-actions"><button class="mini-button edit" type="button" data-info="' +
