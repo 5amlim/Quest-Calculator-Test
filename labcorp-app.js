@@ -4249,6 +4249,12 @@
     // Restore it even though the colored badge above already identifies specimen
     // type. Both Gold and Tiger SST share the same clear spun-SST instruction.
     if (item.originalTube) {
+      // An original sterile urine cup is not a blood tube and was never
+      // transferred. Keep this explicit in the printed submission bag.
+      if (item.className === 'tube-urine-cup' &&
+          (item.tests || []).every(test => isUrineTest(test))) {
+        return '<div class="print-submit-item-detail">Submit original sterile cup · No transfer</div>';
+      }
       const isSpunSst = item.key === 'sst-spun';
       const isMicrotainerSst = item.className === 'tube-microtainer';
       const spins = /\bspun\b|\bcentrifug/i.test(detail)
