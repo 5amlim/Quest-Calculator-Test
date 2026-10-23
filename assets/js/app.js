@@ -4544,7 +4544,16 @@
   function printDetailContainerPath(test) {
     const path = menuContainerBadges(test)
       .replaceAll('class="badge tube ', 'class="print-tube-badge tube ');
-    return `<div class="print-detail-container">${path}<div class="print-detail-specimens">${requiredSpecimenBadges(test, 'print-specimen-badge')}</div></div>`;
+    const labels = [normalizeSpecimenType(test.specimenType),
+      ...additionalDrawRequirements(test).map(req => normalizeSpecimenType(req.specimenType))]
+      .filter(Boolean);
+    const badges = Array.from(new Set(labels)).map(label => {
+      const group = /\\burine\\b/i.test(label) ? 'specimen-urine'
+        : /\\bstool\\b/i.test(label) ? 'specimen-stool'
+        : /\\bswab\\b/i.test(label) ? 'specimen-swab' : '';
+      return `<span class="specimen-badge ${specimenClass(label)} ${group} print-specimen-badge">${escapeHtml(label)}</span>`;
+    }).join(' ');
+    return `<div class="print-detail-container">${path}<div class="print-detail-specimens">${badges}</div></div>`;
   }
 
   function printSummary() {
