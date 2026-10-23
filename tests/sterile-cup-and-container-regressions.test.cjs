@@ -11,7 +11,7 @@ const paths = [
 ];
 
 for (const [name, html, appFile] of paths) {
-  assert.match(read(html), /<option value="sterile-cup">Sterile cup \(collection or transport\)<\/option>/,
+  assert.match(read(html), /<option value="sterile-cup">Sterile cup \(submitted\)<\/option>/,
     name + ': sterile-cup filter must exist');
   const context = vm.createContext({
     window: { SEED_TESTS: [] },
@@ -45,10 +45,13 @@ for (const [name, html, appFile] of paths) {
   const statSerum = mk('108', 'Serum', 'Gold SST', 'Serum Transport Tube', 'Room Temperature', '1 mL serum', true);
   const specialStool = mk('109', 'Stool', 'Trace Metal-Free Plastic Container', 'Trace Metal-Free Plastic Container');
   const timedUrine = mk('110', 'Urine', '24-Hour Urine Container', '24-Hour Urine Container');
-  for (const t of [urineCulture, urineUA, stoolFix, stoolCup, directFluid])
-    assert(api.usesSterileCup(t), name + ': must filter by the cup used with ' + t.testCode);
-  for (const t of [serumA, specialStool, timedUrine])
-    assert(!api.usesSterileCup(t), name + ': must not falsely include ' + t.testCode);
+  for (const t of [stoolCup, directFluid])
+    assert(api.usesSterileCup(t), name + ': sterile cup is submitted for ' + t.testCode);
+  for (const t of [urineCulture, urineUA, stoolFix, serumA, specialStool, timedUrine])
+    assert(!api.usesSterileCup(t), name + ': collection cups must not match transport filter ' + t.testCode);
+  assert.equal(api.transportContainerFilterCategories(urineCulture).includes('urine-culture'), true);
+  assert.equal(api.transportContainerFilterCategories(urineUA).includes('urine-ua'), true);
+  assert.equal(api.transportContainerFilterCategories(stoolFix).includes('stool'), true);
   assert.equal(api.transportContainerFilterCategories(stoolFix).includes('stool'), true);
   assert.equal(api.transportContainerFilterCategories(stoolCup).includes('sterile-cup'), true);
   assert.equal(api.transportContainerFilterCategories(timedUrine).includes('urine-cup'), true);
