@@ -4474,7 +4474,7 @@
     // boundary, iOS Safari can leave the purple heading and a large empty
     // bordered area on one page while moving the first unbreakable bag row to
     // the next. This is strictly a print pagination rule, not a routing change.
-    const bagStartOnFreshPage = bags.length > 0;
+    const bagStartOnFreshPage = bags.length > 0 && (!window.matchMedia('(max-width: 720px)').matches || tests.length > 4 || collectionItems.length > 3);
     const fastingItems = fastingRequirementsForTests(tests).map(({ test, requirement }) => ({ test, requirement: printFastingRequirement(test, requirement) }));
     const preparationItems = preCollectionPrecautionsForTests(tests);
     const preparationPanel = preparationItems.length ? `<div class="print-fasting-panel print-prep-panel">
@@ -4648,7 +4648,7 @@
         <div class="print-meta">Generated ${escapeHtml(new Date().toLocaleString())}<span class="print-selected-count">${tests.length} selected ${tests.length === 1 ? 'test' : 'tests'}</span></div>
       </div>
       ${printCollectionSubmissionPlan(tests)}
-      <section class="print-detail-table-section">
+      <section class="print-detail-table-section${tests.length <= 3 ? ' print-brief-order' : ''}">
       ${alerts.length ? `<div class="print-alerts">${alerts.map(alert => `<div>${escapeHtml(alert.text)}</div>`).join('')}</div>` : ''}
       <table class="print-table">
         <colgroup><col style="width:6%"><col style="width:14%"><col style="width:20%"><col style="width:4%"><col style="width:8%"><col style="width:8%"><col style="width:8%"><col style="width:32%"></colgroup>
