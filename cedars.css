@@ -3288,3 +3288,14 @@
     border-radius: 999px;
   }
 }
+
+/* Printed Cedars specimen type: colored wording, not a filled badge. */
+@media print {
+  #cedarsPrintSheet .cedars-print-detail-container .cedars-print-test-type {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}
