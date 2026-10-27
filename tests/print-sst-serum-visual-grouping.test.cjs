@@ -77,8 +77,8 @@ for (const scriptPath of ['assets/js/app.js', 'labcorp-app.js']) {
     scriptPath+': manual warning shares the footer line with bag progress');
   assert.match(source, /print-bag-manual-flag/,
     scriptPath+': shortened manual warning is left-aligned in progress row');
-  assert.doesNotMatch(source, /\$\{printManualCardWarning\(item\.tests\)\}/,
-    scriptPath+': no long standalone warning inside bag cards');
+  assert.match(source, /printBagItemProgress\(item, itemIndex, contents\)/,
+    scriptPath+': warning is rendered inline rather than as a standalone block');
   assert.match(source, /const totalContainers = contents\.reduce/,
     scriptPath+': physical container totals must be computed before grouping');
   assert.match(source, /contents: printSstSerumTransportGroupContents\(contents\), totalContainers/,

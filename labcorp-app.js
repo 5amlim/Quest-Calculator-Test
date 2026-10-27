@@ -4865,7 +4865,7 @@
     if (parts.length < 2) return;
     const first = parts[0], overrides = new Map();
     parts.forEach(part => {
-      if (!(part.sourceCountOverrides instanceof Map)) return;
+      if (!part.sourceCountOverrides || typeof part.sourceCountOverrides.forEach !== 'function') return;
       part.sourceCountOverrides.forEach((count, key) =>
         overrides.set(key, (overrides.get(key) || 0) + count));
     });
