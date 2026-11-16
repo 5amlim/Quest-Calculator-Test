@@ -813,7 +813,7 @@
     const drawBadges = drawContainerBadge(collectionLabel) +
       additionalDrawRequirements(test).map(req => drawContainerBadge(cleanCollectionContainer(req.container || 'Verify collection container'))).join(' ');
     // Swab kit aliases must not display an invented post-collection transfer.
-    if (isDirectSwabKitSubmission(test))
+    if (isDirectSwabKitSubmission(test) && !additionalDrawRequirements(test).length)
       return '<span class="container-path is-single">' + drawBadges + '</span>';
     const cleanName = value => {
       const text = normalizeSearch(cleanCollectionContainer(value))
