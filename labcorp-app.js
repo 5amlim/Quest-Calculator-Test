@@ -4657,7 +4657,7 @@
       // Every original collection tube must travel as an original submission.
       // If two distinct whole-blood tubes are drawn, they cannot be compressed
       // into a single original tube in the bag plan (e.g. 38287).
-      count: Math.max(explicitSubmissionCount(test), recommendedCollectionTubesForTest(test)),
+      count: directUrineCup ? explicitSubmissionCount(test) : Math.max(explicitSubmissionCount(test), recommendedCollectionTubesForTest(test)),
       detail: isAptima70049 ? processing : `${sourceSpecimen} · ${nmrProcessing}`,
       originalTube: true
     };
