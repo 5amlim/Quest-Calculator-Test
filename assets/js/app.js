@@ -4456,7 +4456,7 @@
       const dedicatedBlood = specimenGroup === 'blood' &&
         (/\bcord\b/i.test(test.specimenType || '') ||
          /\bgestational\b/i.test(test.testName || ''));
-      const groupKey = `${specimenSubtype}|${info.key}${separateCup || separateStool || dedicatedBlood ? `|separate|${test.sourceTestId || test.id}` : ''}`;
+      const groupKey = `${specimenSubtype}|${info.key}${separateCup || separateStool || dedicatedBlood || info.className === 'tube-salivette' ? `|separate|${test.sourceTestId || test.id}` : ''}`;
       if (!grouped.has(groupKey)) grouped.set(groupKey, { ...info, key: groupKey, urineSeparateCollection: separateCup, stoolSeparateCollection: separateStool, urineCollectionKey: groupKey, count: 0, tests: [], detail: '' });
       const item = grouped.get(groupKey);
       if (urineCup && !separateCup) item.count = Math.max(item.count, explicitCollectionCount(test));
@@ -4632,6 +4632,7 @@
 
   function transportTubeClass(test, container) {
     const value = String(container || '').toLowerCase();
+    if (/\bsalivette\b/.test(value)) return 'tube-salivette';
     if (/^frozen platelet[- ]poor plasma transport tube/.test(value)) return 'tube-frozen-purple';
     if (/^frozen transport tube(?:\s*\(.*\))?$/.test(value)) return 'tube-frozen-purple';
     const specimen = normalizeSpecimenType(test.specimenType).toLowerCase();
@@ -4815,7 +4816,7 @@
       ? `${sourceSpecimen} · Submit as Aptima`
       : (String(test.spin || '').toLowerCase() === 'yes' ? 'Process as directed; submit in original tube' : 'Submit in original tube');
     return {
-      key: `original|${normalizeSearch(label)}|${normalizeSearch(sourceSpecimen)}`,
+      key: `original|${normalizeSearch(label)}|${normalizeSearch(sourceSpecimen)}${/\bsalivette\b/i.test(draw) ? '|timed-' + normalizeSearch(String(test.id || test.testCode)) : ''}`,
       label,
       className: tubeClass(draw),
       // Every original collection tube must travel as an original submission.
@@ -5198,6 +5199,12 @@
     if (/^other\s*\/\s*verify$/i.test(source)) source = 'Specimen';
 
     const explicit = /^(?:label\b|mark\b|identify\b|write\b|specimen\s+collection\b)/i.test(raw);
+    if (/\bsalivette\b/i.test(`${test.drawContainer || ''} ${test.transportContainer || ''}`)
+        && /\bcortisol\b/i.test(String(test.testName || ''))) {
+      const samples = Math.max(1, Math.floor(Number(test.submissionCount) || Number(test.collectionCount) || 1));
+      if (samples > 1) add(`Number devices 1–${samples} of ${samples}`);
+      add('Collection time');
+    }
     if (explicit) {
       // Only a declared label instruction can add label-specific details.
       if (/\b(?:trace\s*metal[- ]?free|metal[- ]?free)\b/i.test(raw)) add('Trace metal-free');
@@ -5855,6 +5862,8 @@
   // Print-only grouping. A shared card is NOT permission to pool specimens.
   // Keep each required tube, code, label, and source allocation intact.
   function printContainerPresentationKey(item) {
+    // Keep each timed Salivette order and its physical devices separate.
+    if (/(?:^|\s)tube-salivette(?:\s|$)/.test(String(item?.className || '')) || /\bsalivette\b/i.test(String(item?.label || ''))) return '';
     if (!item || !(item.count > 0) || !item.className || !item.label
       || item.printAllocationNote || item.pooledSerumPlasmaTransport
       || !Array.isArray(item.tests) || !item.tests.length) return '';
@@ -6390,6 +6399,7 @@
 
   function tubeClass(container) {
     const value = String(container || '').toLowerCase();
+    if (/\bsalivette\b/.test(value)) return 'tube-salivette';
     if (/^frozen transport tube(?:\s*\(.*\))?$/.test(value)) return 'tube-frozen-purple';
     if (/microtainer/.test(value)) return 'tube-microtainer';
     if (/uri[- ]?sponge/.test(value)) return 'tube-urisponge';
