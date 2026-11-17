@@ -427,6 +427,19 @@
       specialInstructions: 'DO NOT PERFORM ONSITE. ' + reason};
   }
 
+  // Hair and nail specimens cannot be collected at these clinics.
+  function blockHairOrNailSpecimen(test) {
+    if (!test || test.status === 'reference') return test;
+    const specimen = String(test.specimenType || '').trim().toLowerCase();
+    const required = /\b(?:hair|nails?|fingernails?|toenails?|nail clippings?)\b/.test(specimen);
+    const alternatives = /\b(?:skin|swab|serum|plasma|blood|urine|stool|tissue|saliva|sputum|csf|fluid)\b/.test(specimen);
+    if (!required || alternatives) return test;
+    const notice = 'DO NOT PERFORM ONSITE. Hair and nail specimens are not collected at our clinics.';
+    const instructions = String(test.specialInstructions || '');
+    return { ...test, status: 'blocked',
+      specialInstructions: instructions.includes(notice) ? instructions : notice + ' ' + instructions };
+  }
+
   function applyUserState(state) {
     const builtIns = seedDatabase.map(test => ({ ...test }));
     const byId = new Map(builtIns.map((test, index) => [test.id, index]));
@@ -495,7 +508,8 @@
     // Retired Quest codes must not reappear through legacy user edits or saved custom tests.
     return [...customTests, ...builtIns]
       .filter(test => !RETIRED_TEST_CODES.has(test.testCode))
-      .map(applyLocalSupplyPolicy);
+      .map(applyLocalSupplyPolicy)
+      .map(blockHairOrNailSpecimen);
   }
 
   function userStateFromDatabase() {
@@ -2537,6 +2551,7 @@
     saveSelected();
     renderOrder();
     renderLibrary();
+    showToast('Cart cleared.');
   }
 
   function saveSelected() {
@@ -4228,7 +4243,30 @@
       delete card.details;
     });
     // Collection order: SST, remaining blood tubes, urine, stool, then swabs.
-    return collectionCards.sort((a, b) => collectionSortRank(a) - collectionSortRank(b));
+    // Combine matching specimen/container cards without pooling distinct specimens.
+    const visualCards = [];
+    const visualIndex = new Map();
+    collectionCards.forEach(item => {
+      const specimenGroup = collectionSpecimenGroupForItem(item);
+      if (specimenGroup === 'blood' || specimenGroup === 'other') {
+        visualCards.push(item);
+        return;
+      }
+      const key = `${collectionMergeSubtypeForItem(item)}|${item.className}|${normalizeSearch(item.label)}`;
+      if (!visualIndex.has(key)) {
+        const copy = { ...item, tests: uniqueTests(item.tests || []) };
+        visualIndex.set(key, copy);
+        visualCards.push(copy);
+        return;
+      }
+      const card = visualIndex.get(key);
+      card.count += item.count;
+      card.tests = uniqueTests([...card.tests, ...(item.tests || [])]);
+      card.urineSeparateCollection ||= Boolean(item.urineSeparateCollection);
+      card.stoolSeparateCollection ||= Boolean(item.stoolSeparateCollection);
+      card.detail = Array.from(new Set([card.detail, item.detail].filter(Boolean))).join(' · ');
+    });
+    return visualCards.sort((a, b) => collectionSortRank(a) - collectionSortRank(b));
   }
 
   function consolidateBloodCollectionDetails(details) {
@@ -5058,6 +5096,19 @@
     return true;
   }
 
+  function normalizePrintedLabelDetail(explicit, derived, test) {
+    const text = String(explicit || '').trim().replace(/\s+/g, ' ');
+    const match = text.match(/^label\s+(.+?)\s+(?:and|with)\s+collection\s+date\s*(?:\/\s*time|\s+and\s+time)(?:\s*;\s*(.*))?\.?$/i);
+    if (!match) return text;
+    const subject = match[1].trim();
+    const known = [derived, normalizeSpecimenType(test.specimenType), specificSpecimenSource(test)];
+    const duplicated = known.some(value => value && normalizedLabelComparison(value) === normalizedLabelComparison(subject));
+    const detail = String(match[2] || '').trim()
+      .replace(/^specify\s+left\s+or\s+right\s+(ear|eye)$/i, 'Specify left/right $1')
+      .replace(/\.$/, '');
+    return [duplicated ? '' : subject, 'Collection date/time', detail].filter(Boolean).join(' · ');
+  }
+
   function printLabelingNotes(item) {
     if (item.printVisualGroupParts) return item.printVisualGroupParts.map(printLabelingNotes).join('');
     const grouped = new Map();
@@ -5089,7 +5140,7 @@
       }
       if (is24Hour) parts.push('24h urine · Total volume: ____ mL · Start: ____ · End: ____');
       const explicitIsRedundant24hUrine = is24Hour && /^urine$/i.test(explicit.trim());
-      if (!explicitIsRedundant24hUrine && explicitLabelAddsInformation(explicit, derived)) parts.push(explicit);
+      if (!explicitIsRedundant24hUrine && explicitLabelAddsInformation(explicit, derived)) parts.push(normalizePrintedLabelDetail(explicit, derived, test));
       // Deduplicate equivalent labels from the same test before comparing across
       // tests. Preserve instructions that add a distinct labeling requirement.
       const uniqueParts = [];
@@ -5109,7 +5160,7 @@
       grouped.get(groupKey).codes.push(displayCode(test));
     });
     if (!grouped.size) return '';
-    return `<div class="print-label-notes">${Array.from(grouped.values()).map(({ note, codes }) => `<div class="print-label-note"><span>Label</span><div>${escapeHtml(note)} <small>${escapeHtml([...new Set(codes)].join(', '))}</small></div></div>`).join('')}</div>`;
+    return `<div class="print-label-notes">${Array.from(grouped.values()).map(({ note, codes }) => `<div class="print-label-note"><span>Label</span><div>${escapeHtml(note)} ${grouped.size > 1 ? `<small>${escapeHtml([...new Set(codes)].join(', '))}</small>` : ''}</div></div>`).join('')}</div>`;
   }
 
   function isTransferSubmission(test) {
