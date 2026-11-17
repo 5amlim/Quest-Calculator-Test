@@ -5268,3 +5268,13 @@ dialog::backdrop { background: rgba(18,36,43,.52); backdrop-filter: blur(3px); }
     page-break-after: auto !important;
   }
 }
+
+/* Print-only visual separation of specimen labeling and processing instructions. */
+@media print {
+  .print-label-note.print-label-process { color: #235660; }
+  .print-label-note.print-label-process > span {
+    border-color: #a7c7cc;
+    background: #eef8f8 !important;
+    color: #235660 !important;
+  }
+}
