@@ -1844,3 +1844,50 @@ dialog::backdrop { background:#10293e80; backdrop-filter:blur(3px); }
     .stat-area-common-tag { margin-left: 5px; }
   }
 }
+
+/* Mobile catalog Filters: keep the page in place and scroll the sheet vertically. */
+@media screen and (max-width: 720px) {
+  html.catalog-filter-scroll-lock,
+  body.catalog-filter-scroll-lock {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+  .filter-row.catalog-filter-expanded { z-index: 150; }
+  #catalogFilterControl { min-width: 0; }
+  #catalogFilterPanel {
+    position: fixed;
+    top: var(--catalog-filter-top, 12px);
+    right: 12px;
+    left: 12px;
+    bottom: auto;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    max-height: calc(100dvh - var(--catalog-filter-top, 12px) - 12px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    z-index: 151;
+  }
+  #catalogFilterPanel > *,
+  #catalogFilterPanel label,
+  #catalogFilterPanel .portal-select-wrap,
+  #catalogFilterPanel .portal-select-button,
+  #catalogFilterPanel input,
+  #catalogFilterPanel select {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  #catalogFilterControl .portal-select-menu {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-width: calc(100dvw - 24px);
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+}
