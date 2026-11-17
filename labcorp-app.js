@@ -437,7 +437,7 @@
       LEGACY_FULL_DB_KEYS.forEach(key => localStorage.removeItem(key));
       if (pendingUserState) {
         if (!saveUserState(pendingUserState)) {
-          window.alert('The calculator loaded, but custom browser changes could not be saved. Browser storage may be unavailable.');
+          void window.PortalDialog.alert('The calculator loaded, but custom browser changes could not be saved. Browser storage may be unavailable.', { title: 'Manual changes not saved', tone: 'warning' });
         } else {
           pendingUserState = null;
         }
@@ -1609,10 +1609,10 @@
     els.clearBrowserTestsButton.title = count ? 'Remove only manual entries stored in this browser' : 'No manual entries to remove';
   }
 
-  function clearBrowserAddedTests() {
+  async function clearBrowserAddedTests() {
     const custom = browserAddedTests();
     if (!custom.length) return;
-    if (!window.confirm(`Remove ${custom.length} manual ${custom.length === 1 ? 'entry' : 'entries'}? This cannot be undone. Built-in packaged tests and edits to those tests will not be deleted.`)) return;
+    if (!(await window.PortalDialog.confirm(`Remove ${custom.length} manual ${custom.length === 1 ? 'entry' : 'entries'}? This cannot be undone. Built-in packaged tests and edits to those tests will not be deleted.`, { title: 'Remove manually added tests?', confirmLabel: 'Remove tests', tone: 'danger' }))) return;
     const ids = new Set(custom.map(test => test.id));
     database = database.filter(test => !ids.has(test.id));
     selectedIds = selectedIds.filter(id => !ids.has(id));
@@ -2003,7 +2003,7 @@
       setBatchAddOptionsOpen(toggle.closest('.batch-choice-entry, .batch-main-add-control'), false));
   }
 
-  function handleBatchClick(event) {
+  async function handleBatchClick(event) {
     const trigger = event.target.closest('.batch-choice-trigger');
     if (trigger) {
       const dropdown = trigger.closest('.batch-choice-dropdown');
@@ -2056,9 +2056,8 @@
       const exactSafe = button.dataset.source === 'main'
         ? canAutoAddBatchRow(row)
         : isExactBatchMatch(row.query, test) && test.id === row.matches[0]?.test.id && canAutoAddBatchRow(row);
-      if (!exactSafe &&
-          !window.confirm(`This entry is not an unambiguous exact match.\n\nYou entered: ${row.query}\nSelected test: ${displayCode(test)} · ${test.testName}\n\nPlease verify the test code and specimen requirements. Add this specific test?`)) return;
-      if (wantStat && !confirmStatSelection(test)) return;
+      if (!exactSafe && !(await window.PortalDialog.confirm(`This entry is not an unambiguous exact match.\n\nYou entered: ${row.query}\nSelected test: ${displayCode(test)} · ${test.testName}\n\nPlease verify the test code and specimen requirements. Add this specific test?`, { title: 'Confirm test match', confirmLabel: 'Add selected test', tone: 'warning', subject: `${displayCode(test)} · ${test.testName}` }))) return;
+      if (wantStat && !(await confirmStatSelection(test))) return;
       const fromMatchList = button.dataset.source === 'match';
       const previousMenu = fromMatchList ? button.closest('.batch-choice-menu') : null;
       const previousScroll = previousMenu?.scrollTop || 0;
@@ -2445,14 +2444,14 @@
   }
 
   function confirmStatSelection(test) {
-    return window.confirm(`Mark ${displayCode(test)} · ${test.testName} as STAT?\n\nReceiving lab: ${STAT_AREAS[statArea].label}\n\nThis code is in the configured regional STAT menu. Confirm current receiving-lab acceptance, cutoff, requisition, and separate STAT courier routing before proceeding.`);
+    return window.PortalDialog.confirm(`Mark ${displayCode(test)} · ${test.testName} as STAT?\n\nReceiving lab: ${STAT_AREAS[statArea].label}\n\nThis code is in the configured regional STAT menu. Confirm current receiving-lab acceptance, cutoff, requisition, and separate STAT courier routing before proceeding.`, { title: 'Mark test as STAT?', confirmLabel: 'Mark STAT', tone: 'warning', subject: `${displayCode(test)} · ${test.testName}` });
   }
 
-  function toggleStatPriority(id) {
+  async function toggleStatPriority(id) {
     if (!selectedIds.includes(id)) return;
     const test = database.find(item => item.id === id);
     if (!isStatEligible(test)) return;
-    if (!statSelectedIds.includes(id) && !confirmStatSelection(test)) return;
+    if (!statSelectedIds.includes(id) && !(await confirmStatSelection(test))) return;
     statSelectedIds = statSelectedIds.includes(id)
       ? statSelectedIds.filter(item => item !== id)
       : [...statSelectedIds, id];
@@ -2461,12 +2460,12 @@
     renderLibrary();
   }
 
-  function addStatFromMenu(id) {
+  async function addStatFromMenu(id) {
     const test = database.find(item => item.id === id);
     if (!isStatEligible(test)) return;
     if (selectedIds.includes(id)) return;
     // Never add a test or change its routing until the user confirms it.
-    if (!confirmStatSelection(test)) return;
+    if (!(await confirmStatSelection(test))) return;
     if (!addSelected(id, false)) return;
     statSelectedIds.push(id);
     saveSelected();
@@ -2503,16 +2502,27 @@
     renderLibrary();
   }
 
-  function clearOrder() {
-    if (!selectedIds.length) return;
-    if (!window.confirm('Clear all selected tests from this summary?')) return;
-    selectedIds = [];
-    statSelectedIds = [];
-    saveStatSelectedIds();
-    saveSelected();
-    renderOrder();
-    renderLibrary();
-    showToast('Cart cleared.');
+  let clearOrderPending = false;
+  async function clearOrder() {
+    if (!selectedIds.length || clearOrderPending) return;
+    clearOrderPending = true;
+    try {
+      const count = selectedIds.length;
+      const confirmed = await window.PortalDialog.confirm(
+        `Remove ${count} selected ${count === 1 ? 'test' : 'tests'} from the cart?`,
+        { title: 'Clear collection summary?', confirmLabel: 'Clear all', cancelLabel: 'Keep tests', tone: 'danger' }
+      );
+      if (!confirmed) return;
+      selectedIds = [];
+      statSelectedIds = [];
+      saveStatSelectedIds();
+      saveSelected();
+      renderOrder();
+      renderLibrary();
+      showToast('Cart cleared.');
+    } finally {
+      clearOrderPending = false;
+    }
   }
 
   function saveSelected() {
@@ -3221,11 +3231,11 @@
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
-  function deleteCustomTest() {
+  async function deleteCustomTest() {
     const id = els.testId.value;
     if (!id.startsWith('custom-')) return;
     const test = database.find(item => item.id === id);
-    if (!test || !window.confirm(`Delete the custom entry “${test.testName}”?`)) return;
+    if (!test || !(await window.PortalDialog.confirm(`Delete the custom entry “${test.testName}”?`, { title: 'Delete manually added test?', confirmLabel: 'Delete test', tone: 'danger' }))) return;
     database = database.filter(item => item.id !== id);
     selectedIds = selectedIds.filter(item => item !== id);
     statSelectedIds = statSelectedIds.filter(item => item !== id);
@@ -3240,7 +3250,7 @@
   function persistDatabase() {
     const state = userStateFromDatabase();
     if (!saveUserState(state)) {
-      window.alert('This change is visible now but could not be saved in this browser. Browser storage may be unavailable.');
+      void window.PortalDialog.alert('This change is visible now but could not be saved in this browser. Browser storage may be unavailable.', { title: 'Change not saved', tone: 'warning' });
     }
     els.recordCount.textContent = `${database.length} tests`;
   }
